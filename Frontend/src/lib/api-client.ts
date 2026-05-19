@@ -163,7 +163,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   return apiClient.fetch<T>(path, init);
 }
 
-export function setApiAuthErrorListener(listener: (status: number) => void | null) {
+export function setApiAuthErrorListener(listener: ((status: number) => void) | null) {
   apiClient.setAuthErrorListener(listener);
 }
 
