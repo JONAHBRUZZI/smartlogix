@@ -1,3 +1,46 @@
-# Ignorar las carpetas Frontend y Backend en la raíz del repositorio
-Frontend/
-Backend/
+# Dependencias
+node_modules/
+Backend/**/target/
+Backend/**/.mvn/
+
+# Builds
+Frontend/dist/
+Frontend/dev-dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+._*
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Java
+*.class
+*.jar
+*.war
+*.log
+
+# Docker
+Backend/postgres_data/
+
+# Binary files (Word docs en raiz)
+*.docx
+
+# Secrets (por las dudas)
+*secret*
+*password*
+!*.example
+!*example*

@@ -1,0 +1,187 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&display=swap");
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 208 44% 97%;
+  --foreground: 212 64% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 212 64% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 212 64% 18%;
+  --primary: 205 55% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 208 50% 21%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 210 14% 90%;
+  --muted-foreground: 212 17% 55%;
+  --accent: 205 55% 90%;
+  --accent-foreground: 205 55% 25%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 14% 86%;
+  --input: 208 50% 97%;
+  --ring: 205 55% 55%;
+  --warning: 30 65% 68%;
+  --success: 168 43% 51%;
+  --info: 205 55% 55%;
+  --danger: 0 72% 51%;
+  --success-ink: 168 60% 24%;
+  --warning-ink: 30 70% 25%;
+  --info-ink: 205 55% 30%;
+  --danger-ink: 0 70% 30%;
+  --sidebar: 212 64% 18%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 205 55% 55%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 208 55% 25%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 208 55% 25%;
+  --sidebar-ring: 205 55% 55%;
+  --radius: 0.375rem;
+  --radius-sm: calc(var(--radius) - 0.125rem);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 0.125rem);
+  --radius-xl: calc(var(--radius) + 0.25rem);
+  --font-sans: "Lato", system-ui, sans-serif;
+  --font-heading: "Lato", system-ui, sans-serif;
+}
+
+.dark {
+  --background: 222 47% 6%;
+  --foreground: 210 20% 92%;
+  --card: 222 47% 10%;
+  --card-foreground: 210 20% 92%;
+  --popover: 222 47% 10%;
+  --popover-foreground: 210 20% 92%;
+  --primary: 205 55% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 215 25% 18%;
+  --secondary-foreground: 210 20% 92%;
+  --muted: 215 25% 14%;
+  --muted-foreground: 210 15% 55%;
+  --accent: 215 25% 18%;
+  --accent-foreground: 210 20% 92%;
+  --border: 215 25% 20%;
+  --input: 215 25% 14%;
+  --ring: 205 55% 55%;
+  --sidebar: 222 47% 6%;
+  --sidebar-foreground: 210 20% 92%;
+  --sidebar-primary: 205 55% 55%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 215 25% 14%;
+  --sidebar-accent-foreground: 210 20% 92%;
+  --sidebar-border: 215 25% 20%;
+}
+
+* {
+  @apply border-border outline-ring/50;
+}
+
+html {
+  font-family: var(--font-sans);
+  background: hsl(var(--background));
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen bg-background text-foreground antialiased;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+#root {
+  @apply min-h-screen;
+}
+
+::selection {
+  background: rgba(75, 152, 207, 0.18);
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    @apply font-bold tracking-tight text-foreground;
+  }
+
+  b, strong {
+    font-weight: 600;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+}
+
+@layer components {
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .touch-target-sm {
+    @apply min-h-[40px] min-w-[40px];
+  }
+
+  .card-mobile {
+    @apply rounded-lg border border-border bg-card shadow-sm;
+  }
+
+  .table-row-mobile {
+    @apply flex flex-col gap-1 rounded border border-border bg-card p-3 sm:hidden;
+  }
+
+  .table-row-desktop {
+    @apply hidden sm:table-row;
+  }
+
+  .btn-touch {
+    @apply inline-flex items-center justify-center rounded-lg font-semibold transition-colors
+           min-h-[44px] px-4 text-sm
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-touch-primary {
+    @apply btn-touch bg-[#4B98CF] text-white hover:bg-[#346384] active:scale-[0.98];
+  }
+
+  .btn-touch-outline {
+    @apply btn-touch border border-border bg-card text-foreground hover:bg-muted active:scale-[0.98];
+  }
+
+  .btn-icon-touch {
+    @apply inline-flex items-center justify-center rounded-lg border border-border
+           min-h-[44px] min-w-[44px] text-muted-foreground
+           hover:bg-muted active:scale-[0.95] transition-colors
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-top {
+    padding-top: max(0rem, env(safe-area-inset-top));
+  }
+
+  .text-minimum {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .scroll-x {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -1,0 +1,31 @@
+node_modules/
+
+# Build outputs
+dist/
+dev-dist/
+coverage/
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.crt
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript incremental caches
+*.tsbuildinfo
+
+# IDE and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

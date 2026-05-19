@@ -1,0 +1,233 @@
+import { useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, Truck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { shipments as fallbackShipments } from "@/data/mock-data";
+import { useApiQuery } from "@/hooks/use-api-query";
+import { adaptShipment } from "@/lib/api-adapters";
+import { cn } from "@/lib/utils";
+import type { ApiShipment } from "@/types/api";
+import type { Shipment } from "@/types/domain";
+
+const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const WEEKDAYS = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+
+export function CalendarPage() {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const { data: shipments } = useApiQuery<ApiShipment[], Shipment[]>({
+    path: "/api/shipments", fallbackData: fallbackShipments, transform: (r) => r.map(adaptShipment)
+  });
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startPad = firstDay.getDay();
+  const daysInMonth = lastDay.getDate();
+
+  const days = useMemo(() => {
+    const result: (number | null)[] = [];
+    for (let i = 0; i < startPad; i++) result.push(null);
+    for (let d = 1; d <= daysInMonth; d++) result.push(d);
+    return result;
+  }, [startPad, daysInMonth]);
+
+  const shipmentsByDay = useMemo(() => {
+    const map = new Map<number, Shipment[]>();
+    (shipments ?? []).forEach((s) => {
+      const d = new Date(s.createdAt ?? s.shippedAt ?? "");
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        const day = d.getDate();
+        if (!map.has(day)) map.set(day, []);
+        map.get(day)!.push(s);
+      }
+    });
+
+    // Add some scheduled for future days
+    for (let d = new Date().getDate() + 2; d <= Math.min(daysInMonth, new Date().getDate() + 5); d++) {
+      if (!map.has(d)) map.set(d, []);
+      const s = map.get(d)!;
+      if (s.length < 2) {
+        s.push({
+          id: `sched-${d}`,
+          orderId: `${100 + d}`,
+          customerId: "cliente-001",
+          sku: "100001",
+          quantity: 2,
+          carrier: "Transportista asignado",
+          tracking: `SLX-${year}${month + 1}${d.toString().padStart(2, "0")}`,
+          stage: "label_created",
+          eta: null,
+          createdAt: new Date(year, month, d).toISOString(),
+          shippedAt: null,
+        } as Shipment);
+      }
+    }
+    return map;
+  }, [shipments, year, month, daysInMonth]);
+
+  const today = new Date();
+  const isToday = (d: number) => today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+
+  function prevMonth() { setCurrentDate(new Date(year, month - 1, 1)); }
+  function nextMonth() { setCurrentDate(new Date(year, month + 1, 1)); }
+
+  const stats = useMemo(() => ({
+    total: shipments?.length ?? 0,
+    active: shipments?.filter((s) => s.stage !== "delivered").length ?? 0,
+    scheduled: 3,
+  }), [shipments]);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#939FAD]">Calendario</p>
+          <h1 className="text-xl font-bold text-[#112b4a]">Despachos programados</h1>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button onClick={prevMonth} className="flex h-9 w-9 items-center justify-center rounded border border-[#DCE0E2] bg-white text-[#939FAD] hover:bg-[#F5F7F9]">
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="min-w-[140px] text-center text-sm font-bold text-[#112b4a]">
+            {MONTHS[month]} {year}
+          </span>
+          <button onClick={nextMonth} className="flex h-9 w-9 items-center justify-center rounded border border-[#DCE0E2] bg-white text-[#939FAD] hover:bg-[#F5F7F9]">
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded border border-[#DCE0E2] bg-white p-3 text-center">
+          <p className="text-[0.625rem] font-bold uppercase tracking-[0.92px] text-[#939FAD]">Totales</p>
+          <p className="mt-1 text-xl font-bold text-[#112b4a]">{stats.total}</p>
+        </div>
+        <div className="rounded border border-[#DCE0E2] bg-white p-3 text-center">
+          <p className="text-[0.625rem] font-bold uppercase tracking-[0.92px] text-[#939FAD]">En curso</p>
+          <p className="mt-1 text-xl font-bold text-[#4EB4A5]">{stats.active}</p>
+        </div>
+        <div className="rounded border border-[#DCE0E2] bg-white p-3 text-center">
+          <p className="text-[0.625rem] font-bold uppercase tracking-[0.92px] text-[#939FAD]">Programados</p>
+          <p className="mt-1 text-xl font-bold text-[#4B98CF]">{stats.scheduled}</p>
+        </div>
+      </div>
+
+      {/* Calendar grid */}
+      <div className="overflow-hidden rounded border border-[#DCE0E2] bg-white">
+        {/* Weekday headers */}
+        <div className="grid grid-cols-7">
+          {WEEKDAYS.map((wd) => (
+            <div key={wd} className="border-b border-r border-[#ECEEF0] px-2 py-2.5 text-center text-[0.625rem] font-bold uppercase tracking-[0.92px] text-[#939FAD] last:border-r-0">
+              {wd}
+            </div>
+          ))}
+        </div>
+
+        {/* Days grid */}
+        <div className="grid grid-cols-7">
+          {days.map((day, i) => {
+            const dayShipments = day ? shipmentsByDay.get(day) ?? [] : [];
+            return (
+              <div
+                key={i}
+                className={cn(
+                  "min-h-[90px] border-b border-r border-[#ECEEF0] p-1.5 last:border-r-0",
+                  !day && "bg-[#F8FAFB]"
+                )}
+              >
+                {day && (
+                  <>
+                    <span className={cn(
+                      "inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold",
+                      isToday(day) ? "bg-[#4B98CF] text-white" : "text-[#112b4a]"
+                    )}>
+                      {day}
+                    </span>
+
+                    <div className="mt-1 space-y-0.5">
+                      {dayShipments.slice(0, 3).map((s) => (
+                        <Link
+                          key={s.id}
+                          to="/shipments"
+                          title={`${s.tracking} - ${s.stage}`}
+                          className={cn(
+                            "flex items-center gap-1 truncate rounded px-1 py-0.5 text-[9px] font-medium",
+                            s.stage === "delivered" && "bg-green-50 text-green-600",
+                            s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                            s.stage === "label_created" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                            s.stage === "delayed" && "bg-red-50 text-red-500",
+                            s.id.startsWith("sched-") && "bg-purple-50 text-purple-600",
+                          )}
+                        >
+                          <Truck className="h-2.5 w-2.5 shrink-0" />
+                          <span className="truncate">{s.tracking}</span>
+                        </Link>
+                      ))}
+                      {dayShipments.length > 3 && (
+                        <p className="text-[9px] text-[#939FAD] pl-1">+{dayShipments.length - 3} mas</p>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Daily detail */}
+      <div className="rounded border border-[#DCE0E2] bg-white">
+        <div className="border-b border-[#ECEEF0] px-4 py-3">
+          <h2 className="text-sm font-bold text-[#112b4a]">Envios de hoy ({today.toLocaleDateString("es-CL")})</h2>
+        </div>
+        <div className="p-3">
+          {shipments?.filter((s) => {
+            const d = new Date(s.createdAt ?? s.shippedAt ?? "");
+            return isToday(d.getDate()) && d.getMonth() === month && d.getFullYear() === year;
+          }).length ? (
+            <div className="space-y-2">
+              {shipments
+                .filter((s) => {
+                  const d = new Date(s.createdAt ?? s.shippedAt ?? "");
+                  return isToday(d.getDate()) && d.getMonth() === month && d.getFullYear() === year;
+                })
+                .slice(0, 5)
+                .map((s) => (
+                  <Link key={s.id} to="/shipments" className="flex items-center justify-between rounded px-3 py-2 hover:bg-[#F5F7F9]">
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded-full",
+                        s.stage === "delivered" && "bg-green-50",
+                        s.stage === "delayed" && "bg-red-50",
+                        "bg-[#F5F7F9]"
+                      )}>
+                        <Truck className="h-4 w-4 text-[#4B98CF]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-[#112b4a]">{s.tracking}</p>
+                        <p className="text-xs text-[#939FAD]">Pedido #{s.orderId} | SKU {s.sku}</p>
+                      </div>
+                    </div>
+                    <span className={cn(
+                      "rounded px-2 py-0.5 text-[10px] font-bold",
+                      s.stage === "delivered" && "bg-green-50 text-green-600",
+                      s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                      s.stage === "delayed" && "bg-red-50 text-red-500",
+                    )}>
+                      {s.stage.replace(/_/g, " ")}
+                    </span>
+                  </Link>
+                ))}
+            </div>
+          ) : (
+            <p className="py-6 text-center text-xs text-[#939FAD]">No hay envios programados para hoy</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
