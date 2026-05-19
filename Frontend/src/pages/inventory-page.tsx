@@ -55,7 +55,7 @@ export function InventoryPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => exportInventoryCSV(operationalInventory.map(p => ({ sku: String(p.sku), stock: p.stock, status: p.status, coverageDays: p.coverageDays, updatedAt: p.updatedAt })))}
+            onClick={() => exportInventoryCSV(operationalInventory.map(p => ({ sku: String(p.sku), stock: p.stock, status: String(p.status), coverageDays: p.coverageDays, updatedAt: p.updatedAt })))}
             className="flex items-center gap-1 rounded border border-border bg-white px-3 py-1.5 text-xs font-semibold text-[#939FAD] hover:text-[#112b4a]"
           >
             <Download className="h-3.5 w-3.5" /> Exportar

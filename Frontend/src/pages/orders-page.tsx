@@ -158,7 +158,7 @@ export function OrdersPage() {
               </button>
             </>
           )}
-          <button onClick={() => exportOrdersCSV(operationalOrders.map(o => ({ id: o.id, customer: o.customer, sku: o.sku, quantity: o.quantity, stage: o.stage, createdAt: o.createdAt, transporter: getTransporterName(o.id) ?? undefined })))} className="btn-touch-outline min-h-[40px] gap-1">
+          <button onClick={() => exportOrdersCSV(operationalOrders.map(o => ({ id: o.id, customer: o.customer, sku: o.sku, quantity: o.quantity, stage: String(o.stage), createdAt: o.createdAt, transporter: getTransporterName(o.id) ?? undefined })))} className="btn-touch-outline min-h-[40px] gap-1">
             <Download className="h-4 w-4" />
           </button>
         </div>

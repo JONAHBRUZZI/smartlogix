@@ -54,11 +54,11 @@ export class ApiClient {
     this.token = token;
   }
 
-  setAuthErrorListener(listener: AuthErrorListener | null) {
+  setAuthErrorListener(listener: ((status: number) => void) | null) {
     this.onAuthError = listener;
   }
 
-  setAuthRefreshHandler(handler: AuthRefreshHandler | null) {
+  setAuthRefreshHandler(handler: (() => Promise<string | null>) | null) {
     this.onAuthRefresh = handler;
   }
 

@@ -62,5 +62,6 @@ export function generateDemoTokens(username: string, password: string) {
 
 export function isLocalDemoEnvironment() {
   if (typeof window === "undefined") return false;
+  if (import.meta.env.VITE_ENABLE_DEMO === "true") return true;
   return ["localhost", "127.0.0.1"].includes(window.location.hostname);
 }

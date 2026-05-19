@@ -79,14 +79,14 @@ export const shipmentColumns: ColumnDef<{
   { header: "Creado", accessor: (s) => s.createdAt }
 ];
 
-export function exportOrdersCSV(orders: Parameters<typeof exportCSV<typeof orderColumns[0]>>[0]) {
+export function exportOrdersCSV(orders: Array<{ id: string; customer: string; sku: string; quantity: number; stage: string; createdAt: string; transporter?: string }>) {
   exportCSV(orders, orderColumns, `pedidos-${today()}.csv`);
 }
 
-export function exportInventoryCSV(products: Parameters<typeof exportCSV<typeof inventoryColumns[0]>>[0]) {
+export function exportInventoryCSV(products: Array<{ sku: string; stock: number; status: string; coverageDays: number; updatedAt: string }>) {
   exportCSV(products, inventoryColumns, `inventario-${today()}.csv`);
 }
 
-export function exportShipmentsCSV(shipments: Parameters<typeof exportCSV<typeof shipmentColumns[0]>>[0]) {
+export function exportShipmentsCSV(shipments: Array<{ id: string; tracking: string; orderId: string; sku: string; stage: string; carrier: string; createdAt: string }>) {
   exportCSV(shipments, shipmentColumns, `envios-${today()}.csv`);
 }

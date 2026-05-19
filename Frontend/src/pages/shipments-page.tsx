@@ -74,7 +74,7 @@ export function ShipmentsPage() {
           <span>{counts.total} total</span>
           <span className="text-[#4B98CF] font-bold">{counts.active} activos</span>
           <span className="text-red-500 font-bold">{counts.delayed} retrasados</span>
-          <button onClick={() => exportShipmentsCSV(operationalShipments.map(s => ({ id: s.id, tracking: s.tracking, orderId: s.orderId, sku: s.sku, stage: s.stage, carrier: s.carrier, createdAt: s.createdAt })))} className="flex items-center gap-1 rounded border border-[#DCE0E2] bg-white px-3 py-1.5 text-xs font-semibold text-[#939FAD] hover:text-[#112b4a]">
+          <button onClick={() => exportShipmentsCSV(operationalShipments.map(s => ({ id: s.id, tracking: s.tracking, orderId: s.orderId, sku: s.sku, stage: String(s.stage), carrier: s.carrier, createdAt: s.createdAt })))} className="flex items-center gap-1 rounded border border-[#DCE0E2] bg-white px-3 py-1.5 text-xs font-semibold text-[#939FAD] hover:text-[#112b4a]">
             <Download className="h-3.5 w-3.5" />
           </button>
         </div>

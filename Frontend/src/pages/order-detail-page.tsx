@@ -172,10 +172,10 @@ export function OrderDetailPage() {
               )}
             </div>
 
-            {("operationalNote" in order && order.operationalNote) && (
+            {"operationalNote" in order && order.operationalNote && (
               <div className="rounded border border-[#4B98CF]/20 bg-[#4B98CF]/5 px-4 py-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#4B98CF]">Nota operativa</p>
-                <p className="mt-1 text-sm text-[#112b4a]">{order.operationalNote}</p>
+                <p className="mt-1 text-sm text-[#112b4a]">{String(order.operationalNote)}</p>
               </div>
             )}
           </div>

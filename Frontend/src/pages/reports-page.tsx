@@ -238,7 +238,7 @@ export function ReportsPage() {
     const dayNames = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
     const dayMap = new Map<string, number>();
     filteredOrders.forEach((o) => {
-      const day = dayNames[new Date(o.createdAt).getDay()];
+      const day = dayNames[new Date(o.createdAt).getDay()] ?? "Dom";
       dayMap.set(day, (dayMap.get(day) ?? 0) + 1);
     });
     const ordersByDay = dayNames.map((day) => ({
