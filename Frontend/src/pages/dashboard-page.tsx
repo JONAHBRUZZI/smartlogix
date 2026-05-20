@@ -1,4 +1,29 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
+// Hook para manejar el evento de instalación PWA
+function usePwaInstallPrompt() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [canInstall, setCanInstall] = useState(false);
+
+  useEffect(() => {
+    function handler(e: any) {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setCanInstall(true);
+    }
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const promptInstall = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") setCanInstall(false);
+    }
+  };
+
+  return { canInstall, promptInstall };
+}
 import { ArrowRight, Boxes, Bell, Clock, Package, ShoppingBag, Truck } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/auth";
@@ -20,6 +45,7 @@ const quickActions = [
 ];
 
 export function DashboardPage() {
+  const { canInstall, promptInstall } = usePwaInstallPrompt();
   const { session } = useAuth();
   const navigate = useNavigate();
   const profile = session ? getRoleProfile(session.role) : null;
@@ -65,6 +91,17 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-5">
+      {/* Botón instalar PWA */}
+      {canInstall && (
+        <div className="flex justify-center">
+          <button
+            onClick={promptInstall}
+            className="mb-2 rounded bg-[#4B98CF] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#346384]"
+          >
+            Instalar SmartLogix App
+          </button>
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>

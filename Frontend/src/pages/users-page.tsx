@@ -159,87 +159,154 @@ export function UsersPage() {
         <div className="rounded border border-[#4EB4A5]/30 bg-[#4EB4A5]/5 px-4 py-2 text-xs font-medium text-[#4EB4A5]">{feedback}</div>
       )}
 
-      <div className="overflow-hidden rounded border border-[#DCE0E2] bg-white">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-[#ECEEF0] text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#939FAD]">
-              <th className="px-4 py-3 w-10"></th>
-              <th className="px-4 py-3">Usuario</th>
-              <th className="px-4 py-3 hidden sm:table-cell">Equipo</th>
-              <th className="px-4 py-3">Rol</th>
-              <th className="px-4 py-3 w-20">Activo</th>
-              <th className="px-4 py-3 hidden md:table-cell">Ultimo acceso</th>
-              <th className="px-4 py-3 hidden lg:table-cell">Modulos</th>
-              <th className="px-4 py-3 w-10"></th>
-            </tr>
-          </thead>
-          <tbody>
+
+      {/* Vista tipo card en móvil, tabla en sm+ */}
+      <div className="rounded border border-[#DCE0E2] bg-white">
+        <div className="block sm:hidden">
+          {filtered.length === 0 && (
+            <div className="px-4 py-12 text-center text-xs text-[#939FAD]">Sin usuarios que coincidan</div>
+          )}
+          <div className="flex flex-col gap-3 p-3">
             {filtered.map((user) => (
-              <tr key={user.username} className="border-b border-[#F5F7F9] hover:bg-[#F5F7F9]">
-                <td className="px-4 py-3">
-                  <div className={cn("flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold text-white", roleInitialColors[user.role])}>
+              <div key={user.username} className="rounded border border-[#ECEEF0] bg-[#F8FBFD] p-4 flex flex-col gap-2">
+                <div className="flex items-center gap-3">
+                  <div className={cn("flex h-10 w-10 items-center justify-center rounded-full text-base font-bold text-white", roleInitialColors[user.role])}>
                     {initials(user.name)}
                   </div>
-                </td>
-                <td className="px-4 py-3">
-                  <p className="font-semibold text-[#112b4a]">{user.name}</p>
-                  <p className="text-xs text-[#939FAD]">{user.username}</p>
-                </td>
-                <td className="px-4 py-3 text-[#939FAD] hidden sm:table-cell">{user.team}</td>
-                <td className="px-4 py-3">
-                  {editingUser === user.username ? (
-                    <div className="flex items-center gap-1">
-                      <select
-                        value={user.role}
-                        onChange={(e) => changeRole(user.username, e.target.value as Role)}
-                        className="h-8 rounded border border-[#DDE0E2] bg-[#F8FBFD] px-2 text-xs"
-                      >
-                        {ROLES.map((r) => <option key={r} value={r}>{getRoleProfile(r).label}</option>)}
-                      </select>
-                      <button onClick={() => setEditingUser(null)} className="p-1 text-[#939FAD] hover:text-[#112b4a]"><X className="h-3.5 w-3.5" /></button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setEditingUser(user.username)}
-                      className={cn("inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold group", roleBadgeColors[user.role])}
-                    >
-                      {getRoleProfile(user.role).label}
-                      <Edit2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
-                  )}
-                </td>
-                <td className="px-4 py-3">
+                  <div className="flex-1">
+                    <p className="font-semibold text-[#112b4a]">{user.name}</p>
+                    <p className="text-xs text-[#939FAD]">{user.username}</p>
+                  </div>
+                  <button className="rounded p-1 text-[#939FAD] hover:bg-[#F5F7F9]"><MoreHorizontal className="h-4 w-4" /></button>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs text-[#939FAD]">
+                  <span className="font-semibold text-[#4B98CF]">{getRoleProfile(user.role).label}</span>
+                  <span>{user.team}</span>
+                  <span>{new Date(user.lastLogin).toLocaleDateString("es-CL")}</span>
+                  <span>{user.active ? "Activo" : "Inactivo"}</span>
+                </div>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {user.modules.slice(0, 3).map((m) => (
+                    <span key={m} className="rounded bg-[#E3AA75]/10 px-2 py-0.5 text-[10px] text-[#E3AA75]">{m}</span>
+                  ))}
+                  {user.modules.length > 3 && <span className="text-[10px] text-[#939FAD]">+{user.modules.length - 3}</span>}
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => setEditingUser(user.username)}
+                    className={cn("inline-flex items-center gap-1 rounded px-2 py-1 text-[11px] font-bold group border border-[#4B98CF] text-[#4B98CF]", editingUser === user.username && "bg-[#4B98CF]/10")}
+                  >
+                    Editar rol
+                  </button>
                   <button
                     onClick={() => toggleActive(user.username)}
                     className={cn(
-                      "flex h-6 w-10 rounded-full transition-colors p-0.5",
-                      user.active ? "bg-[#4EB4A5]" : "bg-[#ECEEF0]"
+                      "flex h-7 w-12 rounded-full transition-colors p-0.5 border border-[#ECEEF0]",
+                      user.active ? "bg-[#4EB4A5]/20" : "bg-[#ECEEF0]"
                     )}
                   >
-                    <div className={cn("h-5 w-5 rounded-full bg-white shadow transition-transform", user.active ? "translate-x-4" : "")} />
+                    <div className={cn("h-6 w-6 rounded-full bg-white shadow transition-transform", user.active ? "translate-x-5" : "")} />
                   </button>
-                </td>
-                <td className="px-4 py-3 text-xs text-[#939FAD] hidden md:table-cell">
-                  {new Date(user.lastLogin).toLocaleDateString("es-CL")}
-                </td>
-                <td className="px-4 py-3 hidden lg:table-cell">
-                  <div className="flex flex-wrap gap-1">
-                    {user.modules.slice(0, 3).map((m) => (
-                      <span key={m} className="rounded bg-[#F5F7F9] px-1.5 py-0.5 text-[10px] text-[#939FAD]">{m}</span>
-                    ))}
-                    {user.modules.length > 3 && <span className="text-[10px] text-[#939FAD]">+{user.modules.length - 3}</span>}
+                </div>
+                {editingUser === user.username && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <select
+                      value={user.role}
+                      onChange={(e) => changeRole(user.username, e.target.value as Role)}
+                      className="h-8 rounded border border-[#DDE0E2] bg-[#F8FBFD] px-2 text-xs"
+                    >
+                      {ROLES.map((r) => <option key={r} value={r}>{getRoleProfile(r).label}</option>)}
+                    </select>
+                    <button onClick={() => setEditingUser(null)} className="p-1 text-[#939FAD] hover:text-[#112b4a]"><X className="h-3.5 w-3.5" /></button>
                   </div>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <button className="rounded p-1 text-[#939FAD] hover:bg-[#F5F7F9]"><MoreHorizontal className="h-4 w-4" /></button>
-                </td>
-              </tr>
+                )}
+              </div>
             ))}
-            {filtered.length === 0 && (
-              <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-[#939FAD]">Sin usuarios que coincidan</td></tr>
-            )}
-          </tbody>
-        </table>
+          </div>
+        </div>
+        {/* Tabla para sm+ */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-[#ECEEF0] text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#939FAD]">
+                <th className="px-4 py-3 w-10"></th>
+                <th className="px-4 py-3">Usuario</th>
+                <th className="px-4 py-3 hidden sm:table-cell">Equipo</th>
+                <th className="px-4 py-3">Rol</th>
+                <th className="px-4 py-3 w-20">Activo</th>
+                <th className="px-4 py-3 hidden md:table-cell">Ultimo acceso</th>
+                <th className="px-4 py-3 hidden lg:table-cell">Modulos</th>
+                <th className="px-4 py-3 w-10"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((user) => (
+                <tr key={user.username} className="border-b border-[#F5F7F9] hover:bg-[#F5F7F9]">
+                  <td className="px-4 py-3">
+                    <div className={cn("flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold text-white", roleInitialColors[user.role])}>
+                      {initials(user.name)}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="font-semibold text-[#112b4a]">{user.name}</p>
+                    <p className="text-xs text-[#939FAD]">{user.username}</p>
+                  </td>
+                  <td className="px-4 py-3 text-[#939FAD] hidden sm:table-cell">{user.team}</td>
+                  <td className="px-4 py-3">
+                    {editingUser === user.username ? (
+                      <div className="flex items-center gap-1">
+                        <select
+                          value={user.role}
+                          onChange={(e) => changeRole(user.username, e.target.value as Role)}
+                          className="h-8 rounded border border-[#DDE0E2] bg-[#F8FBFD] px-2 text-xs"
+                        >
+                          {ROLES.map((r) => <option key={r} value={r}>{getRoleProfile(r).label}</option>)}
+                        </select>
+                        <button onClick={() => setEditingUser(null)} className="p-1 text-[#939FAD] hover:text-[#112b4a]"><X className="h-3.5 w-3.5" /></button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setEditingUser(user.username)}
+                        className={cn("inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold group", roleBadgeColors[user.role])}
+                      >
+                        {getRoleProfile(user.role).label}
+                        <Edit2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </button>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => toggleActive(user.username)}
+                      className={cn(
+                        "flex h-6 w-10 rounded-full transition-colors p-0.5",
+                        user.active ? "bg-[#4EB4A5]" : "bg-[#ECEEF0]"
+                      )}
+                    >
+                      <div className={cn("h-5 w-5 rounded-full bg-white shadow transition-transform", user.active ? "translate-x-4" : "")} />
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-[#939FAD] hidden md:table-cell">
+                    {new Date(user.lastLogin).toLocaleDateString("es-CL")}
+                  </td>
+                  <td className="px-4 py-3 hidden lg:table-cell">
+                    <div className="flex flex-wrap gap-1">
+                      {user.modules.slice(0, 3).map((m) => (
+                        <span key={m} className="rounded bg-[#F5F7F9] px-1.5 py-0.5 text-[10px] text-[#939FAD]">{m}</span>
+                      ))}
+                      {user.modules.length > 3 && <span className="text-[10px] text-[#939FAD]">+{user.modules.length - 3}</span>}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button className="rounded p-1 text-[#939FAD] hover:bg-[#F5F7F9]"><MoreHorizontal className="h-4 w-4" /></button>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr><td colSpan={8} className="px-4 py-12 text-center text-xs text-[#939FAD]">Sin usuarios que coincidan</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Permission matrix */}
