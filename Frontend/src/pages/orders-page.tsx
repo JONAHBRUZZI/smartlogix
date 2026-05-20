@@ -167,19 +167,19 @@ export function OrdersPage() {
       {showForm && (
         <div className="rounded border border-border bg-card p-4">
           <form onSubmit={handleCreate} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <label className="block text-[10px] font-bold uppercase tracking-[0.92px] text-muted-foreground mb-1">Cliente ID</label>
               <input value={customerId} onChange={(e) => setCustomerId(e.target.value)} className="h-9 w-full rounded border border-input bg-[#F8FBFD] px-3 text-sm" placeholder="1" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <label className="block text-[10px] font-bold uppercase tracking-[0.92px] text-muted-foreground mb-1">SKU</label>
               <input value={sku} onChange={(e) => setSku(e.target.value)} className="h-9 w-full rounded border border-input bg-[#F8FBFD] px-3 text-sm" placeholder="100001" />
             </div>
-            <div className="w-20">
+            <div className="w-20 sm:w-20">
               <label className="block text-[10px] font-bold uppercase tracking-[0.92px] text-muted-foreground mb-1">Cant</label>
               <input value={quantity} onChange={(e) => setQuantity(e.target.value)} className="h-9 w-full rounded border border-input bg-[#F8FBFD] px-3 text-sm text-center" placeholder="1" />
             </div>
-            <div className="w-44">
+            <div className="sm:w-44">
               <label className="block text-[10px] font-bold uppercase tracking-[0.92px] text-muted-foreground mb-1">
                 <Truck className="inline h-3 w-3 mr-1" />Transportista
               </label>
@@ -298,13 +298,13 @@ export function OrdersPage() {
                     {new Date(order.createdAt).toLocaleDateString("es-CL")}
                   </td>
                   <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                  {canReview && order.stage !== "delivered" && (
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button onClick={() => { validateOrder(order, "approved"); addHistoryEntry({ orderId: order.id, action: "approved", actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail: "Pedido aprobado - listo para despacho" }); }} title="Aprobar" className="btn-icon-touch text-green-600 hover:bg-green-50"><Check className="h-5 w-5" /></button>
-                      <button onClick={() => { validateOrder(order, "reprocess"); addHistoryEntry({ orderId: order.id, action: "reprocessed", actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail: "Pedido enviado a reproceso" }); }} title="Reprocesar" className="btn-icon-touch text-[#E3AA75] hover:bg-amber-50"><RotateCw className="h-5 w-5" /></button>
-                      <button onClick={() => { validateOrder(order, "rejected"); addHistoryEntry({ orderId: order.id, action: "rejected", actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail: "Pedido rechazado - incidencia operativa" }); }} title="Rechazar" className="btn-icon-touch text-red-500 hover:bg-red-50"><X className="h-5 w-5" /></button>
-                      </div>
-                    )}
+                   {canReview && order.stage !== "delivered" && (
+                     <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+                       <button onClick={() => { validateOrder(order, "approved"); addHistoryEntry({ orderId: order.id, action: "approved", actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail: "Pedido aprobado - listo para despacho" }); }} title="Aprobar" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-green-600 hover:bg-green-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Check className="h-4 w-4 sm:h-5 sm:w-5" /></button>
+                       <button onClick={() => { validateOrder(order, "reprocess"); addHistoryEntry({ orderId: order.id, action: "reprocessed", actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail: "Pedido enviado a reproceso" }); }} title="Reprocesar" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-[#E3AA75] hover:bg-amber-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCw className="h-4 w-4 sm:h-5 sm:w-5" /></button>
+                       <button onClick={() => { validateOrder(order, "rejected"); addHistoryEntry({ orderId: order.id, action: "rejected", actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail: "Pedido rechazado - incidencia operativa" }); }} title="Rechazar" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-red-500 hover:bg-red-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X className="h-4 w-4 sm:h-5 sm:w-5" /></button>
+                       </div>
+                     )}
                   </td>
                 </tr>
               );

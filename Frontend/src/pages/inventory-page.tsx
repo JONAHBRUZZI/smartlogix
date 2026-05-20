@@ -139,18 +139,18 @@ export function InventoryPage() {
                 </td>
                 <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                   {canAdjust && (
-                    <div className="flex items-center justify-end gap-1.5">
+                    <div className="flex items-center justify-end gap-1 sm:gap-1.5">
                       <button
                         onClick={() => adjustInventory(product, -1, "Reserva manual")}
-                        className="btn-icon-touch text-red-500 hover:bg-red-50"
+                        className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-red-500 hover:bg-red-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       ><Minus className="h-4 w-4" /></button>
                       <button
                         onClick={() => adjustInventory(product, 1, "Reposicion rapida")}
-                        className="btn-icon-touch text-green-600 hover:bg-green-50"
+                        className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-green-600 hover:bg-green-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       ><Plus className="h-4 w-4" /></button>
                       <button
                         onClick={() => adjustInventory(product, 5, "Reposicion +5")}
-                        className="btn-touch-outline min-h-[36px] min-w-0 px-2.5 text-xs font-semibold"
+                        className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] sm:min-h-[44px] px-2 sm:px-2.5 text-xs font-semibold text-muted-foreground hover:bg-muted active:scale-[0.98] bg-card"
                       >+5</button>
                     </div>
                   )}

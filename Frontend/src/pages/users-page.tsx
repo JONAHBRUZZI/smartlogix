@@ -147,7 +147,7 @@ export function UsersPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#939FAD]" />
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar usuario..." className="h-9 w-full rounded border border-[#DDE0E2] bg-white pl-9 pr-3 text-sm outline-none placeholder:text-[#939FAD]" />
         </div>
-        <div className="flex gap-1 rounded border border-[#DCE0E2] bg-white p-0.5">
+        <div className="flex gap-1 rounded border border-[#DCE0E2] bg-white p-0.5 overflow-x-auto scroll-x">
           <button onClick={() => setRoleFilter("all")} className={cn("rounded px-3 py-1 text-[11px] font-semibold transition-colors", roleFilter === "all" ? "bg-[#4B98CF] text-white" : "text-[#939FAD] hover:text-[#112b4a]")}>Todos</button>
           {ROLES.map((r) => (
             <button key={r} onClick={() => setRoleFilter(r)} className={cn("rounded px-3 py-1 text-[11px] font-semibold transition-colors", roleFilter === r ? "bg-[#4B98CF] text-white" : "text-[#939FAD] hover:text-[#112b4a]")}>{getRoleProfile(r).label}</button>

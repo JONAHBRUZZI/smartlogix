@@ -461,9 +461,9 @@ export function ReportsPage() {
                     <th className="px-4 py-2.5">#</th>
                     <th className="px-4 py-2.5">Cliente</th>
                     <th className="px-4 py-2.5">SKU</th>
-                    <th className="px-4 py-2.5">Cant.</th>
+                    <th className="px-4 py-2.5 hidden sm:table-cell">Cant.</th>
                     <th className="px-4 py-2.5">Estado</th>
-                    <th className="px-4 py-2.5">Fecha</th>
+                    <th className="px-4 py-2.5 hidden sm:table-cell">Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -472,11 +472,11 @@ export function ReportsPage() {
                       <td className="px-4 py-2.5 font-bold text-[#4B98CF]">{o.id}</td>
                       <td className="px-4 py-2.5">{o.customer}</td>
                       <td className="px-4 py-2.5 text-[#939FAD]">{o.sku}</td>
-                      <td className="px-4 py-2.5">{o.quantity}</td>
+                      <td className="px-4 py-2.5 hidden sm:table-cell">{o.quantity}</td>
                       <td className="px-4 py-2.5">
                         <span className="rounded px-2 py-0.5 text-[10px] font-bold bg-[#F5F7F9]">{o.stage}</span>
                       </td>
-                      <td className="px-4 py-2.5 text-xs text-[#939FAD]">{new Date(o.createdAt).toLocaleDateString("es-CL")}</td>
+                      <td className="px-4 py-2.5 text-xs text-[#939FAD] hidden sm:table-cell">{new Date(o.createdAt).toLocaleDateString("es-CL")}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -488,8 +488,8 @@ export function ReportsPage() {
                     <th className="px-4 py-2.5">Tracking</th>
                     <th className="px-4 py-2.5">Pedido</th>
                     <th className="px-4 py-2.5">Estado</th>
-                    <th className="px-4 py-2.5">Transportista</th>
-                    <th className="px-4 py-2.5">Fecha</th>
+                    <th className="px-4 py-2.5 hidden sm:table-cell">Transportista</th>
+                    <th className="px-4 py-2.5 hidden sm:table-cell">Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -500,8 +500,8 @@ export function ReportsPage() {
                       <td className="px-4 py-2.5">
                         <span className="rounded px-2 py-0.5 text-[10px] font-bold bg-[#F5F7F9]">{s.stage.replace(/_/g, " ")}</span>
                       </td>
-                      <td className="px-4 py-2.5 text-[#939FAD]">{s.carrier}</td>
-                      <td className="px-4 py-2.5 text-xs text-[#939FAD]">{new Date(s.createdAt ?? "").toLocaleDateString("es-CL")}</td>
+                      <td className="px-4 py-2.5 text-[#939FAD] hidden sm:table-cell">{s.carrier}</td>
+                      <td className="px-4 py-2.5 text-xs text-[#939FAD] hidden sm:table-cell">{new Date(s.createdAt ?? "").toLocaleDateString("es-CL")}</td>
                     </tr>
                   ))}
                 </tbody>

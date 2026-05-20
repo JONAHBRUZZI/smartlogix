@@ -117,65 +117,67 @@ export function CalendarPage() {
       </div>
 
       {/* Calendar grid */}
-      <div className="overflow-hidden rounded border border-[#DCE0E2] bg-white">
-        {/* Weekday headers */}
-        <div className="grid grid-cols-7">
-          {WEEKDAYS.map((wd) => (
-            <div key={wd} className="border-b border-r border-[#ECEEF0] px-2 py-2.5 text-center text-[0.625rem] font-bold uppercase tracking-[0.92px] text-[#939FAD] last:border-r-0">
-              {wd}
-            </div>
-          ))}
-        </div>
-
-        {/* Days grid */}
-        <div className="grid grid-cols-7">
-          {days.map((day, i) => {
-            const dayShipments = day ? shipmentsByDay.get(day) ?? [] : [];
-            return (
-              <div
-                key={i}
-                className={cn(
-                  "min-h-[90px] border-b border-r border-[#ECEEF0] p-1.5 last:border-r-0",
-                  !day && "bg-[#F8FAFB]"
-                )}
-              >
-                {day && (
-                  <>
-                    <span className={cn(
-                      "inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold",
-                      isToday(day) ? "bg-[#4B98CF] text-white" : "text-[#112b4a]"
-                    )}>
-                      {day}
-                    </span>
-
-                    <div className="mt-1 space-y-0.5">
-                      {dayShipments.slice(0, 3).map((s) => (
-                        <Link
-                          key={s.id}
-                          to="/shipments"
-                          title={`${s.tracking} - ${s.stage}`}
-                          className={cn(
-                            "flex items-center gap-1 truncate rounded px-1 py-0.5 text-[9px] font-medium",
-                            s.stage === "delivered" && "bg-green-50 text-green-600",
-                            s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                            s.stage === "label_created" && "bg-[#E3AA75]/10 text-[#E3AA75]",
-                            s.stage === "delayed" && "bg-red-50 text-red-500",
-                            s.id.startsWith("sched-") && "bg-purple-50 text-purple-600",
-                          )}
-                        >
-                          <Truck className="h-2.5 w-2.5 shrink-0" />
-                          <span className="truncate">{s.tracking}</span>
-                        </Link>
-                      ))}
-                      {dayShipments.length > 3 && (
-                        <p className="text-[9px] text-[#939FAD] pl-1">+{dayShipments.length - 3} mas</p>
-                      )}
-                    </div>
-                  </>
-                )}
+      <div className="overflow-x-auto scroll-x rounded border border-[#DCE0E2] bg-white">
+        <div className="min-w-[600px] sm:min-w-0">
+          {/* Weekday headers */}
+          <div className="grid grid-cols-7">
+            {WEEKDAYS.map((wd) => (
+              <div key={wd} className="border-b border-r border-[#ECEEF0] px-2 py-2.5 text-center text-[0.625rem] font-bold uppercase tracking-[0.92px] text-[#939FAD] last:border-r-0">
+                {wd}
               </div>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* Days grid */}
+          <div className="grid grid-cols-7">
+            {days.map((day, i) => {
+              const dayShipments = day ? shipmentsByDay.get(day) ?? [] : [];
+              return (
+                <div
+                  key={i}
+                  className={cn(
+                    "min-h-[70px] sm:min-h-[90px] border-b border-r border-[#ECEEF0] p-1 sm:p-1.5 last:border-r-0",
+                    !day && "bg-[#F8FAFB]"
+                  )}
+                >
+                  {day && (
+                    <>
+                      <span className={cn(
+                        "inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full text-[10px] sm:text-xs font-bold",
+                        isToday(day) ? "bg-[#4B98CF] text-white" : "text-[#112b4a]"
+                      )}>
+                        {day}
+                      </span>
+
+                      <div className="mt-1 space-y-0.5">
+                        {dayShipments.slice(0, 2).map((s) => (
+                          <Link
+                            key={s.id}
+                            to="/shipments"
+                            title={`${s.tracking} - ${s.stage}`}
+                            className={cn(
+                              "flex items-center gap-1 truncate rounded px-0.5 sm:px-1 py-0.5 text-[8px] sm:text-[9px] font-medium",
+                              s.stage === "delivered" && "bg-green-50 text-green-600",
+                              s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                              s.stage === "label_created" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                              s.stage === "delayed" && "bg-red-50 text-red-500",
+                              s.id.startsWith("sched-") && "bg-purple-50 text-purple-600",
+                            )}
+                          >
+                            <Truck className="h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0" />
+                            <span className="truncate hidden sm:inline">{s.tracking}</span>
+                          </Link>
+                        ))}
+                        {dayShipments.length > 2 && (
+                          <p className="text-[8px] sm:text-[9px] text-[#939FAD] pl-1">+{dayShipments.length - 2} mas</p>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

@@ -212,8 +212,8 @@ export function NotificationsPage() {
 
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1 rounded border border-[#DCE0E2] bg-white p-0.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-1 rounded border border-[#DCE0E2] bg-white p-0.5 overflow-x-auto scroll-x">
             {typeFilters.map((f) => (
               <button
                 key={f.value}

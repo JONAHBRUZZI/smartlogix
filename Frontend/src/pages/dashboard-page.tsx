@@ -206,13 +206,14 @@ export function DashboardPage() {
             </Link>
           </div>
           <div className="overflow-x-auto scroll-x">
-            <table className="w-full text-left text-sm">
+            {/* Desktop table */}
+            <table className="hidden sm:table w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-[#ECEEF0] text-xs font-bold uppercase tracking-[0.92px] text-muted-foreground">
                   <th className="px-4 py-2.5">#</th>
                   <th className="px-4 py-2.5">Cliente</th>
                   <th className="px-4 py-2.5">SKU</th>
-                  <th className="px-4 py-2.5 hidden sm:table-cell">Cant.</th>
+                  <th className="px-4 py-2.5">Cant.</th>
                   <th className="px-4 py-2.5">Estado</th>
                 </tr>
               </thead>
@@ -222,7 +223,7 @@ export function DashboardPage() {
                     <td className="px-4 py-2.5 font-bold text-[#4B98CF]">#{order.id}</td>
                     <td className="px-4 py-2.5 text-foreground">{order.customer}</td>
                     <td className="px-4 py-2.5 text-muted-foreground">{order.sku}</td>
-                    <td className="px-4 py-2.5 text-foreground hidden sm:table-cell">{order.quantity}</td>
+                    <td className="px-4 py-2.5 text-foreground">{order.quantity}</td>
                     <td className="px-4 py-2.5">
                       <span className={cn(
                         "inline-flex rounded px-2 py-0.5 text-xs font-bold",
@@ -241,6 +242,30 @@ export function DashboardPage() {
                 )}
               </tbody>
             </table>
+            {/* Mobile cards */}
+            <div className="sm:hidden divide-y divide-[#F5F7F9]">
+              {(operationalOrders.length > 0 ? operationalOrders.slice(0, 6) : orders ?? []).map((order) => (
+                <div key={order.id} className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-[#F5F7F9]" onClick={() => navigate(`/orders/${order.id}`)}>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-[#4B98CF]">#{order.id}</p>
+                    <p className="text-xs text-foreground">{order.customer}</p>
+                    <p className="text-[11px] text-muted-foreground">SKU {order.sku} · x{order.quantity}</p>
+                  </div>
+                  <span className={cn(
+                    "shrink-0 rounded px-2 py-0.5 text-xs font-bold",
+                    order.stage === "confirmed" && "bg-[#4EB4A5]/10 text-[#4EB4A5]",
+                    order.stage === "new" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                    order.stage === "delivered" && "bg-green-50 text-green-600",
+                    order.stage === "incident" && "bg-red-50 text-red-500",
+                  )}>
+                    {order.stage === "new" ? "Nuevo" : order.stage === "confirmed" ? "Confirmado" : order.stage === "incident" ? "Incidencia" : order.stage === "delivered" ? "Entregado" : order.stage}
+                  </span>
+                </div>
+              ))}
+              {orders?.length === 0 && (
+                <p className="px-4 py-6 text-center text-xs text-muted-foreground">Sin pedidos registrados.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -254,12 +279,13 @@ export function DashboardPage() {
           </Link>
         </div>
         <div className="overflow-x-auto scroll-x">
-          <table className="w-full text-left text-sm">
+          {/* Desktop table */}
+          <table className="hidden sm:table w-full text-left text-sm">
             <thead>
               <tr className="border-b border-[#ECEEF0] text-xs font-bold uppercase tracking-[0.92px] text-muted-foreground">
                 <th className="px-4 py-2.5">Tracking</th>
                 <th className="px-4 py-2.5">Pedido</th>
-                <th className="px-4 py-2.5 hidden sm:table-cell">SKU</th>
+                <th className="px-4 py-2.5">SKU</th>
                 <th className="px-4 py-2.5">Estado</th>
                 <th className="px-4 py-2.5 hidden md:table-cell">Transportista</th>
                 <th className="px-4 py-2.5 hidden md:table-cell">Fecha</th>
@@ -270,7 +296,7 @@ export function DashboardPage() {
                 <tr key={s.id} className="border-b border-[#F5F7F9] hover:bg-[#F5F7F9]">
                   <td className="px-4 py-2.5 font-mono text-xs text-[#4B98CF]">{s.tracking}</td>
                   <td className="px-4 py-2.5 text-foreground">#{s.orderId}</td>
-                  <td className="px-4 py-2.5 text-muted-foreground hidden sm:table-cell">{s.sku}</td>
+                  <td className="px-4 py-2.5 text-muted-foreground">{s.sku}</td>
                   <td className="px-4 py-2.5">
                     <span className={cn(
                       "inline-flex rounded px-2 py-0.5 text-xs font-bold",
@@ -293,6 +319,29 @@ export function DashboardPage() {
               )}
             </tbody>
           </table>
+          {/* Mobile cards */}
+          <div className="sm:hidden divide-y divide-[#F5F7F9]">
+            {operationalShipments.slice(0, 5).map((s) => (
+              <div key={s.id} className="flex items-center justify-between px-4 py-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-mono font-bold text-[#4B98CF]">{s.tracking}</p>
+                  <p className="text-xs text-foreground">Pedido #{s.orderId} · SKU {s.sku}</p>
+                </div>
+                <span className={cn(
+                  "shrink-0 rounded px-2 py-0.5 text-xs font-bold",
+                  s.stage === "delivered" && "bg-green-50 text-green-600",
+                  s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                  s.stage === "label_created" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                  s.stage === "delayed" && "bg-red-50 text-red-500",
+                )}>
+                  {s.stage.replace(/_/g, " ")}
+                </span>
+              </div>
+            ))}
+            {operationalShipments.length === 0 && (
+              <p className="px-4 py-6 text-center text-xs text-muted-foreground">Sin envios en curso</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
