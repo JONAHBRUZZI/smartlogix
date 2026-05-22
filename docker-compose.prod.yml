@@ -1,0 +1,160 @@
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: smartlogix-db
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  localstack:
+    image: localstack/localstack:3.8
+    container_name: smartlogix-localstack
+    restart: unless-stopped
+    ports:
+      - "4567:4566"
+    environment:
+      - SERVICES=sqs,sns,secretsmanager
+      - DEBUG=0
+    volumes:
+      - ./init-sqs.sh:/etc/localstack/init/ready.d
+    healthcheck:
+      test: ["CMD", "sh", "-c", "awslocal sqs list-queues >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  orders-service:
+    image: smartlogix/orders-service:latest
+    container_name: smartlogix-orders
+    restart: unless-stopped
+    environment:
+      - DB_URL=jdbc:postgresql://postgres-db:5432/orders_db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin123
+      - AWS_SQS_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - ORDERS_QUEUE=orders-queue
+      - SHIPPING_QUEUE=shipping-queue
+      - JAVA_TOOL_OPTIONS=-Xmx96m
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  inventory-service:
+    image: smartlogix/inventory-service:latest
+    container_name: smartlogix-inventory
+    restart: unless-stopped
+    environment:
+      - DB_URL=jdbc:postgresql://postgres-db:5432/inventory_db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin123
+      - AWS_SQS_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - SHIPPING_QUEUE=shipping-queue
+      - JAVA_TOOL_OPTIONS=-Xmx96m
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  shipping-service:
+    image: smartlogix/shipping-service:latest
+    container_name: smartlogix-shipping
+    restart: unless-stopped
+    environment:
+      - DB_URL=jdbc:postgresql://postgres-db:5432/shipping_db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin123
+      - AWS_SQS_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - SHIPPING_QUEUE=shipping-queue
+      - NOTIFICATION_TOPIC_ARN=arn:aws:sns:us-east-1:000000000000:notification-events-topic
+      - JAVA_TOOL_OPTIONS=-Xmx96m
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  notification-service:
+    image: smartlogix/notification-service:latest
+    container_name: smartlogix-notification
+    restart: unless-stopped
+    environment:
+      - DB_URL=jdbc:postgresql://postgres-db:5432/notification_db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin123
+      - AWS_SQS_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - NOTIFICATION_EVENTS_QUEUE=notification-events-queue
+      - JAVA_TOOL_OPTIONS=-Xmx96m
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  frontend:
+    image: smartlogix/frontend:latest
+    container_name: smartlogix-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - orders-service
+      - inventory-service
+      - shipping-service
+      - notification-service
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+volumes:
+  postgres_data:
