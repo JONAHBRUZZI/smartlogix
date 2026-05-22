@@ -1,4 +1,22 @@
 services:
+  api-gateway:
+    image: nginx:alpine
+    container_name: smartlogix-api-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./Backend/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - orders-service
+      - inventory-service
+      - shipping-service
+      - notification-service
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+
   postgres-db:
     image: postgres:15-alpine
     container_name: smartlogix-db
@@ -10,7 +28,7 @@ services:
       - POSTGRES_PASSWORD=admin123
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+      - ./Backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s
@@ -31,7 +49,7 @@ services:
       - SERVICES=sqs,sns,secretsmanager
       - DEBUG=0
     volumes:
-      - ./init-sqs.sh:/etc/localstack/init/ready.d
+      - ./Backend/init-sqs.sh:/etc/localstack/init/ready.d
     healthcheck:
       test: ["CMD", "sh", "-c", "awslocal sqs list-queues >/dev/null 2>&1"]
       interval: 10s
@@ -43,7 +61,7 @@ services:
           memory: 256M
 
   orders-service:
-    image: smartlogix/orders-service:latest
+    image: jonahbruzzi/orders-service:latest
     container_name: smartlogix-orders
     restart: unless-stopped
     environment:
@@ -68,7 +86,7 @@ services:
           memory: 256M
 
   inventory-service:
-    image: smartlogix/inventory-service:latest
+    image: jonahbruzzi/inventory-service:latest
     container_name: smartlogix-inventory
     restart: unless-stopped
     environment:
@@ -92,7 +110,7 @@ services:
           memory: 256M
 
   shipping-service:
-    image: smartlogix/shipping-service:latest
+    image: jonahbruzzi/shipping-service:latest
     container_name: smartlogix-shipping
     restart: unless-stopped
     environment:
@@ -117,7 +135,7 @@ services:
           memory: 256M
 
   notification-service:
-    image: smartlogix/notification-service:latest
+    image: jonahbruzzi/notification-service:latest
     container_name: smartlogix-notification
     restart: unless-stopped
     environment:
@@ -139,22 +157,6 @@ services:
       resources:
         limits:
           memory: 256M
-
-  frontend:
-    image: smartlogix/frontend:latest
-    container_name: smartlogix-frontend
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    depends_on:
-      - orders-service
-      - inventory-service
-      - shipping-service
-      - notification-service
-    deploy:
-      resources:
-        limits:
-          memory: 64M
 
 volumes:
   postgres_data:
