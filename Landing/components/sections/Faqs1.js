@@ -72,6 +72,51 @@ export default function Faqs1() {
                     </div>
                 </div>
             </div>
+            <style jsx global>{`
+                .card-faq {
+                    border: 1px solid #CDE2E7;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    background: #fff;
+                    transition: all 0.3s ease;
+                }
+                .card-faq:hover {
+                    box-shadow: 0 4px 16px rgba(3, 68, 96, 0.08);
+                }
+                .card-header-faq {
+                    padding: 20px 25px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    cursor: pointer;
+                    background: #fff;
+                    border-bottom: 1px solid transparent;
+                    transition: all 0.3s ease;
+                }
+                .card-header-faq h6 {
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                    padding-right: 20px;
+                }
+                .card-body-faq {
+                    max-height: 0;
+                    overflow: hidden;
+                    transition: max-height 0.35s ease, padding 0.35s ease;
+                    padding: 0 25px;
+                }
+                .card-body-faq.open {
+                    max-height: 500px;
+                    padding: 0 25px 20px 25px;
+                }
+                .arrow-down {
+                    transition: transform 0.3s ease;
+                    flex-shrink: 0;
+                }
+                .arrow-down.rotate {
+                    transform: rotate(180deg);
+                }
+            `}</style>
         </section>
     )
 }

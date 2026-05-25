@@ -1,18 +1,29 @@
+import Link from "next/link"
+
 export default function Services1() {
     return (
         <section className="section mt-100" id="caracteristicas">
             <div className="container">
-                <div className="text-center">
-                    <img className="mb-15" src="/assets/imgs/template/icons/favicon.svg" alt="smartlogix" />
-                    <h2 className="color-brand-2 mb-20 wow animate__animated animate__fadeIn">Todo lo que tu negocio necesita</h2>
-                    <p className="font-md color-gray-700 wow animate__animated animate__fadeIn">
-                        Una plataforma completa para gestionar tu pequeño comercio de forma eficiente.
-                    </p>
+                <div className="row align-items-end">
+                    <div className="col-lg-8 col-md-8 mb-30">
+                        <h2 className="title-favicon mb-20 wow animate__animated animate__fadeIn">Todo lo que tu negocio necesita</h2>
+                        <p className="font-md color-grey-700 wow animate__animated animate__fadeIn">
+                            Una plataforma completa para gestionar tu pequeño comercio de forma eficiente.
+                        </p>
+                    </div>
+                    <div className="col-lg-4 col-md-4 mb-30 text-md-end text-start">
+                        <Link className="btn btn-brand-1 hover-up" href="#demo">
+                            <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{width:16,height:16,marginRight:6}}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                            </svg>
+                            Solicitar Demo
+                        </Link>
+                    </div>
                 </div>
-                <div className="mt-50 box-background-offer">
+                <div className="mt-20 box-background-offer">
                     <div className="bg-under" />
                     <div className="row">
-                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn">
+                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn" data-wow-delay=".0s">
                             <div className="card-offer hover-up">
                                 <div className="card-image">
                                     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -24,10 +35,20 @@ export default function Services1() {
                                 <div className="card-info">
                                     <h5 className="color-brand-2 mb-15">Punto de Venta (POS)</h5>
                                     <p className="font-sm color-grey-900 mb-35">Vende de forma rápida e intuitiva. Agrega productos al carrito, calcula vueltos y genera comprobantes al instante.</p>
+                                    <div className="box-button-offer mb-30">
+                                        <a className="btn btn-link font-sm color-brand-2">
+                                            Ver Detalles
+                                            <span>
+                                                <svg className="w-6 h-6 icon-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn">
+                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn" data-wow-delay=".1s">
                             <div className="card-offer hover-up">
                                 <div className="card-image">
                                     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,10 +63,20 @@ export default function Services1() {
                                 <div className="card-info">
                                     <h5 className="color-brand-2 mb-15">Control de Inventario</h5>
                                     <p className="font-sm color-grey-900 mb-35">Gestiona tu stock con alertas de inventario crítico. Por producto, por categoría y por proveedor.</p>
+                                    <div className="box-button-offer mb-30">
+                                        <a className="btn btn-link font-sm color-brand-2">
+                                            Ver Detalles
+                                            <span>
+                                                <svg className="w-6 h-6 icon-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn">
+                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn" data-wow-delay=".2s">
                             <div className="card-offer hover-up">
                                 <div className="card-image">
                                     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,10 +91,20 @@ export default function Services1() {
                                 <div className="card-info">
                                     <h5 className="color-brand-2 mb-15">Gestión de Pedidos</h5>
                                     <p className="font-sm color-grey-900 mb-35">Crea, confirma y da seguimiento a cada pedido. Desde la creación hasta la entrega final.</p>
+                                    <div className="box-button-offer mb-30">
+                                        <a className="btn btn-link font-sm color-brand-2">
+                                            Ver Detalles
+                                            <span>
+                                                <svg className="w-6 h-6 icon-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn">
+                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn" data-wow-delay=".3s">
                             <div className="card-offer hover-up">
                                 <div className="card-image">
                                     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -77,28 +118,46 @@ export default function Services1() {
                                 <div className="card-info">
                                     <h5 className="color-brand-2 mb-15">Despachos y Reparto</h5>
                                     <p className="font-sm color-grey-900 mb-35">Coordina entregas con código QR, asigna repartidores y registra la entrega con código de cliente y RUT.</p>
+                                    <div className="box-button-offer mb-30">
+                                        <a className="btn btn-link font-sm color-brand-2">
+                                            Ver Detalles
+                                            <span>
+                                                <svg className="w-6 h-6 icon-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn">
+                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn" data-wow-delay=".4s">
                             <div className="card-offer hover-up">
                                 <div className="card-image">
                                     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <rect width="80" height="80" rx="16" fill="#FFE799"/>
                                         <rect x="22" y="29" width="36" height="26" rx="4" fill="#034460"/>
-                                        <text x="28" y="48" fontFamily="Arial" fontSize="10" fontWeight="bold" fill="#FEC201">$</text>
+                                        <text x="28" y="48" fontFamily="Arial" fontSize="10" fontWeight="bold" fill="#FEC201">%</text>
                                         <path d="M20 55h40l-5 10H25l-5-10z" fill="#034460"/>
-                                        <rect x="30" y="25" width="20" height="6" rx="3" fill="#FEC201"/>
-                                        <rect x="35" y="20" width="10" height="7" rx="2" fill="#034460"/>
                                     </svg>
                                 </div>
                                 <div className="card-info">
                                     <h5 className="color-brand-2 mb-15">Dashboard y Reportes</h5>
                                     <p className="font-sm color-grey-900 mb-35">Visualiza tus ventas del día, pedidos activos, productos con stock crítico y genera reportes exportables.</p>
+                                    <div className="box-button-offer mb-30">
+                                        <a className="btn btn-link font-sm color-brand-2">
+                                            Ver Detalles
+                                            <span>
+                                                <svg className="w-6 h-6 icon-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn">
+                        <div className="col-lg-4 col-md-6 wow animate__animated animate__fadeIn" data-wow-delay=".5s">
                             <div className="card-offer hover-up">
                                 <div className="card-image">
                                     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -117,6 +176,16 @@ export default function Services1() {
                                 <div className="card-info">
                                     <h5 className="color-brand-2 mb-15">Clientes e Historial</h5>
                                     <p className="font-sm color-grey-900 mb-35">Mantén un registro completo de tus clientes con su historial de pedidos, contactos y estadísticas.</p>
+                                    <div className="box-button-offer mb-30">
+                                        <a className="btn btn-link font-sm color-brand-2">
+                                            Ver Detalles
+                                            <span>
+                                                <svg className="w-6 h-6 icon-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

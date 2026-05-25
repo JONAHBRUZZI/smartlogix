@@ -7,7 +7,7 @@ export default function Pricing1() {
                 <div className="text-center">
                     <img className="mb-15" src="/assets/imgs/template/icons/favicon.svg" alt="smartlogix" />
                     <h2 className="color-brand-2 mb-20 wow animate__animated animate__fadeIn">Elige el Plan Ideal</h2>
-                    <p className="font-lg color-gray-500 wow animate__animated animate__fadeIn">
+                    <p className="font-lg color-grey-500 wow animate__animated animate__fadeIn">
                         Todos los planes incluyen prueba gratuita de 14 días.<br className="d-none d-lg-block" />Sin compromiso, cancela cuando quieras.
                     </p>
                 </div>
