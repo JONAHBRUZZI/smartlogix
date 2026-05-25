@@ -88,7 +88,7 @@ export function adaptInventory(apiInventory: ApiInventory): Product {
     stock: apiInventory.stock,
     price: apiInventory.price,
     cost: apiInventory.cost,
-    category: apiInventory.category,
+    category: apiInventory.category as Product["category"],
     status: calculateHealthFromStock(apiInventory.stock),
     updatedAt: new Date().toISOString()
   };

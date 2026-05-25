@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Clock, FileText, Inbox, Package, Search, Truck, User, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { managedUsers } from "@/app/user-directory";
@@ -40,7 +40,7 @@ export function NotificationsPage() {
 
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
     path: "/api/orders",
-    transform: (response) => response.map(adaptOrder)
+    transform: (response) => response.map((o) => adaptOrder(o))
   });
 
   const { data: shipments } = useApiQuery<ApiShipment[], Shipment[]>({

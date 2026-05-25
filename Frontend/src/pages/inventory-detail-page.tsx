@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Box, Package, ShoppingBag, TrendingDown, TrendingUp } from "lucide-react";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -16,7 +16,7 @@ export function InventoryDetailPage() {
     path: `/api/inventory/${encodeURIComponent(decodedId)}`, transform: adaptInventory, enabled: Boolean(decodedId)
   });
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
-    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+    path: "/api/orders", transform: (r) => r.map((o) => adaptOrder(o))
   });
 
   const { operationalInventory, operationalOrders } = useOperationalWorkspace({ inventory: product ? [product] : [], orders });

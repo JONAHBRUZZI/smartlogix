@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Check, Clock, Download, Package, Search, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -25,7 +25,7 @@ export function ShipmentsPage() {
 
   useAutoRefresh(() => { if (!sLoading) refreshShipments(); }, 10000);
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
-    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+    path: "/api/orders", transform: (r) => r.map((o) => adaptOrder(o))
   });
 
   const { operationalShipments } = useOperationalWorkspace({ orders, shipments });
@@ -127,7 +127,7 @@ export function ShipmentsPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-[#4B98CF] font-mono">{shipment.tracking}</p>
-                    <p className="text-xs text-[#6B7280]">Pedido #{shipment.orderId} · SKU {shipment.sku}</p>
+                    <p className="text-xs text-[#6B7280]">Pedido #{shipment.orderId} � SKU {shipment.sku}</p>
                   </div>
                 </div>
 

@@ -35,7 +35,7 @@ export function ShipperDeliveryPage() {
 
   useAutoRefresh(() => { if (!sLoading) refreshShipments(); }, 10000);
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
-    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+    path: "/api/orders", transform: (r) => r.map((o) => adaptOrder(o))
   });
 
   const { operationalShipments, updateShipmentStage } = useOperationalWorkspace({ orders, shipments });

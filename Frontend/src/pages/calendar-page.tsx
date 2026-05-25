@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -56,7 +56,7 @@ export function CalendarPage() {
           quantity: 2,
           carrier: "Transportista asignado",
           tracking: `SLX-${year}${month + 1}${d.toString().padStart(2, "0")}`,
-          stage: "label_created",
+          stage: "en_preparacion",
           eta: null,
           createdAt: new Date(year, month, d).toISOString(),
           shippedAt: null,
@@ -74,7 +74,7 @@ export function CalendarPage() {
 
   const stats = useMemo(() => ({
     total: shipments?.length ?? 0,
-    active: shipments?.filter((s) => s.stage !== "delivered").length ?? 0,
+    active: shipments?.filter((s) => s.stage !== "entregado").length ?? 0,
     scheduled: 3,
   }), [shipments]);
 

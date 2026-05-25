@@ -26,7 +26,7 @@ export function ShipmentDetailPage() {
     path: "/api/shipments", transform: (r) => r.map(adaptShipment)
   });
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
-    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+    path: "/api/orders", transform: (r) => r.map((o) => adaptOrder(o))
   });
 
   const { operationalShipments } = useOperationalWorkspace({ orders, shipments });

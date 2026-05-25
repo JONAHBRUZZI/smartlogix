@@ -1,4 +1,4 @@
-ï»¿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Check, ChevronDown, Edit2, MoreHorizontal, Search, ShieldCheck, UserPlus, X } from "lucide-react";
 import { getRoleProfile } from "@/app/access";
 import { getVisibleNavItems } from "@/components/layout/navigation";
@@ -90,6 +90,7 @@ export function UsersPage() {
     support: "bg-blue-50 text-blue-600",
     customer: "bg-slate-50 text-slate-500",
     shipper: "bg-green-50 text-green-600",
+    vendor: "bg-orange-50 text-orange-600",
   };
 
   const roleInitialColors: Record<Role, string> = {
@@ -99,6 +100,7 @@ export function UsersPage() {
     support: "bg-blue-500",
     customer: "bg-slate-500",
     shipper: "bg-green-500",
+    vendor: "bg-orange-500",
   };
 
   return (
@@ -160,7 +162,7 @@ export function UsersPage() {
       )}
 
 
-      {/* Vista tipo card en mÃ³vil, tabla en sm+ */}
+      {/* Vista tipo card en móvil, tabla en sm+ */}
       <div className="rounded border border-[#DCE0E2] bg-white">
         <div className="block sm:hidden">
           {filtered.length === 0 && (
@@ -352,7 +354,7 @@ export function UsersPage() {
                           {has ? (
                             <Check className="mx-auto h-4 w-4 text-[#4EB4A5]" />
                           ) : (
-                            <span className="text-[#DCE0E2]">â€”</span>
+                            <span className="text-[#DCE0E2]">—</span>
                           )}
                         </td>
                       );

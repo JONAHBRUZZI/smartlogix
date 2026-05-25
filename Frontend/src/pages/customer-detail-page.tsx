@@ -17,7 +17,7 @@ export function CustomerDetailPage() {
   });
 
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
-    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+    path: "/api/orders", transform: (r) => r.map((o) => adaptOrder(o))
   });
 
   const customer = useMemo(() => (customers ?? []).find((c) => c.id === customerId) ?? null, [customers, customerId]);

@@ -109,8 +109,9 @@ export const orders: Order[] = [
   {
     id: "1",
     customer: "Bar El Rincon",
+    customerId: "1",
     source: "Pedido Telefonico",
-    stage: "confirmed",
+    stage: "en_preparacion",
     sku: "COCA-COLA-2L",
     quantity: 6,
     createdAt: "2026-05-18T09:15:00-04:00",
@@ -125,8 +126,9 @@ export const orders: Order[] = [
   {
     id: "2",
     customer: "Bar El Rincon",
+    customerId: "1",
     source: "Pedido Telefonico",
-    stage: "in_transit",
+    stage: "en_reparto",
     sku: "AGUA-MINERAL-500",
     quantity: 12,
     createdAt: "2026-05-18T09:30:00-04:00",
@@ -140,8 +142,9 @@ export const orders: Order[] = [
   {
     id: "3",
     customer: "Kiosco Don Pepe",
+    customerId: "2",
     source: "WhatsApp",
-    stage: "new",
+    stage: "created",
     sku: "CHOCOLATE-TRENCITO",
     quantity: 2,
     createdAt: "2026-05-18T10:00:00-04:00",
@@ -155,8 +158,9 @@ export const orders: Order[] = [
   {
     id: "4",
     customer: "Bar El Rincon",
+    customerId: "1",
     source: "Pedido Telefonico",
-    stage: "incident",
+    stage: "cancelado",
     sku: "CHICLES-FRUGELE",
     quantity: 1,
     createdAt: "2026-05-18T10:22:00-04:00",
@@ -170,8 +174,9 @@ export const orders: Order[] = [
   {
     id: "5",
     customer: "Distribuidora Sur",
+    customerId: "3",
     source: "Correo",
-    stage: "confirmed",
+    stage: "en_preparacion",
     sku: "CERVEZA-CORONA-355",
     quantity: 24,
     createdAt: "2026-05-18T11:05:00-04:00",
@@ -185,8 +190,9 @@ export const orders: Order[] = [
   {
     id: "6",
     customer: "Kiosco Don Pepe",
+    customerId: "2",
     source: "WhatsApp",
-    stage: "new",
+    stage: "created",
     sku: "SPRITE-2L",
     quantity: 8,
     createdAt: "2026-05-18T11:45:00-04:00",
@@ -199,8 +205,9 @@ export const orders: Order[] = [
   {
     id: "7",
     customer: "Bar El Rincon",
+    customerId: "1",
     source: "Pedido Telefonico",
-    stage: "in_transit",
+    stage: "en_reparto",
     sku: "JUGO-WATTS-1L",
     quantity: 10,
     createdAt: "2026-05-18T12:00:00-04:00",
@@ -214,8 +221,9 @@ export const orders: Order[] = [
   {
     id: "8",
     customer: "Distribuidora Sur",
+    customerId: "3",
     source: "Correo",
-    stage: "delivered",
+    stage: "entregado",
     sku: "COCA-COLA-2L",
     quantity: 4,
     createdAt: "2026-05-17T16:30:00-04:00",
@@ -230,8 +238,9 @@ export const orders: Order[] = [
   {
     id: "9",
     customer: "Kiosco Don Pepe",
+    customerId: "2",
     source: "WhatsApp",
-    stage: "incident",
+    stage: "cancelado",
     sku: "PAPAS-LAYS-200G",
     quantity: 3,
     createdAt: "2026-05-18T08:50:00-04:00",
@@ -245,8 +254,9 @@ export const orders: Order[] = [
   {
     id: "10",
     customer: "Bar El Rincon",
+    customerId: "1",
     source: "Pedido Telefonico",
-    stage: "confirmed",
+    stage: "en_preparacion",
     sku: "PEPSI-2L",
     quantity: 15,
     createdAt: "2026-05-18T13:10:00-04:00",
@@ -268,7 +278,7 @@ export const shipments: Shipment[] = [
     quantity: 12,
     carrier: "Luis Castro (local)",
     tracking: "TRK-7591A2",
-    stage: "hub",
+    stage: "en_preparacion",
     eta: "2026-05-18T12:00:00-04:00",
     createdAt: "2026-05-18T09:35:00-04:00",
     shippedAt: "2026-05-18T09:45:00-04:00"
@@ -281,7 +291,7 @@ export const shipments: Shipment[] = [
     quantity: 10,
     carrier: "Luis Castro (local)",
     tracking: "TRK-4820C3",
-    stage: "out_for_delivery",
+    stage: "en_reparto",
     eta: "2026-05-18T15:00:00-04:00",
     createdAt: "2026-05-18T12:05:00-04:00",
     shippedAt: "2026-05-18T12:15:00-04:00"
@@ -294,7 +304,7 @@ export const shipments: Shipment[] = [
     quantity: 4,
     carrier: "Luis Castro (local)",
     tracking: "TRK-1265F7",
-    stage: "delivered",
+    stage: "entregado",
     eta: null,
     createdAt: "2026-05-17T16:35:00-04:00",
     shippedAt: "2026-05-17T17:10:00-04:00"
@@ -307,7 +317,7 @@ export const shipments: Shipment[] = [
     quantity: 15,
     carrier: "Luis Castro (local)",
     tracking: "TRK-9931H4",
-    stage: "delayed",
+    stage: "cancelado",
     eta: "2026-05-18T17:00:00-04:00",
     createdAt: "2026-05-18T13:15:00-04:00",
     shippedAt: "2026-05-18T13:20:00-04:00",
@@ -371,22 +381,18 @@ const HEALTH_VARIANT: Record<HealthState, "success" | "warning" | "danger"> = {
 };
 
 const ORDER_STAGE_VARIANT: Record<OrderStage, "info" | "success" | "warning" | "neutral" | "danger"> = {
-  new: "info",
-  confirmed: "success",
-  picking: "warning",
-  packed: "neutral",
-  in_transit: "success",
-  delivered: "success",
-  incident: "danger"
+  created: "info",
+  en_preparacion: "warning",
+  en_reparto: "success",
+  entregado: "success",
+  cancelado: "danger"
 };
 
 const SHIPMENT_STAGE_VARIANT: Record<ShipmentStage, "neutral" | "info" | "warning" | "success" | "danger"> = {
-  label_created: "neutral",
-  picked_up: "info",
-  hub: "warning",
-  out_for_delivery: "warning",
-  delivered: "success",
-  delayed: "danger"
+  en_preparacion: "neutral",
+  en_reparto: "warning",
+  entregado: "success",
+  cancelado: "danger"
 };
 
 export function getHealthVariant(state: HealthState) {

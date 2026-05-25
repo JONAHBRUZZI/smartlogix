@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Box, Check, Clock, History, Package, Truck, AlertTriangle } from "lucide-react";
 import { managedUsers } from "@/app/user-directory";
@@ -18,7 +18,7 @@ export function OrderDetailPage() {
   const { orderId } = useParams();
 
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
-    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+    path: "/api/orders", transform: (r) => r.map((o) => adaptOrder(o))
   });
   const { data: shipment } = useApiQuery<ApiShipment, Shipment | null>({
     path: `/api/shipments/${orderId}`, transform: adaptShipment, enabled: Boolean(orderId)

@@ -152,7 +152,7 @@ export function useOperationalWorkspace({
         id: `sale-${s.id}`,
         items: JSON.parse(s.items),
         total: s.total,
-        paymentMethod: s.paymentMethod,
+        paymentMethod: s.paymentMethod as Sale["paymentMethod"],
         vendorId: s.vendorId,
         vendorName: s.vendorName,
         createdAt: s.createdAt,

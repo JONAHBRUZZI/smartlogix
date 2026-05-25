@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Key, LogIn, Mail } from "lucide-react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { getDefaultPathForRole, isPathAllowedForRole } from "@/app/access";

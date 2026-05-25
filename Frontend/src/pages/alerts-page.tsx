@@ -27,7 +27,7 @@ export function AlertsPage() {
 
   const { data: orders, source: ordersSource, error: ordersError, refresh: refreshOrders } = useApiQuery<ApiOrder[], Order[]>({
     path: "/api/orders",
-    transform: (response) => response.map(adaptOrder)
+    transform: (response) => response.map((o) => adaptOrder(o))
   });
 
   const { data: inventory, source: inventorySource, error: inventoryError, refresh: refreshInventory } = useApiQuery<ApiInventory[], Product[]>({
@@ -47,7 +47,7 @@ export function AlertsPage() {
 
   const { operationalOrders, operationalInventory, operationalShipments } = useOperationalWorkspace({ orders, inventory, shipments });
 
-  const source: ApiSource = [ordersSource, inventorySource, shipmentsSource, notificationsSource].some((value) => value === "live") ? "live" : "demo";
+  const source: ApiSource = [ordersSource, inventorySource, shipmentsSource, notificationsSource].some((value) => value === "live") ? "live" : "error";
   const error = [ordersError, inventoryError, shipmentsError, notificationsError].filter(Boolean).join(" | ") || null;
 
   const alerts = useMemo(() => {

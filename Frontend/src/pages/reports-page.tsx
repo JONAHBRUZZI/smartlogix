@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, BarChart3, Boxes, CalendarDays, Clock, Download, Package, Search, ShoppingBag, ShoppingCart, Table2, Truck } from "lucide-react";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useOperationalWorkspace } from "@/hooks/use-operational-workspace";
@@ -167,7 +167,7 @@ export function ReportsPage() {
   const [selectedBar, setSelectedBar] = useState<{ label: string; value: number } | null>(null);
 
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
-    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+    path: "/api/orders", transform: (r) => r.map((o) => adaptOrder(o))
   });
   const { data: inventory } = useApiQuery<ApiInventory[], Product[]>({
     path: "/api/inventory", transform: (r) => r.map(adaptInventory)
@@ -313,7 +313,7 @@ export function ReportsPage() {
       .map(([vendor, total], i) => ({
         label: vendor,
         value: Math.round(total),
-        color: BAR_COLORS[i % BAR_COLORS.length],
+        color: BAR_COLORS[i % BAR_COLORS.length] ?? "#6B7280",
         detail: `${vendorCountMap.get(vendor) ?? 0} ventas`,
       }));
 
@@ -525,7 +525,7 @@ export function ReportsPage() {
                   <div className="space-y-3">
                     {salesReport.revenueByVendor.length > 0
                       ? salesReport.revenueByVendor.map((v) => (
-                          <ProgressBar key={v.label} label={v.label} value={v.value} max={salesReport.totalRevenue} color={v.color} detail={v.detail} />
+                          <ProgressBar key={v.label} label={v.label} value={v.value} max={salesReport.totalRevenue} color={v.color} detail={v.detail ?? ""} />
                         ))
                       : <p className="py-8 text-center text-xs text-[#6B7280]">Sin datos para el periodo seleccionado</p>}
                   </div>

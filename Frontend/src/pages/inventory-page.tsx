@@ -1,4 +1,4 @@
-ï»¿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Download, Minus, PackagePlus, Plus, Search, Trash2, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/auth";
@@ -172,7 +172,7 @@ export function InventoryPage() {
               </form>
             </DialogContent>
           </Dialog>
-          <span className="text-xs text-[#6B7280]">{counts.total} SKU Â· {counts.totalUnits} unids totales</span>
+          <span className="text-xs text-[#6B7280]">{counts.total} SKU · {counts.totalUnits} unids totales</span>
         </div>
       </div>
 
@@ -320,7 +320,7 @@ export function InventoryPage() {
               <button onClick={() => setDeleteConfirm(null)} className="p-1 rounded hover:bg-gray-100"><X className="h-4 w-4" /></button>
             </div>
             <p className="text-sm text-[#6B7280]">
-              Â¿Estas seguro de eliminar <strong>{deleteConfirm.name}</strong> ({deleteConfirm.sku})?
+              ¿Estas seguro de eliminar <strong>{deleteConfirm.name}</strong> ({deleteConfirm.sku})?
             </p>
             <div className="flex gap-2 justify-end">
               <Button variant="outline" size="sm" onClick={() => setDeleteConfirm(null)}>Cancelar</Button>

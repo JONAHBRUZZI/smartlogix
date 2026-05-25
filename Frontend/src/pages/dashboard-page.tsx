@@ -51,7 +51,7 @@ export function DashboardPage() {
   const profile = session ? getRoleProfile(session.role) : null;
 
   const { data: orders, loading: ordersLoading } = useApiQuery<ApiOrder[], Order[]>({
-    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+    path: "/api/orders", transform: (r) => r.map((o) => adaptOrder(o))
   });
   const { data: inventory, loading: inventoryLoading } = useApiQuery<ApiInventory[], Product[]>({
     path: "/api/inventory", transform: (r) => r.map(adaptInventory)
@@ -210,8 +210,8 @@ export function DashboardPage() {
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-foreground">
                     {sale.items.length > 1
-                      ? `${sale.items[0].name} +${sale.items.length - 1} mas`
-                      : sale.items[0].name}
+                      ? `${sale.items[0]?.name} +${sale.items.length - 1} mas`
+                      : sale.items[0]?.name}
                   </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     {sale.vendorName}

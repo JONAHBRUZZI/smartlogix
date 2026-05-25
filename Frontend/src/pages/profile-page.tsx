@@ -1,4 +1,4 @@
-﻿import { Boxes, Clock, MapPin, Package, Truck } from "lucide-react";
+import { Boxes, Clock, MapPin, Package, Truck } from "lucide-react";
 import { useAuth } from "@/app/auth";
 import { getRoleProfile } from "@/app/access";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -12,7 +12,7 @@ export function ProfilePage() {
 
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
     path: "/api/orders",
-    transform: (response) => response.map(adaptOrder)
+    transform: (response) => response.map((o) => adaptOrder(o))
   });
 
   const { data: shipments } = useApiQuery<ApiShipment[], Shipment[]>({
