@@ -36,14 +36,26 @@ const faqs = [
 ]
 
 export default function Faqs1() {
-    const [openIndex, setOpenIndex] = useState(null)
+    const [isActive, setIsActive] = useState({
+        status: false,
+        key: 0,
+    })
 
-    const toggleFaq = (index) => {
-        setOpenIndex(openIndex === index ? null : index)
+    const handleToggle = (key) => {
+        if (isActive.key === key) {
+            setIsActive({
+                status: false,
+            })
+        } else {
+            setIsActive({
+                status: true,
+                key,
+            })
+        }
     }
 
     return (
-        <section className="section pt-110 pb-110" id="faq">
+        <section className="section pt-80 mb-70" id="faq">
             <div className="container">
                 <div className="text-center">
                     <img className="mb-15" src="/assets/imgs/template/icons/favicon.svg" alt="smartlogix" />
@@ -54,69 +66,25 @@ export default function Faqs1() {
                 </div>
                 <div className="row mt-50">
                     <div className="col-lg-10 m-auto">
-                        {faqs.map((faq, index) => (
-                            <div key={index} className="card card-faq wow animate__animated animate__fadeIn mb-15">
-                                <div className="card-header-faq" onClick={() => toggleFaq(index)}>
-                                    <h6 className="color-brand-2">{faq.question}</h6>
-                                    <span className={openIndex === index ? "arrow-down rotate" : "arrow-down"}>
-                                        <svg className="w-6 h-6 icon-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </span>
+                        <div className="accordion" id="accordionFAQ">
+                            {faqs.map((faq, index) => (
+                                <div key={index} className="accordion-item wow animate__animated animate__fadeIn">
+                                    <h5 className="accordion-header" onClick={() => handleToggle(index)}>
+                                        <button className={isActive.key === index ? "accordion-button text-heading-5" : "accordion-button text-heading-5 collapsed"}>
+                                            {faq.question}
+                                        </button>
+                                    </h5>
+                                    <div className={isActive.key === index ? "accordion-collapse" : "accordion-collapse collapse"}>
+                                        <div className="accordion-body">
+                                            <p className="font-md color-grey-700">{faq.answer}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className={openIndex === index ? "card-body-faq open" : "card-body-faq"}>
-                                    <p className="font-md color-grey-700">{faq.answer}</p>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-            <style jsx global>{`
-                .card-faq {
-                    border: 1px solid #CDE2E7;
-                    border-radius: 8px;
-                    overflow: hidden;
-                    background: #fff;
-                    transition: all 0.3s ease;
-                }
-                .card-faq:hover {
-                    box-shadow: 0 4px 16px rgba(3, 68, 96, 0.08);
-                }
-                .card-header-faq {
-                    padding: 20px 25px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    cursor: pointer;
-                    background: #fff;
-                    border-bottom: 1px solid transparent;
-                    transition: all 0.3s ease;
-                }
-                .card-header-faq h6 {
-                    margin: 0;
-                    font-size: 16px;
-                    font-weight: 600;
-                    padding-right: 20px;
-                }
-                .card-body-faq {
-                    max-height: 0;
-                    overflow: hidden;
-                    transition: max-height 0.35s ease, padding 0.35s ease;
-                    padding: 0 25px;
-                }
-                .card-body-faq.open {
-                    max-height: 500px;
-                    padding: 0 25px 20px 25px;
-                }
-                .arrow-down {
-                    transition: transform 0.3s ease;
-                    flex-shrink: 0;
-                }
-                .arrow-down.rotate {
-                    transform: rotate(180deg);
-                }
-            `}</style>
         </section>
     )
 }

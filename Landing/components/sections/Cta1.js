@@ -6,12 +6,12 @@ export default function Cta1() {
             <div className="container">
                 <div className="box-get-quote">
                     <div className="get-quote-left">
-                        <h2 className="color-brand-1 wow animate__animated animate__fadeIn">
-                            ¿Listo para transformar tu negocio?
-                        </h2>
                         <p className="font-3xl color-white mb-10 wow animate__animated animate__fadeIn">
                             Únete a los cientos de comercios que ya confían en SmartLogix.
                         </p>
+                        <h2 className="color-brand-1 wow animate__animated animate__fadeIn">
+                            ¿Listo para transformar tu negocio?
+                        </h2>
                     </div>
                     <div className="get-quote-right">
                         <Link className="btn btn-get-quote wow animate__animated animate__fadeIn" href="#demo">
