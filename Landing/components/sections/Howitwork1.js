@@ -102,8 +102,12 @@ export default function Howitwork1() {
                     transform: translateX(8px);
                 }
                 .howitwork-section .list-how-works li .image-how .img {
+                    display: flex !important;
+                    align-items: center;
+                    justify-content: center;
                     transition: all 0.3s ease;
                     box-shadow: 0 4px 16px rgba(254,194,1,0.2);
+                    line-height: 1;
                 }
                 .howitwork-section .list-how-works li:hover .image-how .img {
                     transform: scale(1.05);
