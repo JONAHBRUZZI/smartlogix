@@ -1,5 +1,7 @@
 # Dependencias
 node_modules/
+Landing/node_modules/
+Landing/.next/
 Backend/**/target/
 Backend/**/.mvn/
 
