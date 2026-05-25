@@ -1,18 +1,18 @@
 package com.smartlogix.orders_service.service;
 
 import com.smartlogix.orders_service.dto.OrderResponse;
-import com.smartlogix.contracts.events.OrderEvent;
 import com.smartlogix.orders_service.model.Order;
 import com.smartlogix.orders_service.model.OrderStatus;
-import com.smartlogix.orders_service.publisher.OrderPublisher;
 import com.smartlogix.orders_service.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderPublisher orderPublisher;
+    private final RestTemplate restTemplate;
 
     @Transactional
     public OrderResponse createOrder(Order orderRequest) {
@@ -33,22 +33,66 @@ public class OrderService {
         Order savedOrder = orderRepository.save(orderRequest);
         log.info("Orden guardada en DB con ID: {}", savedOrder.getId());
 
-        OrderEvent event = OrderEvent.builder()
-                .orderId(savedOrder.getId())
-                .customerId(savedOrder.getCustomerId())
-                .sku(savedOrder.getSku())
-                .quantity(savedOrder.getQuantity())
-                .status(savedOrder.getStatus().name())
-                .build();
-
-        orderPublisher.publishOrderCreated(event);
-
         return OrderResponse.builder()
                 .orderId(savedOrder.getId())
                 .status(savedOrder.getStatus().name())
-                .message("Orden procesada y enviada a SQS correctamente")
+                .message("Orden creada correctamente")
                 .createdAt(savedOrder.getCreatedAt())
                 .build();
+    }
+
+    @Transactional
+    public void confirmOrder(Long orderId) {
+        log.info("Confirmando orden {}", orderId);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada: " + orderId));
+
+        order.setStatus(OrderStatus.EN_PREPARACION);
+        orderRepository.save(order);
+
+        try {
+            restTemplate.put(
+                    "http://inventory-service:8082/api/inventory/" + order.getSku() + "/adjust?delta=-" + order.getQuantity(),
+                    null
+            );
+
+            Map<String, Object> shipmentRequest = Map.of(
+                    "orderId", order.getId(),
+                    "customerId", order.getCustomerId(),
+                    "sku", order.getSku(),
+                    "quantity", order.getQuantity()
+            );
+            restTemplate.postForEntity(
+                    "http://shipping-service:8084/api/shipments",
+                    shipmentRequest,
+                    Void.class
+            );
+        } catch (Exception e) {
+            log.error("Error al procesar confirmacion de orden {}: {}", orderId, e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void cancelOrder(Long orderId, String reason) {
+        log.info("Cancelando orden {}: {}", orderId, reason);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada: " + orderId));
+
+        OrderStatus prevStatus = order.getStatus();
+        order.setStatus(OrderStatus.CANCELADO);
+        order.setCancelReason(reason);
+        orderRepository.save(order);
+
+        if (prevStatus == OrderStatus.EN_PREPARACION) {
+            try {
+                restTemplate.put(
+                        "http://inventory-service:8082/api/inventory/" + order.getSku() + "/adjust?delta=+" + order.getQuantity(),
+                        null
+                );
+            } catch (Exception e) {
+                log.error("Error al restaurar stock para orden cancelada {}: {}", orderId, e.getMessage());
+            }
+        }
     }
 
     @Transactional

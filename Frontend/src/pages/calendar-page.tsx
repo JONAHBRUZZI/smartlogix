@@ -156,10 +156,10 @@ export function CalendarPage() {
                             title={`${s.tracking} - ${s.stage}`}
                             className={cn(
                               "flex items-center gap-1 truncate rounded px-0.5 sm:px-1 py-0.5 text-[8px] sm:text-[9px] font-medium",
-                              s.stage === "delivered" && "bg-green-50 text-green-600",
-                              s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                              s.stage === "label_created" && "bg-[#E3AA75]/10 text-[#E3AA75]",
-                              s.stage === "delayed" && "bg-red-50 text-red-500",
+                              s.stage === "entregado" && "bg-green-50 text-green-600",
+                              s.stage === "en_reparto" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                              s.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                              s.stage === "cancelado" && "bg-red-50 text-red-500",
                               s.id.startsWith("sched-") && "bg-purple-50 text-purple-600",
                             )}
                           >
@@ -202,8 +202,8 @@ export function CalendarPage() {
                     <div className="flex items-center gap-3">
                       <div className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-full",
-                        s.stage === "delivered" && "bg-green-50",
-                        s.stage === "delayed" && "bg-red-50",
+                        s.stage === "entregado" && "bg-green-50",
+                        s.stage === "cancelado" && "bg-red-50",
                         "bg-[#F5F7F9]"
                       )}>
                         <Truck className="h-4 w-4 text-[#4B98CF]" />
@@ -215,11 +215,11 @@ export function CalendarPage() {
                     </div>
                     <span className={cn(
                       "rounded px-2 py-0.5 text-[10px] font-bold",
-                      s.stage === "delivered" && "bg-green-50 text-green-600",
-                      s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                      s.stage === "delayed" && "bg-red-50 text-red-500",
+                      s.stage === "entregado" && "bg-green-50 text-green-600",
+                      s.stage === "en_reparto" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                      s.stage === "cancelado" && "bg-red-50 text-red-500",
                     )}>
-                      {s.stage.replace(/_/g, " ")}
+                      {s.stage === "en_preparacion" ? "Preparacion" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
                     </span>
                   </Link>
                 ))}

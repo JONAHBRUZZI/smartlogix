@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Download, Pencil, Plus, Search, Trash2, User, UserPlus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useAutoRefresh } from "@/hooks/use-auto-refresh";
 import { adaptCustomer } from "@/lib/api-adapters";
@@ -13,6 +14,7 @@ import { apiFetch, ApiRequestError } from "@/lib/api-client";
 
 export function CustomersPage() {
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", address: "", email: "" });
@@ -133,7 +135,7 @@ export function CustomersPage() {
 
       <div className="space-y-2">
         {filtered.map((customer) => (
-          <div key={customer.id} className="rounded border border-[#DCE0E2] bg-white p-4">
+          <div key={customer.id} className="rounded border border-[#DCE0E2] bg-white p-4 hover:border-[#4B98CF]/40 transition-colors cursor-pointer" onClick={() => navigate(`/customers/${customer.id}`)}>
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#4B98CF]/10">
                 <User className="h-5 w-5 text-[#4B98CF]" />

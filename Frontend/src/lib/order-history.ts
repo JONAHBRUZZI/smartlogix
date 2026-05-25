@@ -3,7 +3,7 @@ const HISTORY_KEY = "smartlogix-order-history";
 export interface HistoryEntry {
   id: string;
   orderId: string;
-  action: "created" | "approved" | "rejected" | "reprocessed" | "dispatched" | "in_transit" | "delivered" | "delayed";
+  action: "created" | "confirmed" | "cancelled" | "dispatched" | "in_transit" | "delivered" | "rejected";
   actor: string;
   actorRole: string;
   detail: string;

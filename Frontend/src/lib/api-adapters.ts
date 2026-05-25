@@ -4,27 +4,29 @@ import type { Customer, HealthState, Order, OrderStage, Product, Shipment, Shipm
 type StatusMap<T extends string> = readonly (readonly [string, T])[];
 
 const ORDER_STAGE_MAP: StatusMap<OrderStage> = [
-  ["deliver", "delivered"],
-  ["transit", "in_transit"],
-  ["ship", "in_transit"],
-  ["pack", "packed"],
-  ["pick", "picking"],
-  ["confirm", "confirmed"],
-  ["approve", "confirmed"],
-  ["reject", "incident"],
-  ["cancel", "incident"],
-  ["error", "incident"],
-  ["incident", "incident"]
+  ["preparacion", "en_preparacion"],
+  ["EN_PREPARACION", "en_preparacion"],
+  ["reparto", "en_reparto"],
+  ["EN_REPARTO", "en_reparto"],
+  ["entregado", "entregado"],
+  ["ENTREGADO", "entregado"],
+  ["cancelado", "cancelado"],
+  ["CANCELADO", "cancelado"],
+  ["cancel", "cancelado"],
+  ["reject", "cancelado"]
 ];
 
 const SHIPMENT_STAGE_MAP: StatusMap<ShipmentStage> = [
-  ["deliver", "delivered"],
-  ["delay", "delayed"],
-  ["error", "delayed"],
-  ["out", "out_for_delivery"],
-  ["hub", "hub"],
-  ["transit", "hub"],
-  ["pick", "picked_up"]
+  ["preparacion", "en_preparacion"],
+  ["EN_PREPARACION", "en_preparacion"],
+  ["reparto", "en_reparto"],
+  ["EN_REPARTO", "en_reparto"],
+  ["entregado", "entregado"],
+  ["ENTREGADO", "entregado"],
+  ["cancelado", "cancelado"],
+  ["CANCELADO", "cancelado"],
+  ["cancel", "cancelado"],
+  ["deliver", "entregado"]
 ];
 
 const HEALTH_MAP: StatusMap<HealthState> = [
@@ -44,8 +46,8 @@ const normalizeFromMap = <T extends string>(maps: StatusMap<T>, fallback: T) => 
   return fallback;
 };
 
-export const normalizeOrderStage = normalizeFromMap(ORDER_STAGE_MAP, "new");
-export const normalizeShipmentStage = normalizeFromMap(SHIPMENT_STAGE_MAP, "label_created");
+export const normalizeOrderStage = normalizeFromMap(ORDER_STAGE_MAP, "created");
+export const normalizeShipmentStage = normalizeFromMap(SHIPMENT_STAGE_MAP, "en_preparacion");
 export const normalizeHealth = normalizeFromMap(HEALTH_MAP, "critical");
 
 export function calculateHealthFromStock(stock: number): HealthState {
@@ -73,7 +75,8 @@ export function adaptOrder(apiOrder: ApiOrder, customerName?: string): Order {
       }
     ],
     timeline: [],
-    assignedTo: apiOrder.assignedTo ?? undefined
+    assignedTo: apiOrder.assignedTo ?? undefined,
+    cancelReason: apiOrder.cancelReason ?? null
   };
 }
 
@@ -105,9 +108,10 @@ export function adaptShipment(apiShipment: ApiShipment): Shipment {
     eta: apiShipment.shippedAt ?? apiShipment.createdAt ?? null,
     createdAt: apiShipment.createdAt ?? new Date().toISOString(),
     shippedAt: apiShipment.shippedAt ?? null,
-    exception: stage === "delayed" ? "El servicio de envios reporto una demora que requiere seguimiento." : undefined,
+    exception: stage === "cancelado" ? "Envio cancelado" : undefined,
     proofOfDeliveryImage: apiShipment.proofOfDeliveryImage ?? null,
-    recipientRut: apiShipment.recipientRut ?? null
+    recipientRut: apiShipment.recipientRut ?? null,
+    customerCode: apiShipment.customerCode ?? null
   };
 }
 

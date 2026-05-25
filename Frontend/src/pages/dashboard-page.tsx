@@ -86,7 +86,7 @@ export function DashboardPage() {
 
   const metrics = useMemo(() => ({
     totalOrders: operationalOrders.length,
-    activeShipments: operationalShipments.filter((s) => s.stage !== "delivered").length,
+    activeShipments: operationalShipments.filter((s) => s.stage !== "entregado" && s.stage !== "cancelado").length,
     lowStock: stockQueue.length,
     criticalAlerts: alerts.filter((a) => a.severity === "critical").length,
     salesToday: todaySales.total,
@@ -326,12 +326,13 @@ export function DashboardPage() {
                     <td className="px-4 py-2.5">
                       <span className={cn(
                         "inline-flex rounded px-2 py-0.5 text-xs font-bold",
-                        order.stage === "confirmed" && "bg-[#4EB4A5]/10 text-[#4EB4A5]",
-                        order.stage === "new" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                        order.stage === "delivered" && "bg-green-50 text-green-600",
-                        order.stage === "incident" && "bg-red-50 text-red-500",
+                        order.stage === "entregado" && "bg-green-50 text-green-600",
+                        order.stage === "created" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                        order.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                        order.stage === "en_reparto" && "bg-purple-50 text-purple-600",
+                        order.stage === "cancelado" && "bg-red-50 text-red-500",
                       )}>
-                        {order.stage === "new" ? "Nuevo" : order.stage === "confirmed" ? "Confirmado" : order.stage === "incident" ? "Incidencia" : order.stage === "delivered" ? "Entregado" : order.stage}
+                        {order.stage === "created" ? "Pendiente" : order.stage === "en_preparacion" ? "Preparacion" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
                       </span>
                     </td>
                   </tr>
@@ -350,15 +351,16 @@ export function DashboardPage() {
                     <p className="text-xs text-foreground">{order.customer}</p>
                     <p className="text-[11px] text-muted-foreground">SKU {order.sku} · x{order.quantity}</p>
                   </div>
-                  <span className={cn(
-                    "shrink-0 rounded px-2 py-0.5 text-xs font-bold",
-                    order.stage === "confirmed" && "bg-[#4EB4A5]/10 text-[#4EB4A5]",
-                    order.stage === "new" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                    order.stage === "delivered" && "bg-green-50 text-green-600",
-                    order.stage === "incident" && "bg-red-50 text-red-500",
-                  )}>
-                    {order.stage === "new" ? "Nuevo" : order.stage === "confirmed" ? "Confirmado" : order.stage === "incident" ? "Incidencia" : order.stage === "delivered" ? "Entregado" : order.stage}
-                  </span>
+                    <span className={cn(
+                      "shrink-0 rounded px-2 py-0.5 text-xs font-bold",
+                      order.stage === "entregado" && "bg-green-50 text-green-600",
+                      order.stage === "created" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                      order.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                      order.stage === "en_reparto" && "bg-purple-50 text-purple-600",
+                      order.stage === "cancelado" && "bg-red-50 text-red-500",
+                    )}>
+                      {order.stage === "created" ? "Pendiente" : order.stage === "en_preparacion" ? "Preparacion" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
+                    </span>
                 </div>
               ))}
               {orders?.length === 0 && (
@@ -399,12 +401,12 @@ export function DashboardPage() {
                   <td className="px-4 py-2.5">
                     <span className={cn(
                       "inline-flex rounded px-2 py-0.5 text-xs font-bold",
-                      s.stage === "delivered" && "bg-green-50 text-green-600",
-                      s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                      s.stage === "label_created" && "bg-[#E3AA75]/10 text-[#E3AA75]",
-                      s.stage === "delayed" && "bg-red-50 text-red-500",
+                      s.stage === "entregado" && "bg-green-50 text-green-600",
+                      s.stage === "en_reparto" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                      s.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                      s.stage === "cancelado" && "bg-red-50 text-red-500",
                     )}>
-                      {s.stage.replace(/_/g, " ")}
+                      {s.stage === "en_preparacion" ? "Preparacion" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
                     </span>
                   </td>
                   <td className="px-4 py-2.5 text-muted-foreground hidden md:table-cell">{s.carrier}</td>
@@ -428,12 +430,12 @@ export function DashboardPage() {
                 </div>
                 <span className={cn(
                   "shrink-0 rounded px-2 py-0.5 text-xs font-bold",
-                  s.stage === "delivered" && "bg-green-50 text-green-600",
-                  s.stage === "out_for_delivery" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                  s.stage === "label_created" && "bg-[#E3AA75]/10 text-[#E3AA75]",
-                  s.stage === "delayed" && "bg-red-50 text-red-500",
+                  s.stage === "entregado" && "bg-green-50 text-green-600",
+                  s.stage === "en_reparto" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                  s.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                  s.stage === "cancelado" && "bg-red-50 text-red-500",
                 )}>
-                  {s.stage.replace(/_/g, " ")}
+                  {s.stage === "en_preparacion" ? "Preparacion" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
                 </span>
               </div>
             ))}

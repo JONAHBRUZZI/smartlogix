@@ -256,7 +256,7 @@ export function ReportsPage() {
     }));
 
     const deliveryRate = filteredShipments.length > 0
-      ? Math.round((filteredShipments.filter((s) => s.stage === "delivered").length / filteredShipments.length) * 100)
+      ? Math.round((filteredShipments.filter((s) => s.stage === "entregado").length / filteredShipments.length) * 100)
       : 0;
     const lowStock = operationalInventory.filter((p) => p.stock <= 5).length;
 
@@ -493,19 +493,15 @@ export function ReportsPage() {
                   <p className="mb-3 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Resumen de envios</p>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="rounded bg-[#F5F7F9] p-4 text-center">
-                      <p className="text-2xl font-bold text-[#4EB4A5]">{filteredShipments.filter((s) => s.stage === "delivered").length}</p>
-                      <p className="text-[10px] font-medium text-[#6B7280]">Entregados</p>
-                    </div>
-                    <div className="rounded bg-[#F5F7F9] p-4 text-center">
-                      <p className="text-2xl font-bold text-[#CF4B4B]">{filteredShipments.filter((s) => s.stage === "delayed").length}</p>
-                      <p className="text-[10px] font-medium text-[#6B7280]">Retrasados</p>
-                    </div>
-                    <div className="rounded bg-[#F5F7F9] p-4 text-center">
-                      <p className="text-2xl font-bold text-[#4B98CF]">{filteredShipments.filter((s) => s.stage.includes("out")).length}</p>
-                      <p className="text-[10px] font-medium text-[#6B7280]">En reparto</p>
-                    </div>
-                    <div className="rounded bg-[#F5F7F9] p-4 text-center">
-                      <p className="text-2xl font-bold text-[#E3AA75]">{filteredShipments.filter((s) => s.stage === "label_created" || s.stage === "picked_up").length}</p>
+                      <p className="text-2xl font-bold text-[#4EB4A5]">{filteredShipments.filter((s) => s.stage === "entregado").length}</p>
+
+  . . .
+
+              <p className="text-2xl font-bold text-[#CF4B4B]">{filteredShipments.filter((s) => s.stage === "cancelado").length}</p>
+
+  . . .
+
+              <p className="text-2xl font-bold text-[#E3AA75]">{filteredShipments.filter((s) => s.stage === "en_preparacion" || s.stage === "en_reparto").length}</p>
                       <p className="text-[10px] font-medium text-[#6B7280]">En preparacion</p>
                     </div>
                   </div>

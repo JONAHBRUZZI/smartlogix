@@ -3,7 +3,6 @@ package com.smartlogix.orders_service.controller;
 import com.smartlogix.orders_service.dto.OrderRequest;
 import com.smartlogix.orders_service.dto.OrderResponse;
 import com.smartlogix.orders_service.model.Order;
-import com.smartlogix.orders_service.model.OrderStatus;
 import com.smartlogix.orders_service.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -62,6 +62,31 @@ public class OrderController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/{id}/confirm")
+    public ResponseEntity<Order> confirmOrder(@PathVariable Long id) {
+        try {
+            orderService.confirmOrder(id);
+            return orderService.getOrderById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Order> cancelOrder(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            String reason = body.getOrDefault("reason", "");
+            orderService.cancelOrder(id, reason);
+            return orderService.getOrderById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
     }

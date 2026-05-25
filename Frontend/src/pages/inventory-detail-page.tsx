@@ -130,11 +130,13 @@ export function InventoryDetailPage() {
                   <div className="text-right">
                     <span className={cn(
                       "rounded px-2 py-0.5 text-[10px] font-bold",
-                      order.stage === "confirmed" && "bg-[#4EB4A5]/10 text-[#4EB4A5]",
-                      order.stage === "new" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                      order.stage === "incident" && "bg-red-50 text-red-500",
+                      order.stage === "entregado" && "bg-green-50 text-green-600",
+                      order.stage === "created" && "bg-[#4B98CF]/10 text-[#4B98CF]",
+                      order.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                      order.stage === "en_reparto" && "bg-purple-50 text-purple-600",
+                      order.stage === "cancelado" && "bg-red-50 text-red-500",
                     )}>
-                      {order.stage === "new" ? "Nuevo" : order.stage === "confirmed" ? "Confirmado" : order.stage}
+                      {order.stage === "created" ? "Pendiente" : order.stage === "en_preparacion" ? "Preparacion" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
                     </span>
                     <p className="mt-0.5 text-[10px] text-[#6B7280]">{new Date(order.createdAt).toLocaleDateString("es-CL")}</p>
                   </div>

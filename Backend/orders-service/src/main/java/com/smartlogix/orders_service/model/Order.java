@@ -51,4 +51,7 @@ public class Order {
 
     @Column(name = "assigned_to", length = 100)
     private String assignedTo;
+
+    @Column(name = "cancel_reason", columnDefinition = "TEXT")
+    private String cancelReason;
 }

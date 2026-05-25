@@ -15,6 +15,7 @@ export interface ApiOrder {
   status: string;
   createdAt: string | null;
   assignedTo: string | null;
+  cancelReason: string | null;
 }
 
 export interface ApiCustomer {
@@ -61,6 +62,7 @@ export interface ApiShipment {
   shippedAt: string | null;
   proofOfDeliveryImage?: string | null;
   recipientRut?: string | null;
+  customerCode?: string | null;
 }
 
 export interface ApiNotificationRecord {

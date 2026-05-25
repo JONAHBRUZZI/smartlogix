@@ -57,4 +57,7 @@ public class Shipment {
 
     @Column(name = "recipient_rut", length = 12)
     private String recipientRut;
+
+    @Column(name = "customer_code", length = 20)
+    private String customerCode;
 }

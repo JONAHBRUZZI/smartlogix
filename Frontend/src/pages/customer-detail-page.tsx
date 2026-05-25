@@ -1,0 +1,180 @@
+import { useMemo } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Package, ShoppingBag, Truck, User, Phone, Mail, MapPin, Check, X, AlertTriangle, Clock } from "lucide-react";
+import { useApiQuery } from "@/hooks/use-api-query";
+import { adaptCustomer, adaptOrder } from "@/lib/api-adapters";
+import { useOperationalWorkspace } from "@/hooks/use-operational-workspace";
+import { cn } from "@/lib/utils";
+import type { ApiCustomer, ApiOrder } from "@/types/api";
+import type { Customer, Order } from "@/types/domain";
+
+export function CustomerDetailPage() {
+  const { customerId } = useParams();
+  const navigate = useNavigate();
+
+  const { data: customers } = useApiQuery<ApiCustomer[], Customer[]>({
+    path: "/api/customers", transform: (r) => r.map(adaptCustomer)
+  });
+
+  const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
+    path: "/api/orders", transform: (r) => r.map(adaptOrder)
+  });
+
+  const customer = useMemo(() => (customers ?? []).find((c) => c.id === customerId) ?? null, [customers, customerId]);
+
+  const { operationalOrders } = useOperationalWorkspace({ orders });
+
+  const customerOrders = useMemo(() => {
+    return (operationalOrders ?? []).filter((o) => o.customerId === customerId);
+  }, [operationalOrders, customerId]);
+
+  const stats = useMemo(() => ({
+    total: customerOrders.length,
+    entregados: customerOrders.filter((o) => o.stage === "entregado").length,
+    cancelados: customerOrders.filter((o) => o.stage === "cancelado").length,
+    activos: customerOrders.filter((o) => o.stage !== "entregado" && o.stage !== "cancelado").length,
+  }), [customerOrders]);
+
+  const badgeClass = (stage: string) =>
+    stage === "entregado" ? "bg-green-50 text-green-600" :
+    stage === "created" ? "bg-[#4B98CF]/10 text-[#4B98CF]" :
+    stage === "en_preparacion" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
+    stage === "en_reparto" ? "bg-purple-50 text-purple-600" :
+    stage === "cancelado" ? "bg-red-50 text-red-500" : "bg-muted text-muted-foreground";
+
+  const badgeLabel = (stage: string) =>
+    stage === "created" ? "Pendiente" :
+    stage === "en_preparacion" ? "Preparacion" :
+    stage === "en_reparto" ? "En reparto" :
+    stage === "entregado" ? "Entregado" :
+    stage === "cancelado" ? "Cancelado" : stage;
+
+  if (!customer) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24">
+        <User className="h-12 w-12 text-[#DCE0E2]" />
+        <p className="mt-4 font-medium text-[#6B7280]">Cliente no encontrado</p>
+        <Link to="/customers" className="mt-2 text-sm text-[#4B98CF] hover:underline">Volver a clientes</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5 max-w-sm w-full mx-auto sm:max-w-3xl md:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl px-2">
+      <Link to="/customers" className="inline-flex items-center gap-1 text-xs text-[#6B7280] hover:text-[#112b4a]">
+        <ArrowLeft className="h-3.5 w-3.5" /> Clientes
+      </Link>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#4B98CF]/10">
+            <User className="h-6 w-6 text-[#4B98CF]" />
+          </div>
+          <div>
+            <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Cliente</p>
+            <h1 className="text-xl font-bold text-[#112b4a]">{customer.name}</h1>
+          </div>
+        </div>
+        <span className="text-xs text-[#6B7280]">ID #{customer.id}</span>
+      </div>
+
+      {customer.phone || customer.email || customer.address ? (
+        <div className="rounded border border-[#DCE0E2] bg-white p-4">
+          <div className="space-y-2">
+            {customer.phone && (
+              <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+                <Phone className="h-4 w-4 text-[#4B98CF]" />
+                <span>{customer.phone}</span>
+              </div>
+            )}
+            {customer.email && (
+              <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+                <Mail className="h-4 w-4 text-[#4B98CF]" />
+                <span>{customer.email}</span>
+              </div>
+            )}
+            {customer.address && (
+              <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+                <MapPin className="h-4 w-4 text-[#4B98CF]" />
+                <span>{customer.address}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded border border-[#DCE0E2] bg-white p-4 text-center">
+          <p className="text-2xl font-bold text-[#112b4a]">{stats.total}</p>
+          <p className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-[0.92px]">Total</p>
+        </div>
+        <div className="rounded border border-[#DCE0E2] bg-white p-4 text-center">
+          <p className="text-2xl font-bold text-[#4EB4A5]">{stats.entregados}</p>
+          <p className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-[0.92px]">Entregados</p>
+        </div>
+        <div className="rounded border border-[#DCE0E2] bg-white p-4 text-center">
+          <p className="text-2xl font-bold text-[#4B98CF]">{stats.activos}</p>
+          <p className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-[0.92px]">Activos</p>
+        </div>
+      </div>
+
+      <div>
+        <p className="text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280] mb-3">Historial de pedidos</p>
+        {customerOrders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded border border-[#DCE0E2] bg-white py-12">
+            <Package className="h-8 w-8 text-[#DCE0E2]" />
+            <p className="mt-2 text-sm text-[#6B7280]">Sin pedidos registrados</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {customerOrders.map((order) => (
+              <div
+                key={order.id}
+                className="rounded border border-[#DCE0E2] bg-white p-4 hover:border-[#4B98CF]/40 transition-colors cursor-pointer"
+                onClick={() => navigate(`/orders/${order.id}`)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+                      order.stage === "entregado" ? "bg-green-50" :
+                      order.stage === "cancelado" ? "bg-red-50" :
+                      order.stage === "en_reparto" ? "bg-purple-50" :
+                      "bg-[#4B98CF]/10"
+                    )}>
+                      <ShoppingBag className={cn(
+                        "h-4 w-4",
+                        order.stage === "entregado" ? "text-[#4EB4A5]" :
+                        order.stage === "cancelado" ? "text-red-500" :
+                        order.stage === "en_reparto" ? "text-purple-500" :
+                        "text-[#4B98CF]"
+                      )} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-[#4B98CF]">#{order.id}</p>
+                      <p className="text-xs text-[#6B7280]">{order.sku} x{order.quantity}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={cn("rounded px-2 py-0.5 text-[10px] font-bold", badgeClass(order.stage))}>
+                      {badgeLabel(order.stage)}
+                    </span>
+                    <p className="mt-0.5 text-[10px] text-[#6B7280]">
+                      {new Date(order.createdAt).toLocaleDateString("es-CL")}
+                    </p>
+                  </div>
+                </div>
+                {order.cancelReason && (
+                  <div className="mt-2 flex items-center gap-1 text-[10px] text-red-500">
+                    <AlertTriangle className="h-3 w-3" />
+                    {order.cancelReason}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

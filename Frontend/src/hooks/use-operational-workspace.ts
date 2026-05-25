@@ -2,14 +2,14 @@ import { useMemo } from "react";
 import type { Order, Product, ProductCategory, Sale, Shipment, ShipmentStage } from "@/types/domain";
 import { apiFetch } from "@/lib/api-client";
 
-export type OrderDecisionType = "approved" | "rejected" | "reprocess";
+export type OrderDecisionType = "approved" | "rejected";
 
 export interface OperationalOrder extends Order {
   operationalDecision: OrderDecisionType | null;
   operationalNote: string | null;
   operationalUpdatedAt: string | null;
   needsReview: boolean;
-  canDispatch: boolean;
+  canConfirm: boolean;
 }
 
 export interface OperationalProduct extends Product {
@@ -64,8 +64,8 @@ export function useOperationalWorkspace({
         operationalDecision: null,
         operationalNote: null,
         operationalUpdatedAt: null,
-        needsReview: order.stage !== "delivered",
-        canDispatch: order.stage === "confirmed",
+        needsReview: order.stage === "created",
+        canConfirm: order.stage === "created",
       }))
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [safeOrders]);
@@ -82,7 +82,7 @@ export function useOperationalWorkspace({
   }, [safeShipments]);
 
   const validationQueue = useMemo(() => operationalOrders.filter((o) => o.needsReview), [operationalOrders]);
-  const dispatchQueue = useMemo(() => operationalOrders.filter((o) => o.canDispatch), [operationalOrders]);
+  const dispatchQueue = useMemo(() => operationalOrders.filter((o) => o.canConfirm), [operationalOrders]);
   const stockQueue = useMemo(() => operationalInventory.filter((p) => p.stock <= 5), [operationalInventory]);
 
   const activities = useMemo<OperationalActivity[]>(() => {
@@ -90,7 +90,10 @@ export function useOperationalWorkspace({
       id: `order-${o.id}`,
       type: "order" as const,
       title: `Pedido ${o.id}`,
-      detail: o.stage,
+      detail: o.stage === "created" ? "Pendiente de confirmacion" :
+              o.stage === "en_preparacion" ? "En preparacion" :
+              o.stage === "en_reparto" ? "En reparto" :
+              o.stage === "entregado" ? "Entregado" : "Cancelado",
       createdAt: o.createdAt,
       href: `/orders/${o.id}`,
     }));
@@ -159,8 +162,19 @@ export function useOperationalWorkspace({
     }
   }
 
+  async function confirmOrder(order: Order) {
+    await apiFetch(`/api/orders/${order.id}/confirm`, { method: "PUT" });
+  }
+
+  async function cancelOrder(order: Order, reason: string) {
+    await apiFetch(`/api/orders/${order.id}/cancel`, {
+      method: "PUT",
+      body: JSON.stringify({ reason }),
+    });
+  }
+
   async function validateOrder(order: Order, decision: OrderDecisionType, _note?: string) {
-    const status = decision === "approved" ? "CONFIRMED" : decision === "rejected" ? "REJECTED" : "CREATED";
+    const status = decision === "approved" ? "EN_PREPARACION" : "CANCELADO";
     await apiFetch(`/api/orders/${order.id}/status?status=${status}`, { method: "PUT" });
     if (decision === "approved") {
       try {
@@ -169,16 +183,11 @@ export function useOperationalWorkspace({
           body: JSON.stringify({ orderId: Number(order.id), customerId: Number(order.customerId), sku: order.sku, quantity: order.quantity }),
         });
       } catch {
-        // Shipment may already exist from SQS event
       }
     }
   }
 
-  function createDispatch(_order: Order, _carrier: string, _note?: string) {
-    // Pending: POST /api/shipments endpoint
-  }
-
-  async function updateShipmentStage(shipment: Shipment, stage: ShipmentStage, _note?: string, proof?: { proofOfDeliveryImage?: string; recipientRut?: string }) {
+  async function updateShipmentStage(shipment: Shipment, stage: ShipmentStage, _note?: string, proof?: { proofOfDeliveryImage?: string; recipientRut?: string; customerCode?: string }) {
     const body = proof ? JSON.stringify(proof) : undefined;
     await apiFetch(`/api/shipments/${shipment.id}/stage?stage=${stage}`, { method: "PUT", body });
   }
@@ -192,8 +201,9 @@ export function useOperationalWorkspace({
     stockQueue,
     activities,
     validateOrder,
+    confirmOrder,
+    cancelOrder,
     adjustInventory,
-    createDispatch,
     updateShipmentStage,
     recordSale,
     getAllSales,

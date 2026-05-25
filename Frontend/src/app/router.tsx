@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { AccessDeniedPage } from "@/pages/access-denied-page";
 import { CalendarPage } from "@/pages/calendar-page";
 import { CustomersPage } from "@/pages/customers-page";
+import { CustomerDetailPage } from "@/pages/customer-detail-page";
 import { DashboardPage } from "@/pages/dashboard-page";
 import { InventoryDetailPage } from "@/pages/inventory-detail-page";
 import { InventoryPage } from "@/pages/inventory-page";
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
           { path: "/orders", element: <OrdersPage /> },
           { path: "/orders/:orderId", element: <OrderDetailPage /> },
           { path: "/customers", element: <CustomersPage /> },
+          { path: "/customers/:customerId", element: <CustomerDetailPage /> },
           { path: "/shipments", element: <ShipmentsPage /> },
           { path: "/shipments/:shipmentId", element: <ShipmentDetailPage /> },
           { path: "/deliveries", element: <ShipperDeliveryPage /> },

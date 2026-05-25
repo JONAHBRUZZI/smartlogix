@@ -85,11 +85,11 @@ SELECT 10, 100010, 2 WHERE NOT EXISTS (SELECT 1 FROM inventory WHERE id = 10);
 \c orders_db
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
-SELECT 1, 1, 100001, 6, 'CONFIRMED', '2026-05-18 09:15:00'
+SELECT 1, 1, 100001, 6, 'EN_PREPARACION', '2026-05-18 09:15:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 1);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
-SELECT 2, 1, 100004, 12, 'SHIPPED', '2026-05-18 09:30:00'
+SELECT 2, 1, 100004, 12, 'EN_REPARTO', '2026-05-18 09:30:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 2);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
@@ -97,11 +97,11 @@ SELECT 3, 2, 100007, 2, 'CREATED', '2026-05-18 10:00:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 3);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
-SELECT 4, 1, 100010, 1, 'REJECTED', '2026-05-18 10:22:00'
+SELECT 4, 1, 100010, 1, 'CANCELADO', '2026-05-18 10:22:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 4);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
-SELECT 5, 3, 100006, 24, 'CONFIRMED', '2026-05-18 11:05:00'
+SELECT 5, 3, 100006, 24, 'EN_PREPARACION', '2026-05-18 11:05:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 5);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
@@ -109,46 +109,46 @@ SELECT 6, 2, 100003, 8, 'CREATED', '2026-05-18 11:45:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 6);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
-SELECT 7, 1, 100005, 10, 'SHIPPED', '2026-05-18 12:00:00'
+SELECT 7, 1, 100005, 10, 'EN_REPARTO', '2026-05-18 12:00:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 7);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
-SELECT 8, 3, 100001, 4, 'DELIVERED', '2026-05-17 16:30:00'
+SELECT 8, 3, 100001, 4, 'ENTREGADO', '2026-05-17 16:30:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 8);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
-SELECT 9, 2, 100009, 3, 'CANCELLED', '2026-05-18 08:50:00'
+SELECT 9, 2, 100009, 3, 'CANCELADO', '2026-05-18 08:50:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 9);
 
 INSERT INTO orders (id, customer_id, sku, quantity, status, created_at)
-SELECT 10, 1, 100002, 15, 'CONFIRMED', '2026-05-18 13:10:00'
+SELECT 10, 1, 100002, 15, 'EN_PREPARACION', '2026-05-18 13:10:00'
 WHERE NOT EXISTS (SELECT 1 FROM orders WHERE id = 10);
 
 -- 6. Shipments: envios de pedidos confirmados ------------------
 \c shipping_db
 
 INSERT INTO shipments (id, order_id, customer_id, sku, quantity, status, tracking_number, created_at, shipped_at)
-SELECT 1, 2, 1, 100004, 12, 'IN_TRANSIT', 'TRK-7591A2', '2026-05-18 09:35:00', '2026-05-18 09:45:00'
+SELECT 1, 2, 1, 100004, 12, 'EN_REPARTO', 'TRK-7591A2', '2026-05-18 09:35:00', '2026-05-18 09:45:00'
 WHERE NOT EXISTS (SELECT 1 FROM shipments WHERE id = 1);
 
 INSERT INTO shipments (id, order_id, customer_id, sku, quantity, status, tracking_number, created_at, shipped_at)
-SELECT 2, 7, 1, 100005, 10, 'IN_TRANSIT', 'TRK-4820C3', '2026-05-18 12:05:00', '2026-05-18 12:15:00'
+SELECT 2, 7, 1, 100005, 10, 'EN_REPARTO', 'TRK-4820C3', '2026-05-18 12:05:00', '2026-05-18 12:15:00'
 WHERE NOT EXISTS (SELECT 1 FROM shipments WHERE id = 2);
 
 INSERT INTO shipments (id, order_id, customer_id, sku, quantity, status, tracking_number, created_at, shipped_at)
-SELECT 3, 8, 3, 100001, 4, 'DELIVERED', 'TRK-1265F7', '2026-05-17 16:35:00', '2026-05-17 17:10:00'
+SELECT 3, 8, 3, 100001, 4, 'ENTREGADO', 'TRK-1265F7', '2026-05-17 16:35:00', '2026-05-17 17:10:00'
 WHERE NOT EXISTS (SELECT 1 FROM shipments WHERE id = 3);
 
 INSERT INTO shipments (id, order_id, customer_id, sku, quantity, status, tracking_number, created_at, shipped_at)
-SELECT 4, 1, 1, 100001, 6, 'PENDING', NULL, '2026-05-18 09:20:00', NULL
+SELECT 4, 1, 1, 100001, 6, 'EN_PREPARACION', NULL, '2026-05-18 09:20:00', NULL
 WHERE NOT EXISTS (SELECT 1 FROM shipments WHERE id = 4);
 
 INSERT INTO shipments (id, order_id, customer_id, sku, quantity, status, tracking_number, created_at, shipped_at)
-SELECT 5, 5, 3, 100006, 24, 'PENDING', NULL, '2026-05-18 11:10:00', NULL
+SELECT 5, 5, 3, 100006, 24, 'EN_PREPARACION', NULL, '2026-05-18 11:10:00', NULL
 WHERE NOT EXISTS (SELECT 1 FROM shipments WHERE id = 5);
 
 INSERT INTO shipments (id, order_id, customer_id, sku, quantity, status, tracking_number, created_at, shipped_at)
-SELECT 6, 10, 1, 100002, 15, 'FAILED', 'TRK-9931H4', '2026-05-18 13:15:00', '2026-05-18 13:20:00'
+SELECT 6, 10, 1, 100002, 15, 'CANCELADO', 'TRK-9931H4', '2026-05-18 13:15:00', '2026-05-18 13:20:00'
 WHERE NOT EXISTS (SELECT 1 FROM shipments WHERE id = 6);
 
 -- 7. Notification Records: trazabilidad de eventos -------------

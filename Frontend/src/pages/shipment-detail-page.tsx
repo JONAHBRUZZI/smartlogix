@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Camera, Check, Clock, Package, Truck, User } from "lucide-react";
+import { ArrowLeft, Camera, Check, Clock, Package, Truck, User, QrCode } from "lucide-react";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useOperationalWorkspace } from "@/hooks/use-operational-workspace";
 import { adaptOrder, adaptShipment } from "@/lib/api-adapters";
@@ -12,8 +12,9 @@ const STEP_LABELS = ["Preparacion", "En reparto", "Entregado"];
 
 function getStepIndex(stage: string) {
   const s = stage.toLowerCase();
-  if (s === "delivered") return 2;
-  if (s === "out_for_delivery") return 1;
+  if (s === "entregado" || s === "ENTREGADO") return 2;
+  if (s === "en_reparto" || s === "EN_REPARTO") return 1;
+  if (s === "cancelado" || s === "CANCELADO") return -1;
   return 0;
 }
 
@@ -40,13 +41,14 @@ export function ShipmentDetailPage() {
 
   const customerName = shipment ? (customerNames.get(shipment.orderId) ?? "Cliente") : "";
   const step = shipment ? getStepIndex(shipment.stage) : 0;
+  const isCancelled = shipment?.stage === "cancelado";
 
   if (!shipment) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
         <Package className="h-12 w-12 text-[#DCE0E2]" />
         <p className="mt-4 font-medium text-[#6B7280]">Envio no encontrado</p>
-        <Link to="/deliveries" className="mt-2 text-sm text-[#4B98CF] hover:underline">Volver a entregas</Link>
+        <Link to="/deliveries" className="mt-2 text-sm text-[#4B98CF] hover:underline">Volver a envios</Link>
       </div>
     );
   }
@@ -54,7 +56,7 @@ export function ShipmentDetailPage() {
   return (
     <div className="space-y-5 max-w-sm w-full mx-auto sm:max-w-3xl md:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl px-2">
       <Link to="/deliveries" className="inline-flex items-center gap-1 text-xs text-[#6B7280] hover:text-[#112b4a]">
-        <ArrowLeft className="h-3.5 w-3.5" /> Entregas
+        <ArrowLeft className="h-3.5 w-3.5" /> Envios
       </Link>
 
       {/* Header */}
@@ -66,35 +68,66 @@ export function ShipmentDetailPage() {
         </div>
         <span className={cn(
           "self-start rounded-full px-3 py-1 text-xs font-bold",
-          shipment.stage === "delivered" ? "bg-green-50 text-green-600" :
-          shipment.stage === "out_for_delivery" ? "bg-[#4B98CF]/10 text-[#4B98CF]" :
-          shipment.stage === "delayed" ? "bg-red-50 text-red-500" :
-          "bg-[#ECEEF0] text-[#6B7280]"
+          shipment.stage === "entregado" ? "bg-green-50 text-green-600" :
+          shipment.stage === "en_reparto" ? "bg-purple-50 text-purple-600" :
+          shipment.stage === "cancelado" ? "bg-red-50 text-red-500" :
+          "bg-[#E3AA75]/10 text-[#E3AA75]"
         )}>
-          {shipment.stage.replace(/_/g, " ")}
+          {shipment.stage === "en_preparacion" ? "Preparacion" :
+           shipment.stage === "en_reparto" ? "En reparto" :
+           shipment.stage === "entregado" ? "Entregado" :
+           shipment.stage === "cancelado" ? "Cancelado" : shipment.stage}
         </span>
       </div>
 
       {/* Progress steps */}
-      <div className="rounded border border-[#DCE0E2] bg-white p-5">
-        <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Progreso</p>
-        <div className="flex items-center">
-          {STEP_LABELS.map((label, i) => (
-            <div key={label} className="flex flex-1 items-center">
-              <div className="flex flex-col items-center flex-1">
-                <div className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full text-white text-xs",
-                  i < step ? "bg-[#4EB4A5]" : i === step ? "bg-[#4B98CF]" : "bg-[#ECEEF0]"
-                )}>
-                  {i < step ? <Check className="h-4 w-4" /> : i === step ? <Clock className="h-4 w-4" /> : <span>{i + 1}</span>}
+      {!isCancelled && (
+        <div className="rounded border border-[#DCE0E2] bg-white p-5">
+          <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Progreso</p>
+          <div className="flex items-center">
+            {STEP_LABELS.map((label, i) => (
+              <div key={label} className="flex flex-1 items-center">
+                <div className="flex flex-col items-center flex-1">
+                  <div className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full text-white text-xs",
+                    i < step ? "bg-[#4EB4A5]" : i === step ? "bg-[#4B98CF]" : "bg-[#ECEEF0]"
+                  )}>
+                    {i < step ? <Check className="h-4 w-4" /> : i === step ? <Clock className="h-4 w-4" /> : <span>{i + 1}</span>}
+                  </div>
+                  <p className={cn("mt-1.5 text-[10px] font-semibold text-center", i <= step ? "text-[#112b4a]" : "text-[#6B7280]")}>{label}</p>
                 </div>
-                <p className={cn("mt-1.5 text-[10px] font-semibold text-center", i <= step ? "text-[#112b4a]" : "text-[#6B7280]")}>{label}</p>
+                {i < 2 && <div className={cn("h-0.5 flex-1 -mt-5", i < step ? "bg-[#4EB4A5]" : "bg-[#ECEEF0]")} />}
               </div>
-              {i < 2 && <div className={cn("h-0.5 flex-1 -mt-5", i < step ? "bg-[#4EB4A5]" : "bg-[#ECEEF0]")} />}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Cancelled banner */}
+      {isCancelled && (
+        <div className="rounded border border-red-200 bg-red-50 p-5">
+          <p className="text-sm font-bold text-red-600">Envio cancelado</p>
+          <p className="text-xs text-red-500 mt-1">Este envio fue cancelado y no tiene progreso activo.</p>
+        </div>
+      )}
+
+      {/* QR code for pickup - show when EN_PREPARACION */}
+      {shipment.stage === "en_preparacion" && (
+        <div className="rounded border border-[#DCE0E2] bg-white p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <QrCode className="h-4 w-4 text-[#4B98CF]" />
+            <p className="text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">QR de retiro</p>
+          </div>
+          <div className="bg-white border-2 border-dashed border-[#4B98CF] rounded-xl p-4 mx-auto w-fit">
+            <div className="w-40 h-40 bg-[#F8FBFD] flex items-center justify-center">
+              <p className="text-xs font-mono text-[#4B98CF] break-all text-center">
+                SMARTLOGIX-{shipment.tracking}
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-[#6B7280] text-center mt-3">Escanea para confirmar retiro de la tienda</p>
+        </div>
+      )}
 
       {/* Info grid */}
       <div className="grid gap-4 sm:grid-cols-2">
@@ -133,7 +166,7 @@ export function ShipmentDetailPage() {
       </div>
 
       {/* Proof of delivery */}
-      {shipment.stage === "delivered" && (
+      {shipment.stage === "entregado" && (
         <div className="rounded border border-[#DCE0E2] bg-white p-5">
           <div className="flex items-center gap-2 mb-4">
             <Camera className="h-4 w-4 text-[#4EB4A5]" />
@@ -147,11 +180,21 @@ export function ShipmentDetailPage() {
           )}
 
           {shipment.recipientRut && (
-            <div className="flex items-center gap-3 rounded bg-[#F8FAFB] px-4 py-3">
+            <div className="flex items-center gap-3 rounded bg-[#F8FAFB] px-4 py-3 mb-2">
               <User className="h-4 w-4 text-[#6B7280]" />
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">RUT de quien recibio</p>
                 <p className="text-sm font-semibold text-[#112b4a]">{shipment.recipientRut}</p>
+              </div>
+            </div>
+          )}
+
+          {shipment.customerCode && (
+            <div className="flex items-center gap-3 rounded bg-[#F8FAFB] px-4 py-3">
+              <User className="h-4 w-4 text-[#6B7280]" />
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Codigo del cliente</p>
+                <p className="text-sm font-semibold text-[#112b4a]">{shipment.customerCode}</p>
               </div>
             </div>
           )}

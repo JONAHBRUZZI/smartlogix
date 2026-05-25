@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import com.smartlogix.shipping_service.model.Shipment;
-import com.smartlogix.shipping_service.model.ShipmentStatus;
 import com.smartlogix.shipping_service.repository.ShipmentRepository;
 import com.smartlogix.shipping_service.service.ShippingService;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -65,24 +63,33 @@ public class ShipmentController {
             return ResponseEntity.notFound().build();
         }
         try {
-            shipment.setStatus(ShipmentStatus.valueOf(stage.toUpperCase()));
-            if (stage.equalsIgnoreCase("out_for_delivery") || stage.equalsIgnoreCase("in_transit")) {
-                shipment.setShippedAt(LocalDateTime.now());
+            String stageUpper = stage.toUpperCase();
+            if (stageUpper.equals("EN_REPARTO")) {
+                shippingService.markEnReparto(id);
+            } else if (stageUpper.equals("ENTREGADO") && proof != null) {
+                String customerCode = proof.getOrDefault("customerCode", "");
+                String rut = proof.getOrDefault("recipientRut", "");
+                String image = proof.getOrDefault("proofOfDeliveryImage", "");
+                shippingService.markEntregado(id, customerCode, rut, image);
+            } else if (stageUpper.equals("CANCELADO")) {
+                shippingService.cancelShipment(id);
+            } else {
+                shipment.setStatus(com.smartlogix.shipping_service.model.ShipmentStatus.valueOf(stageUpper));
+                shipmentRepository.save(shipment);
             }
-            if (stage.equalsIgnoreCase("delivered") && proof != null) {
-                String image = proof.get("proofOfDeliveryImage");
-                String rut = proof.get("recipientRut");
-                if (image != null && !image.isBlank()) {
-                    shipment.setProofOfDeliveryImage(image);
-                }
-                if (rut != null && !rut.isBlank()) {
-                    shipment.setRecipientRut(rut);
-                }
-            }
-            shipmentRepository.save(shipment);
-            return ResponseEntity.ok(shipment);
+            return ResponseEntity.ok(shipmentRepository.findById(id).orElseThrow());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/{id}/qr")
+    public ResponseEntity<Map<String, String>> getQrCode(@PathVariable Long id) {
+        Shipment shipment = shipmentRepository.findById(id).orElse(null);
+        if (shipment == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String qrData = "SMARTLOGIX-" + shipment.getTrackingNumber();
+        return ResponseEntity.ok(Map.of("qrCode", qrData));
     }
 }

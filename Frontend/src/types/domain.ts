@@ -5,8 +5,8 @@ export type ProductCategory = "bebidas" | "galletas" | "dulces" | "otros";
 export type PaymentMethod = "cash" | "transfer" | "debit" | "credit";
 
 export type HealthState = "healthy" | "warning" | "critical" | "offline";
-export type OrderStage = "new" | "confirmed" | "picking" | "packed" | "in_transit" | "delivered" | "incident";
-export type ShipmentStage = "label_created" | "picked_up" | "hub" | "out_for_delivery" | "delivered" | "delayed";
+export type OrderStage = "created" | "en_preparacion" | "en_reparto" | "entregado" | "cancelado";
+export type ShipmentStage = "en_preparacion" | "en_reparto" | "entregado" | "cancelado";
 
 export interface Product {
   id: string;
@@ -47,6 +47,7 @@ export interface Order {
   items: OrderItem[];
   timeline: TimelineEvent[];
   assignedTo?: string;
+  cancelReason?: string | null;
 }
 
 export interface Customer {
@@ -73,6 +74,7 @@ export interface Shipment {
   exception?: string;
   proofOfDeliveryImage?: string | null;
   recipientRut?: string | null;
+  customerCode?: string | null;
 }
 
 export interface AlertItem {

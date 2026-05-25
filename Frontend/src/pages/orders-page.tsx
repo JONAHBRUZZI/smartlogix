@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Download, FileUp, Plus, RotateCw, Search, Truck, User, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Check, Download, FileUp, Plus, Search, Truck, User, X, AlertTriangle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/auth";
 import { managedUsers } from "@/app/user-directory";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -12,6 +12,7 @@ import { apiFetch, ApiRequestError } from "@/lib/api-client";
 import { exportOrdersCSV } from "@/lib/export-csv";
 import { addHistoryEntry } from "@/lib/order-history";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import type { ApiCreateOrderRequest, ApiCreateOrderResponse, ApiCustomer, ApiInventory, ApiOrder } from "@/types/api";
 import type { Customer, Order, Product, Role } from "@/types/domain";
 import type { OrderDecisionType } from "@/hooks/use-operational-workspace";
@@ -37,6 +38,8 @@ export function OrdersPage() {
   const [csvText, setCsvText] = useState("");
   const [bulkFeedback, setBulkFeedback] = useState<string | null>(null);
   const [assigningOrder, setAssigningOrder] = useState<string | null>(null);
+  const [cancelModal, setCancelModal] = useState<Order | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
   const { can, role } = usePermissions();
   const { session } = useAuth();
   const canCreate = can("orders.create");
@@ -62,7 +65,7 @@ export function OrdersPage() {
 
   useAutoRefresh(() => { if (!loading && !cLoading) refresh(); }, 10000);
 
-  const { operationalOrders, validationQueue, validateOrder } = useOperationalWorkspace({ orders });
+  const { operationalOrders, validationQueue, confirmOrder, cancelOrder } = useOperationalWorkspace({ orders });
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -81,9 +84,18 @@ export function OrdersPage() {
     return customers.filter((c) => `${c.name} ${c.phone ?? ""} ${c.email ?? ""}`.toLowerCase().includes(q)).slice(0, 8);
   }, [customers, customerSearch]);
 
-  async function handleValidate(order: Order, decision: OrderDecisionType, detail: string) {
-    await validateOrder(order, decision);
-    addHistoryEntry({ orderId: order.id, action: decision, actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail });
+  async function handleConfirm(order: Order) {
+    await confirmOrder(order);
+    addHistoryEntry({ orderId: order.id, action: "confirmed", actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail: "Pedido confirmado" });
+    refresh();
+  }
+
+  async function handleCancel(order: Order) {
+    if (!cancelReason.trim()) return;
+    await cancelOrder(order, cancelReason);
+    addHistoryEntry({ orderId: order.id, action: "cancelled", actor: session?.name ?? "Admin", actorRole: role ?? "owner", detail: cancelReason });
+    setCancelModal(null);
+    setCancelReason("");
     refresh();
   }
 
@@ -111,9 +123,19 @@ export function OrdersPage() {
   const counts = useMemo(() => ({
     total: operationalOrders.length,
     pending: validationQueue.length,
-    confirmed: operationalOrders.filter((o) => o.stage === "confirmed").length,
-    incident: operationalOrders.filter((o) => o.stage === "incident").length,
+    preparing: operationalOrders.filter((o) => o.stage === "en_preparacion").length,
+    inTransit: operationalOrders.filter((o) => o.stage === "en_reparto").length,
   }), [operationalOrders, validationQueue.length]);
+
+  const tabs = ["all", "created", "en_preparacion", "en_reparto", "entregado", "cancelado"] as const;
+  const tabLabels: Record<string, string> = {
+    all: "Todos",
+    created: "Pendientes",
+    en_preparacion: "Preparacion",
+    en_reparto: "Reparto",
+    entregado: "Entregados",
+    cancelado: "Cancelados",
+  };
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -124,18 +146,17 @@ export function OrdersPage() {
       setCreating(false);
       return;
     }
-    const duplicate = (operationalOrders ?? []).find(
-      (o) => o.customerId === String(selectedCustomer.id) && o.sku === sku.trim() && (o.stage === "new" || o.stage === "confirmed")
-    );
-    if (duplicate) {
-      setFeedback({ type: "error", msg: `Ya existe un pedido activo para ${selectedCustomer.name} con SKU ${sku.trim()} (Pedido #${duplicate.id})` });
+    const product = (products ?? []).find((p) => p.sku === sku.trim());
+    const qty = Number(quantity);
+    if (product && qty > product.stock) {
+      setFeedback({ type: "error", msg: `Stock insuficiente: disponible ${product.stock}, solicitado ${qty}` });
       setCreating(false);
       return;
     }
     try {
       const res = await apiFetch<ApiCreateOrderResponse>("/api/orders", {
         method: "POST",
-        body: JSON.stringify({ customerId: Number(selectedCustomer.id), sku: sku.trim(), quantity: Number(quantity) } as ApiCreateOrderRequest)
+        body: JSON.stringify({ customerId: Number(selectedCustomer.id), sku: sku.trim(), quantity: qty } as ApiCreateOrderRequest)
       });
       if (transporter) {
         await apiFetch(`/api/orders/${res.orderId}/assign?transporter=${encodeURIComponent(transporter)}`, { method: "PUT" });
@@ -145,18 +166,14 @@ export function OrdersPage() {
         action: "created",
         actor: session?.name ?? "Admin",
         actorRole: role ?? "owner",
-        detail: `Pedido #${res.orderId} creado - ${selectedCustomer.name}, SKU ${sku}, ${quantity} unids` + (transporter ? ` - Asignado a ${TRANSPORTERS.find(t => t.username === transporter)?.name}` : ""),
+        detail: `Pedido #${res.orderId} creado - ${selectedCustomer.name}, SKU ${sku}, ${qty} unids` + (transporter ? ` - Asignado a ${TRANSPORTERS.find(t => t.username === transporter)?.name}` : ""),
       });
       setSelectedCustomer(null);
       setCustomerSearch("");
       setQuantity("1");
       refresh();
-      if (confirm("Pedido creado exitosamente. ¿Desea crear otro pedido?")) {
-        setFeedback(null);
-      } else {
-        setShowForm(false);
-        setFeedback({ type: "success", msg: `Pedido #${res.orderId} creado` });
-      }
+      setFeedback({ type: "success", msg: `Pedido #${res.orderId} creado` });
+      setTimeout(() => setFeedback(null), 3000);
     } catch (err) {
       setFeedback({ type: "error", msg: err instanceof ApiRequestError ? err.message : "Error al crear pedido" });
     } finally { setCreating(false); }
@@ -170,10 +187,18 @@ export function OrdersPage() {
   };
 
   const badgeColor = (stage: string) =>
-    stage === "confirmed" ? "bg-[#4EB4A5]/10 text-[#4EB4A5]" :
-    stage === "new" ? "bg-[#4B98CF]/10 text-[#4B98CF]" :
-    stage === "incident" ? "bg-red-50 text-red-500" :
-    stage === "delivered" ? "bg-green-50 text-green-600" : "bg-muted text-muted-foreground";
+    stage === "created" ? "bg-[#4B98CF]/10 text-[#4B98CF]" :
+    stage === "en_preparacion" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
+    stage === "en_reparto" ? "bg-purple-50 text-purple-600" :
+    stage === "entregado" ? "bg-green-50 text-green-600" :
+    stage === "cancelado" ? "bg-red-50 text-red-500" : "bg-muted text-muted-foreground";
+
+  const stageLabel = (stage: string) =>
+    stage === "created" ? "Pendiente" :
+    stage === "en_preparacion" ? "Preparacion" :
+    stage === "en_reparto" ? "En reparto" :
+    stage === "entregado" ? "Entregado" :
+    stage === "cancelado" ? "Cancelado" : stage;
 
   return (
     <div className="space-y-4 max-w-sm w-full mx-auto sm:max-w-3xl md:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl px-2">
@@ -184,8 +209,8 @@ export function OrdersPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <span className="rounded bg-muted px-2 py-0.5">{counts.total} total</span>
-          <span className="rounded bg-[#E3AA75]/10 px-2 py-0.5 text-[#E3AA75] font-bold">{counts.pending} por validar</span>
-          <span className="rounded bg-[#4EB4A5]/10 px-2 py-0.5 text-[#4EB4A5] font-bold">{counts.confirmed} listos</span>
+          <span className="rounded bg-[#4B98CF]/10 px-2 py-0.5 text-[#4B98CF] font-bold">{counts.pending} pendientes</span>
+          <span className="rounded bg-[#E3AA75]/10 px-2 py-0.5 text-[#E3AA75] font-bold">{counts.preparing} preparacion</span>
           {canCreate && (
             <>
               <button onClick={() => setShowForm(!showForm)} className="btn-touch-primary min-h-[40px] gap-1">
@@ -324,9 +349,9 @@ export function OrdersPage() {
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar pedido, cliente, SKU..." className="h-10 w-full rounded border border-input bg-card pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground" />
         </div>
         <div className="flex gap-1 rounded border border-border bg-card p-0.5 overflow-x-auto scroll-x">
-          {(["all", "new", "confirmed", "incident", "delivered"] as const).map((t) => (
+          {tabs.map((t) => (
             <button key={t} onClick={() => setTab(t)} className={cn("rounded px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors", tab === t ? "bg-[#4B98CF] text-white" : "text-muted-foreground hover:text-foreground")}>
-              {t === "all" ? "Todos" : t === "new" ? "Nuevos" : t === "confirmed" ? "Confirmados" : t === "incident" ? "Incidencias" : "Entregados"}
+              {tabLabels[t]}
             </button>
           ))}
         </div>
@@ -379,20 +404,24 @@ export function OrdersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <span className={cn("rounded px-2 py-0.5 text-[10px] font-bold", badgeColor(order.stage))}>
-                      {order.stage === "new" ? "Nuevo" : order.stage === "confirmed" ? "Confirmado" : order.stage === "incident" ? "Incidencia" : order.stage === "delivered" ? "Entregado" : order.stage}
+                      {stageLabel(order.stage)}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell">
                     {new Date(order.createdAt).toLocaleDateString("es-CL")}
                   </td>
                   <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                   {canReview && order.stage !== "delivered" && (
+                   {canReview && order.stage === "created" && (
                      <div className="flex items-center justify-end gap-1 sm:gap-1.5">
-                       <button onClick={() => handleValidate(order, "approved", "Pedido aprobado - listo para despacho")} title="Aprobar" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-green-600 hover:bg-green-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Check className="h-4 w-4 sm:h-5 sm:w-5" /></button>
-                       <button onClick={() => handleValidate(order, "reprocess", "Pedido enviado a reproceso")} title="Reprocesar" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-[#E3AA75] hover:bg-amber-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCw className="h-4 w-4 sm:h-5 sm:w-5" /></button>
-                       <button onClick={() => handleValidate(order, "rejected", "Pedido rechazado - incidencia operativa")} title="Rechazar" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-red-500 hover:bg-red-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X className="h-4 w-4 sm:h-5 sm:w-5" /></button>
-                       </div>
-                     )}
+                       <button onClick={() => handleConfirm(order)} title="Confirmar pedido" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-green-600 hover:bg-green-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Check className="h-4 w-4 sm:h-5 sm:w-5" /></button>
+                       <button onClick={() => { setCancelModal(order); setCancelReason(""); }} title="Cancelar pedido" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-red-500 hover:bg-red-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X className="h-4 w-4 sm:h-5 sm:w-5" /></button>
+                     </div>
+                   )}
+                   {canReview && order.stage === "en_preparacion" && (
+                     <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+                       <button onClick={() => { setCancelModal(order); setCancelReason(""); }} title="Cancelar pedido" className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-red-500 hover:bg-red-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X className="h-4 w-4 sm:h-5 sm:w-5" /></button>
+                     </div>
+                   )}
                   </td>
                 </tr>
               );
@@ -404,6 +433,39 @@ export function OrdersPage() {
         </table>
         </div>
       </div>
+
+      {cancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setCancelModal(null); setCancelReason(""); }}>
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+                <h3 className="font-bold text-sm text-[#112b4a]">Cancelar pedido #{cancelModal.id}</h3>
+              </div>
+              <button onClick={() => { setCancelModal(null); setCancelReason(""); }} className="p-1 rounded hover:bg-gray-100"><X className="h-4 w-4" /></button>
+            </div>
+            <p className="text-sm text-[#6B7280]">
+              Ingresa el motivo de cancelacion para <strong>{cancelModal.customer}</strong> ({cancelModal.sku} x{cancelModal.quantity})
+            </p>
+            {cancelModal.stage === "en_preparacion" && (
+              <p className="text-xs text-[#E3AA75]">El stock se restaurara automaticamente</p>
+            )}
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder="Motivo de cancelacion..."
+              rows={3}
+              className="w-full rounded border border-input bg-[#F8FBFD] p-3 text-sm"
+            />
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" size="sm" onClick={() => { setCancelModal(null); setCancelReason(""); }}>Volver</Button>
+              <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white" onClick={() => handleCancel(cancelModal)} disabled={!cancelReason.trim()}>
+                Cancelar pedido
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

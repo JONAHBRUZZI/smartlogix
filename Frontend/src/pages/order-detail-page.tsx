@@ -1,6 +1,6 @@
 ﻿import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Box, Check, Clock, History, Package, ShoppingBag, Truck } from "lucide-react";
+import { ArrowLeft, Box, Check, Clock, History, Package, Truck, AlertTriangle } from "lucide-react";
 import { managedUsers } from "@/app/user-directory";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useOperationalWorkspace } from "@/hooks/use-operational-workspace";
@@ -11,11 +11,11 @@ import { cn } from "@/lib/utils";
 import type { ApiNotificationRecord, ApiOrder, ApiShipment } from "@/types/api";
 import type { Order, Shipment } from "@/types/domain";
 
-const STAGES = ["new", "confirmed", "in_transit", "delivered"];
+const STAGES = ["created", "en_preparacion", "en_reparto", "entregado"];
+const STAGE_LABELS = ["Recibido", "Preparacion", "En reparto", "Entregado"];
 
 export function OrderDetailPage() {
   const { orderId } = useParams();
-  const fallbackOrder = fallbackOrders.find((item) => item.id === orderId) ?? null;
 
   const { data: orders } = useApiQuery<ApiOrder[], Order[]>({
     path: "/api/orders", transform: (r) => r.map(adaptOrder)
@@ -28,7 +28,7 @@ export function OrderDetailPage() {
   });
 
   const { operationalOrders, operationalShipments } = useOperationalWorkspace({ orders, shipments: shipment ? [shipment] : [] });
-  const order = useMemo(() => operationalOrders.find((item) => item.id === orderId) ?? fallbackOrder, [fallbackOrder, operationalOrders, orderId]);
+  const order = useMemo(() => operationalOrders.find((item) => item.id === orderId) ?? null, [operationalOrders, orderId]);
   const operationalShipment = useMemo(() => operationalShipments.find((item) => item.orderId === orderId) ?? null, [operationalShipments, orderId]);
   const historyEntries = useMemo(() => getOrderHistory(orderId ?? ""), [orderId]);
 
@@ -50,16 +50,32 @@ export function OrderDetailPage() {
     );
   }
 
-  const stageIdx = STAGES.findIndex((s) => order.stage.includes(s) || s.includes(order.stage));
+  const isCancelled = order.stage === "cancelado";
+  const stageIdx = STAGES.findIndex((s) => s === order.stage);
   const currentStage = stageIdx >= 0 ? stageIdx : 0;
 
   const stageColor = (idx: number) =>
     idx < currentStage ? "bg-[#4EB4A5]" :
-    idx === currentStage ? (order.stage === "incident" ? "bg-red-500" : "bg-[#4B98CF]") :
+    idx === currentStage ? "bg-[#4B98CF]" :
     "bg-[#ECEEF0]";
 
+  const badgeClass = () =>
+    order.stage === "entregado" ? "bg-green-50 text-green-600" :
+    order.stage === "created" ? "bg-[#4B98CF]/10 text-[#4B98CF]" :
+    order.stage === "en_preparacion" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
+    order.stage === "en_reparto" ? "bg-purple-50 text-purple-600" :
+    order.stage === "cancelado" ? "bg-red-50 text-red-500" :
+    "bg-muted text-muted-foreground";
+
+  const badgeLabel = () =>
+    order.stage === "created" ? "Pendiente" :
+    order.stage === "en_preparacion" ? "Preparacion" :
+    order.stage === "en_reparto" ? "En reparto" :
+    order.stage === "entregado" ? "Entregado" :
+    order.stage === "cancelado" ? "Cancelado" : order.stage;
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 max-w-sm w-full mx-auto sm:max-w-3xl md:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl px-2">
       <Link to="/orders" className="inline-flex items-center gap-1 text-xs text-[#6B7280] hover:text-[#112b4a]">
         <ArrowLeft className="h-3.5 w-3.5" /> Pedidos
       </Link>
@@ -77,156 +93,129 @@ export function OrderDetailPage() {
             </p>
           )}
         </div>
-        <span className={cn(
-          "self-start rounded-full px-3 py-1 text-xs font-bold",
-          order.stage === "confirmed" && "bg-[#4EB4A5]/10 text-[#4EB4A5]",
-          order.stage === "new" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-          order.stage === "incident" && "bg-red-50 text-red-500",
-          order.stage === "delivered" && "bg-green-50 text-green-600",
-        )}>
-          {order.stage === "new" ? "Nuevo" : order.stage === "confirmed" ? "Confirmado" : order.stage === "incident" ? "Incidencia" : order.stage === "delivered" ? "Entregado" : order.stage}
+        <span className={cn("self-start rounded-full px-3 py-1 text-xs font-bold", badgeClass())}>
+          {badgeLabel()}
         </span>
       </div>
 
       {/* Pipeline */}
-      <div className="rounded border border-[#DCE0E2] bg-white p-5">
-        <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Progreso del pedido</p>
-        <div className="flex items-center">
-          {["Recibido", "Confirmado", "En transito", "Entregado"].map((label, i) => (
-            <div key={label} className="flex flex-1 items-center">
-              <div className="flex flex-col items-center flex-1">
-                <div className={cn("flex h-8 w-8 items-center justify-center rounded-full text-white text-xs", stageColor(i))}>
-                  {i < currentStage ? <Check className="h-4 w-4" /> : i === currentStage ? <Clock className="h-4 w-4" /> : <span>{i + 1}</span>}
+      {!isCancelled ? (
+        <div className="rounded border border-[#DCE0E2] bg-white p-5">
+          <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Progreso del pedido</p>
+          <div className="flex items-center">
+            {STAGE_LABELS.map((label, i) => (
+              <div key={label} className="flex flex-1 items-center">
+                <div className="flex flex-col items-center flex-1">
+                  <div className={cn("flex h-8 w-8 items-center justify-center rounded-full text-white text-xs", stageColor(i))}>
+                    {i < currentStage ? <Check className="h-4 w-4" /> : i === currentStage ? <Clock className="h-4 w-4" /> : <span>{i + 1}</span>}
+                  </div>
+                  <p className={cn("mt-1.5 text-[10px] font-semibold text-center", i <= currentStage ? "text-[#112b4a]" : "text-[#6B7280]")}>{label}</p>
                 </div>
-                <p className={cn("mt-1.5 text-[10px] font-semibold text-center", i <= currentStage ? "text-[#112b4a]" : "text-[#6B7280]")}>{label}</p>
+                {i < 3 && <div className={cn("h-0.5 flex-1 -mt-5", i < currentStage ? "bg-[#4EB4A5]" : "bg-[#ECEEF0]")} />}
               </div>
-              {i < 3 && <div className={cn("h-0.5 flex-1 -mt-5", stageColor(i + 1))} />}
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="rounded border border-red-200 bg-red-50 p-5">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-red-500" />
+            <div>
+              <p className="text-sm font-bold text-red-600">Pedido cancelado</p>
+              {order.cancelReason && <p className="text-xs text-red-500 mt-1">Motivo: {order.cancelReason}</p>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Info cards */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="rounded border border-[#DCE0E2] bg-white p-5">
+          <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Producto</p>
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-[#F5F7F9]">
+              <Box className="h-7 w-7 text-[#6B7280]" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#112b4a]">{order.sku}</p>
+              <p className="text-xs text-[#6B7280]">SKU &middot; {order.quantity} unidad(es)</p>
+            </div>
+          </div>
+        </div>
+
+        {operationalShipment && (
+          <div className="rounded border border-[#DCE0E2] bg-white p-5">
+            <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Envio</p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[#6B7280]">Tracking</span>
+                <span className="text-xs font-mono font-bold text-[#4B98CF]">{operationalShipment.tracking}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[#6B7280]">Estado</span>
+                <span className={cn("text-xs font-bold", badgeClass())}>{badgeLabel()}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Timeline */}
+      <div className="rounded border border-[#DCE0E2] bg-white p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <History className="h-4 w-4 text-[#6B7280]" />
+          <p className="text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Linea de tiempo</p>
+        </div>
+        <div className="space-y-0">
+          {timeline.map((event) => (
+            <div key={event.id} className="flex gap-3 pb-4 last:pb-0">
+              <div className="flex flex-col items-center">
+                <div className={cn(
+                  "h-2.5 w-2.5 rounded-full shrink-0 mt-1",
+                  event.state === "done" ? "bg-[#4EB4A5]" :
+                  event.state === "warning" ? "bg-[#E3AA75]" :
+                  event.state === "critical" ? "bg-red-500" : "bg-[#4B98CF]"
+                )} />
+                <div className="w-px flex-1 bg-[#ECEEF0] mt-1" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-[#112b4a]">{event.title}</p>
+                <p className="text-xs text-[#6B7280] mt-0.5">{event.detail}</p>
+                <p className="text-[10px] text-[#6B7280]/60 mt-0.5">
+                  {new Date(event.timestamp).toLocaleDateString("es-CL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
             </div>
           ))}
+          {timeline.length === 0 && (
+            <p className="text-xs text-[#6B7280] text-center py-4">Sin eventos registrados</p>
+          )}
         </div>
       </div>
 
-      {/* Change history */}
+      {/* History */}
       {historyEntries.length > 0 && (
         <div className="rounded border border-[#DCE0E2] bg-white p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <History className="h-4 w-4 text-[#6B7280]" />
-            <p className="text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Historial de cambios</p>
-          </div>
-          <div className="relative pl-6 border-l-2 border-[#ECEEF0] space-y-4">
+          <p className="mb-3 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Historial de acciones</p>
+          <div className="space-y-2">
             {historyEntries.map((entry) => (
-              <div key={entry.id} className="relative">
+              <div key={entry.id} className="flex items-start gap-3 rounded bg-[#F8FAFB] px-4 py-2.5">
                 <div className={cn(
-                  "absolute -left-[25px] h-3 w-3 rounded-full border-2 border-white",
-                  entry.action === "created" ? "bg-[#4B98CF]" :
-                  entry.action === "approved" ? "bg-[#4EB4A5]" :
-                  entry.action === "rejected" ? "bg-red-500" :
-                  "bg-[#E3AA75]"
+                  "h-2 w-2 rounded-full shrink-0 mt-1.5",
+                  entry.action === "created" && "bg-[#4B98CF]",
+                  entry.action === "confirmed" && "bg-[#4EB4A5]",
+                  entry.action === "cancelled" && "bg-red-500",
                 )} />
-                <p className="text-xs font-bold text-[#112b4a]">{entry.detail}</p>
-                <p className="text-[10px] text-[#6B7280]">
-                  {entry.actor} ({entry.actorRole}) &middot; {new Date(entry.timestamp).toLocaleString("es-CL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                </p>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-[#112b4a]">{entry.actor} - {entry.action}</p>
+                  {entry.detail && <p className="text-[11px] text-[#6B7280]">{entry.detail}</p>}
+                  <p className="text-[10px] text-[#6B7280]/60">{new Date(entry.timestamp).toLocaleDateString("es-CL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        {/* Order info */}
-        <div className="rounded border border-[#DCE0E2] bg-white p-5">
-          <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Informacion del pedido</p>
-          <div className="space-y-3">
-            {[
-              { label: "SKU", value: order.sku, icon: Box },
-              { label: "Cantidad", value: `${order.quantity} unidad(es)`, icon: ShoppingBag },
-              { label: "Origen", value: order.source, icon: ArrowLeft },
-            ].map(({ label, value, icon: Icon }) => (
-              <div key={label} className="flex items-center gap-3 rounded bg-[#F8FAFB] px-4 py-3">
-                <Icon className="h-4 w-4 text-[#6B7280]" />
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">{label}</p>
-                  <p className="text-sm font-semibold text-[#112b4a]">{value}</p>
-                </div>
-              </div>
-            ))}
-
-            <div className="rounded bg-[#F8FAFB] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280] mb-2">Items</p>
-              {Array.isArray(order.items) && order.items.length > 0 ? (
-                order.items.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between py-1.5 border-b border-[#ECEEF0] last:border-0">
-                    <span className="text-sm text-[#112b4a]">{item.name}</span>
-                    <span className="text-xs text-[#6B7280]">SKU {item.sku} x{item.quantity}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="flex items-center justify-between py-1.5">
-                  <span className="text-sm text-[#112b4a]">Producto {order.sku}</span>
-                  <span className="text-xs text-[#6B7280]">x{order.quantity}</span>
-                </div>
-              )}
-            </div>
-
-            {(order as import("@/hooks/use-operational-workspace").OperationalOrder).operationalNote && (
-              <div className="rounded border border-[#4B98CF]/20 bg-[#4B98CF]/5 px-4 py-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#4B98CF]">Nota operativa</p>
-                <p className="mt-1 text-sm text-[#112b4a]">{String((order as import("@/hooks/use-operational-workspace").OperationalOrder).operationalNote)}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Shipment + Timeline */}
-        <div className="space-y-5">
-          {operationalShipment ? (
-            <div className="rounded border border-[#DCE0E2] bg-white p-5">
-              <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Despacho</p>
-              <div className="space-y-3">
-                {[
-                  { label: "Tracking", value: operationalShipment.tracking, color: "text-[#4B98CF] font-mono" },
-                  { label: "Transportista", value: operationalShipment.carrier },
-                  { label: "Estado", value: operationalShipment.stage.replace(/_/g, " ") },
-                  { label: "Salida", value: operationalShipment.shippedAt ? new Date(operationalShipment.shippedAt).toLocaleDateString("es-CL") : "Pendiente" },
-                ].map(({ label, value, color }) => (
-                  <div key={label} className="flex items-center justify-between rounded bg-[#F8FAFB] px-4 py-2.5">
-                    <span className="text-xs text-[#6B7280]">{label}</span>
-                    <span className={cn("text-sm font-semibold text-[#112b4a]", color)}>{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center rounded border border-[#DCE0E2] bg-white py-10">
-              <Truck className="h-10 w-10 text-[#ECEEF0]" />
-              <p className="mt-2 text-sm text-[#6B7280]">Sin despacho asociado</p>
-            </div>
-          )}
-
-          {/* Timeline */}
-          <div className="rounded border border-[#DCE0E2] bg-white p-5">
-            <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Linea de tiempo</p>
-            {timeline.length > 0 ? (
-              <div className="relative pl-6 border-l-2 border-[#ECEEF0] space-y-4">
-                {timeline.map((event: any, i: number) => (
-                  <div key={event.id ?? i} className="relative">
-                    <div className={cn(
-                      "absolute -left-[25px] h-3 w-3 rounded-full border-2 border-white",
-                      event.state === "done" ? "bg-[#4EB4A5]" : event.state === "critical" ? "bg-red-500" : "bg-[#E3AA75]"
-                    )} />
-                    <p className="text-xs font-bold text-[#112b4a]">{event.title}</p>
-                    <p className="text-xs text-[#6B7280]">{event.detail}</p>
-                    <p className="mt-0.5 text-[10px] text-[#6B7280]">{new Date(event.timestamp).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-[#6B7280] text-center py-4">Sin eventos registrados aun</p>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

@@ -1,9 +1,7 @@
 package com.smartlogix.shipping_service.service;
 
-import com.smartlogix.contracts.events.NotificationEvent;
 import com.smartlogix.shipping_service.model.Shipment;
 import com.smartlogix.shipping_service.model.ShipmentStatus;
-import com.smartlogix.shipping_service.publisher.NotificationPublisher;
 import com.smartlogix.shipping_service.repository.ShipmentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +17,6 @@ import java.util.UUID;
 public class ShippingService {
 
     private final ShipmentRepository shipmentRepository;
-    private final NotificationPublisher notificationPublisher;
 
     @Transactional
     public Shipment createShipment(Long orderId, Long customerId, String sku, Integer quantity) {
@@ -31,7 +28,7 @@ public class ShippingService {
                 .customerId(customerId)
                 .sku(sku)
                 .quantity(quantity)
-                .status(ShipmentStatus.LABEL_CREATED)
+                .status(ShipmentStatus.EN_PREPARACION)
                 .trackingNumber(generateTrackingNumber())
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -39,34 +36,37 @@ public class ShippingService {
         Shipment savedShipment = shipmentRepository.save(shipment);
         log.info("[SHIPPING] Envio creado con ID: {}, Tracking: {}", savedShipment.getId(), savedShipment.getTrackingNumber());
 
-        notificationPublisher.publish(NotificationEvent.builder()
-                .eventId(UUID.randomUUID().toString())
-                .orderId(savedShipment.getOrderId())
-                .customerId(savedShipment.getCustomerId())
-                .stage("SHIPMENT_CREATED")
-                .status(savedShipment.getStatus().name())
-                .message("Envio creado con tracking " + savedShipment.getTrackingNumber())
-                .sourceService("shipping-service")
-                .audience("BOTH")
-                .occurredAt(LocalDateTime.now())
-                .build());
-
         return savedShipment;
     }
 
     @Transactional
-    public Shipment shipOrder(Long orderId) {
-        log.info("[SHIPPING] Procesando envio para Orden ID: {}", orderId);
-
-        Shipment shipment = shipmentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Envio no encontrado para Orden ID: " + orderId));
-
-        shipment.setStatus(ShipmentStatus.DELIVERED);
+    public void markEnReparto(Long shipmentId) {
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Envio no encontrado: " + shipmentId));
+        shipment.setStatus(ShipmentStatus.EN_REPARTO);
         shipment.setShippedAt(LocalDateTime.now());
-        Shipment updated = shipmentRepository.save(shipment);
+        shipmentRepository.save(shipment);
+    }
 
-        log.info("[SHIPPING] Orden {} enviada con tracking {}", orderId, updated.getTrackingNumber());
-        return updated;
+    @Transactional
+    public void markEntregado(Long shipmentId, String customerCode, String recipientRut, String proofImage) {
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Envio no encontrado: " + shipmentId));
+        shipment.setStatus(ShipmentStatus.ENTREGADO);
+        shipment.setCustomerCode(customerCode);
+        shipment.setRecipientRut(recipientRut);
+        if (proofImage != null && !proofImage.isBlank()) {
+            shipment.setProofOfDeliveryImage(proofImage);
+        }
+        shipmentRepository.save(shipment);
+    }
+
+    @Transactional
+    public void cancelShipment(Long shipmentId) {
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Envio no encontrado: " + shipmentId));
+        shipment.setStatus(ShipmentStatus.CANCELADO);
+        shipmentRepository.save(shipment);
     }
 
     private String generateTrackingNumber() {

@@ -1,11 +1,13 @@
 ﻿import { useMemo, useState } from "react";
-import { Download, Minus, PackagePlus, Plus, Search, Trash2 } from "lucide-react";
+import { Download, Minus, PackagePlus, Plus, Search, Trash2, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/app/auth";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useAutoRefresh } from "@/hooks/use-auto-refresh";
 import { useOperationalWorkspace } from "@/hooks/use-operational-workspace";
 import { usePermissions } from "@/hooks/use-permissions";
 import { adaptInventory } from "@/lib/api-adapters";
+import { apiFetch } from "@/lib/api-client";
 import { exportInventoryCSV } from "@/lib/export-csv";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -22,8 +24,12 @@ export function InventoryPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ sku: "", name: "", category: "bebidas" as ProductCategory, stock: 0, price: 0, cost: 0 });
   const [formError, setFormError] = useState("");
-  const { can } = usePermissions();
+  const [deleteConfirm, setDeleteConfirm] = useState<{ sku: string; name: string } | null>(null);
+  const { can, role } = usePermissions();
+  const { session } = useAuth();
   const canAdjust = can("inventory.adjust");
+  const isOwner = role === "owner";
+  const isVendor = role === "vendor";
 
   const { data: inventory, loading, refresh } = useApiQuery<ApiInventory[], Product[]>({
     path: "/api/inventory", transform: (r) => r.map(adaptInventory)
@@ -45,6 +51,7 @@ export function InventoryPage() {
 
   async function handleDelete(sku: string) {
     await deleteProduct(sku);
+    setDeleteConfirm(null);
     refresh();
   }
 
@@ -202,6 +209,7 @@ export function InventoryPage() {
               <tr className="border-b border-[#ECEEF0] text-xs font-bold uppercase tracking-[0.92px] text-muted-foreground">
                 <th className="px-4 py-3 w-6"></th>
                 <th className="px-4 py-3">SKU</th>
+                <th className="px-4 py-3 hidden sm:table-cell">Nombre</th>
                 <th className="px-4 py-3">Stock</th>
                 <th className="px-4 py-3 hidden md:table-cell">Estado</th>
                 <th className="px-4 py-3 text-right">{canAdjust ? "Ajuste" : ""}</th>
@@ -218,9 +226,9 @@ export function InventoryPage() {
                       product.status === "warning" && "bg-[#E3AA75]",
                       product.status === "critical" && "bg-red-500",
                     )} />
-                    {product.isCustom && (
+                    {isOwner && (
                       <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(product.sku); }}
+                        onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ sku: product.sku, name: product.name }); }}
                         className="p-0.5 rounded text-red-400 hover:bg-red-50 hover:text-red-600"
                         title="Eliminar producto"
                       ><Trash2 className="h-3.5 w-3.5" /></button>
@@ -228,6 +236,7 @@ export function InventoryPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3 font-bold text-[#4B98CF] hover:underline"><Link to={`/inventory/${product.sku}`} onClick={(e) => e.stopPropagation()}>{product.sku}</Link></td>
+                <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell text-xs">{product.name}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className={cn("font-bold text-sm", product.stock <= 5 && "text-red-500")}>{product.stock}</span>
@@ -270,18 +279,56 @@ export function InventoryPage() {
                       >+10</button>
                     </div>
                   )}
+                  {isVendor && (product.status === "critical" || product.status === "warning") && (
+                    <button
+                      onClick={async () => {
+                        await apiFetch("/api/notifications/alert", {
+                          method: "POST",
+                          body: JSON.stringify({
+                            sku: product.sku,
+                            name: product.name,
+                            stock: product.stock,
+                            type: "critical_stock",
+                            vendor: session?.name ?? "Vendedor"
+                          })
+                        }).catch(() => {});
+                        alert("Aviso de stock critico enviado al administrador");
+                      }}
+                      className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] px-2.5 py-1 text-[10px] sm:text-xs font-semibold text-[#E3AA75] hover:bg-amber-50 active:scale-[0.98]"
+                    >
+                      Alertar
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-xs text-[#6B7280]">Sin productos que coincidan con el filtro</td>
+                <td colSpan={6} className="px-4 py-12 text-center text-xs text-[#6B7280]">Sin productos que coincidan con el filtro</td>
               </tr>
             )}
           </tbody>
         </table>
         </div>
       </div>
+
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setDeleteConfirm(null)}>
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-xs p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-sm text-[#112b4a]">Eliminar producto</h3>
+              <button onClick={() => setDeleteConfirm(null)} className="p-1 rounded hover:bg-gray-100"><X className="h-4 w-4" /></button>
+            </div>
+            <p className="text-sm text-[#6B7280]">
+              ¿Estas seguro de eliminar <strong>{deleteConfirm.name}</strong> ({deleteConfirm.sku})?
+            </p>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
+              <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white" onClick={() => handleDelete(deleteConfirm.sku)}>Eliminar</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

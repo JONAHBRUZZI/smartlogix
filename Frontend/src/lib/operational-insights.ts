@@ -49,11 +49,11 @@ export function buildOperationalAlerts({
     }));
 
   const orderAlerts: AlertItem[] = orders
-    .filter((order) => order.stage === "incident")
+    .filter((order) => order.stage === "cancelado")
     .map((order) => ({
       id: `order-${order.id}`,
-      title: `Pedido ${order.id} con incidencia`,
-      description: `El pedido del cliente ${order.customer} no pudo continuar su procesamiento normal.`,
+      title: `Pedido ${order.id} cancelado`,
+      description: order.cancelReason ?? `El pedido del cliente ${order.customer} fue cancelado.`,
       type: "order",
       severity: "high",
       createdAt: order.createdAt,
@@ -61,11 +61,11 @@ export function buildOperationalAlerts({
     }));
 
   const shipmentAlerts: AlertItem[] = shipments
-    .filter((shipment) => shipment.stage === "delayed")
+    .filter((shipment) => shipment.stage === "cancelado")
     .map((shipment) => ({
       id: `shipment-${shipment.id}`,
-      title: `Envio ${shipment.id} con retraso`,
-      description: shipment.exception ?? `El despacho del pedido ${shipment.orderId} requiere seguimiento con transportista.`,
+      title: `Envio ${shipment.id} cancelado`,
+      description: shipment.exception ?? `El despacho del pedido ${shipment.orderId} fue cancelado.`,
       type: "shipment",
       severity: "medium",
       createdAt: shipment.shippedAt ?? shipment.createdAt,
@@ -112,17 +112,17 @@ export function buildOrderTimeline({
       state: "done"
     });
 
-    if (order.stage === "confirmed" || order.stage === "packed" || order.stage === "in_transit" || order.stage === "delivered") {
+    if (order.stage === "en_preparacion" || order.stage === "en_reparto" || order.stage === "entregado") {
       timeline.push({
         id: `${order.id}-confirmed`,
         title: "Pedido confirmado",
-        detail: "El pedido supero la validacion de inventario y quedo habilitado para despacho.",
+        detail: "El pedido supero la validacion de inventario y se encuentra en preparacion.",
         timestamp: order.createdAt,
         state: "done"
       });
     }
 
-    if (order.stage === "incident") {
+    if (order.stage === "cancelado") {
       timeline.push({
         id: `${order.id}-incident`,
         title: "Incidencia detectada",
@@ -148,7 +148,7 @@ export function buildOrderTimeline({
         title: "Tracking asignado",
         detail: `Codigo de seguimiento ${shipment.tracking}.`,
         timestamp: shipment.shippedAt ?? shipment.createdAt,
-        state: shipment.stage === "delayed" ? "warning" : "done"
+        state: shipment.stage === "cancelado" ? "warning" : "done"
       });
     }
   }
