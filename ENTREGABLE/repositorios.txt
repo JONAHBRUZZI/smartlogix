@@ -1,0 +1,66 @@
+# Repositorios del Proyecto SmartLogix
+
+## Repositorio Principal
+https://github.com/JONAHBRUZZI/smartlogix
+
+Contiene todo el proyecto SmartLogix:
+- Frontend/ — Aplicación SPA en React + Vite + TypeScript (sistema interno POS, inventario, pedidos, despachos)
+- Landing/ — Landing page en Next.js 16 + Tailwind CSS v4
+- Backend/ — 4 microservicios Spring Boot (orders, inventory, shipping, notification) + API Gateway Nginx + PostgreSQL
+- ENTREGABLE/ — Documentación completa (análisis de patrones, plan de branching, READMEs)
+
+## Microservicios Backend
+
+### orders-service
+- Código: Backend/orders-service/
+- Descripción: Microservicio de gestión de pedidos. CRUD de órdenes, cambio de estados, confirmación y cancelación. Base de datos: orders_db.
+- Patrones: Repository, Observer (SQS), Factory (DI)
+- Tecnologías: Spring Boot 3, JPA, PostgreSQL, SQS, CloudWatch
+- Puerto: 8081
+
+### inventory-service
+- Código: Backend/inventory-service/
+- Descripción: Microservicio de control de inventario. Gestión de productos, ajustes de stock, alertas de nivel crítico. Base de datos: inventory_db.
+- Patrones: Repository, Observer (SQS), Factory (DI)
+- Tecnologías: Spring Boot 3, JPA, PostgreSQL, SQS, CloudWatch
+- Puerto: 8082
+
+### shipping-service
+- Código: Backend/shipping-service/
+- Descripción: Microservicio de despachos. Generación de despachos desde pedidos confirmados, seguimiento con código QR, confirmación de entrega con código cliente y RUT. Base de datos: shipping_db.
+- Patrones: Repository, Observer (SQS), Factory (DI)
+- Tecnologías: Spring Boot 3, JPA, PostgreSQL, SQS, CloudWatch
+- Puerto: 8084
+
+### notification-service
+- Código: Backend/notification-service/
+- Descripción: Microservicio de notificaciones. Envío de alertas por múltiples canales (dashboard, email) basado en eventos del sistema. Base de datos: notification_db.
+- Patrones: Repository, Strategy, Observer (SNS), Factory (DI)
+- Tecnologías: Spring Boot 3, JPA, PostgreSQL, SNS, CloudWatch
+- Puerto: 8085
+
+## Frontend
+
+### Sistema Interno (SPA)
+- Código: Frontend/
+- Descripción: Aplicación React SPA con Vite + TypeScript. Módulos: Dashboard, POS, Inventario, Pedidos, Despachos, Clientes, Reportes, Usuarios.
+- Patrones: Custom Hook (useApiQuery, useOperationalWorkspace), Adapter (api-adapters), Proxy (api-client), Composite (useOperationalWorkspace)
+- Tecnologías: React 19, Vite 6, TypeScript, Tailwind CSS
+
+### Landing Page
+- Código: Landing/
+- Descripción: Landing page de SmartLogix. Página estática de presentación con secciones de Hero, Características, Cómo Funciona, Planes, Demo y FAQ.
+- Patrones: Componentes atómicos
+- Tecnologías: Next.js 16, React 19, Tailwind CSS v4
+- URL: https://smartlogix-landing.vercel.app
+
+## Infraestructura
+
+### Docker Compose
+- local: Backend/docker-compose.yml (PostgreSQL + LocalStack + 4 servicios + Nginx)
+- producción: docker-compose.optimized.yml (PostgreSQL ligero + 4 servicios + Nginx, optimizado para 1GB RAM)
+
+### Base de Datos
+- Motor: PostgreSQL 15 (Alpine)
+- Bases: orders_db, inventory_db, shipping_db, notification_db
+- Scripts: Backend/init-db.sql (creación), Backend/seed.sql (datos de prueba)
