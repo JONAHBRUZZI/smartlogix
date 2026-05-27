@@ -39,12 +39,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./elasticmq.conf:/opt/elasticmq.conf
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:9324 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
     networks:
       - smartlogix-net
     deploy:
