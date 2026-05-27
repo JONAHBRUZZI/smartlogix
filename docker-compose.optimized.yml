@@ -38,18 +38,22 @@ services:
           memory: 64M
 
   sqs-mock:
-    image: alpine/socat:latest
+    image: softwaremill/elasticmq:latest
     container_name: smartlogix-sqs-mock
     restart: unless-stopped
-    command: ["tcp-listen:4566,fork,reuseaddr", "SYSTEM:'echo ok'"]
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9324"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     networks:
       - smartlogix-net
     deploy:
       resources:
         limits:
-          memory: 16M
+          memory: 64M
         reservations:
-          memory: 8M
+          memory: 32M
 
   orders-service:
     image: jonahbruzzi/orders-service:latest
@@ -62,8 +66,8 @@ services:
       - AWS_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
-      - AWS_SQS_ENDPOINT=http://sqs-mock:4566
-      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:4566
+      - AWS_SQS_ENDPOINT=http://sqs-mock:9324
+      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:9324
       - ORDERS_QUEUE=orders-queue
       - SHIPPING_QUEUE=shipping-queue
       - CLOUDWATCH_LOG_GROUP=/smartlogix/orders-service
@@ -95,8 +99,8 @@ services:
       - AWS_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
-      - AWS_SQS_ENDPOINT=http://sqs-mock:4566
-      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:4566
+      - AWS_SQS_ENDPOINT=http://sqs-mock:9324
+      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:9324
       - SHIPPING_QUEUE=shipping-queue
       - CLOUDWATCH_LOG_GROUP=/smartlogix/inventory-service
       - CLOUDWATCH_LOG_STREAM=production
@@ -127,8 +131,8 @@ services:
       - AWS_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
-      - AWS_SQS_ENDPOINT=http://sqs-mock:4566
-      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:4566
+      - AWS_SQS_ENDPOINT=http://sqs-mock:9324
+      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:9324
       - SHIPPING_QUEUE=shipping-queue
       - NOTIFICATION_TOPIC_ARN=arn:aws:sns:us-east-1:000000000000:notification-events-topic
       - CLOUDWATCH_LOG_GROUP=/smartlogix/shipping-service
@@ -160,8 +164,8 @@ services:
       - AWS_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
-      - AWS_SQS_ENDPOINT=http://sqs-mock:4566
-      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:4566
+      - AWS_SQS_ENDPOINT=http://sqs-mock:9324
+      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:9324
       - NOTIFICATION_EVENTS_QUEUE=notification-events-queue
       - CLOUDWATCH_LOG_GROUP=/smartlogix/notification-service
       - CLOUDWATCH_LOG_STREAM=production
