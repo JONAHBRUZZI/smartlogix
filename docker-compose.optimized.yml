@@ -42,11 +42,6 @@ services:
     container_name: smartlogix-sqs-mock
     restart: unless-stopped
     command: ["tcp-listen:4566,fork,reuseaddr", "SYSTEM:'echo ok'"]
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "4566"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
     networks:
       - smartlogix-net
     deploy:
