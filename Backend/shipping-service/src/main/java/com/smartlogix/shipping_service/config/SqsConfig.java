@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
 import java.net.URI;
@@ -50,25 +49,6 @@ public class SqsConfig {
                 .region(Region.US_EAST_1)
                 .build();
     }
-
-        @Bean
-        @Profile("!prod")
-        public SnsClient localSnsClient() {
-        return SnsClient.builder()
-            .endpointOverride(URI.create(sqsEndpoint))
-            .region(Region.of(awsRegion))
-            .credentialsProvider(StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(awsAccessKey, awsSecretKey)))
-            .build();
-        }
-
-        @Bean
-        @Profile("prod")
-        public SnsClient prodSnsClient() {
-        return SnsClient.builder()
-            .region(Region.US_EAST_1)
-            .build();
-        }
 
     @Bean
     public SqsTemplate sqsTemplate(SqsAsyncClient sqsAsyncClient) {

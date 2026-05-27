@@ -1,14 +1,21 @@
 package com.smartlogix.notification_service.controller;
 
+import com.smartlogix.contracts.events.NotificationEvent;
 import com.smartlogix.notification_service.model.NotificationRecord;
 import com.smartlogix.notification_service.service.NotificationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -25,5 +32,12 @@ public class NotificationController {
     @GetMapping("/audience/{audience}")
     public List<NotificationRecord> getByAudience(@PathVariable String audience) {
         return notificationService.findByAudience(audience.toUpperCase());
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Map<String, String> create(@Valid @RequestBody NotificationEvent event) {
+        notificationService.persistNotification(event, event.getAudience());
+        return Map.of("status", "ACCEPTED", "eventId", event.getEventId());
     }
 }

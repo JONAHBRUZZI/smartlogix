@@ -96,9 +96,7 @@ flowchart LR
     Q1 --> INV["inventory-service"]
     INV --> Q3["shipping-queue"]
     Q3 --> SHP["shipping-service"]
-    SHP --> SNS
-    SNS --> Q4["notification-events-queue"]
-    Q4 --> NOTI["notification-service"]
+    SHP -->|REST| NOTI["notification-service"]
 ```
 
 ## Como esta arquitectura responde al enunciado

@@ -6,7 +6,7 @@ Esta fase deja una simulacion local util para seguir iterando sobre SmartLogix s
 
 Queda materializado:
 
-- `SQS + SNS` en `LocalStack`
+- `SQS` en `LocalStack`
 - bucket `S3` para artefactos frontend
 - `Secrets Manager` con configuracion base de plataforma
 - `Route53` y `Cognito` como opcion avanzada (con licencia/token)
@@ -20,7 +20,7 @@ Ejemplo:
 ```powershell
 $env:LOCALSTACK_IMAGE="localstack/localstack-pro:latest"
 $env:LOCALSTACK_AUTH_TOKEN="tu-token"
-$env:LOCALSTACK_SERVICES="cloudformation,ecs,lambda,iam,ec2,elbv2,rds,sqs,sns,logs,cloudwatch,kms,secretsmanager,s3,route53,cognito-idp"
+$env:LOCALSTACK_SERVICES="cloudformation,ecs,lambda,iam,ec2,elbv2,rds,sqs,logs,cloudwatch,kms,secretsmanager,s3,route53,cognito-idp"
 $env:ENABLE_LOCALSTACK_ROUTE53="true"
 $env:ENABLE_LOCALSTACK_COGNITO="true"
 docker compose up -d

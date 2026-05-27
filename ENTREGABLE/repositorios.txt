@@ -35,8 +35,8 @@ Contiene todo el proyecto SmartLogix:
 ### notification-service
 - Código: Backend/notification-service/
 - Descripción: Microservicio de notificaciones. Envío de alertas por múltiples canales (dashboard, email) basado en eventos del sistema. Base de datos: notification_db.
-- Patrones: Repository, Strategy, Observer (SNS), Factory (DI)
-- Tecnologías: Spring Boot 3, JPA, PostgreSQL, SNS, CloudWatch
+- Patrones: Repository, Strategy, Observer (REST), Factory (DI)
+- Tecnologías: Spring Boot 3, JPA, PostgreSQL, REST, CloudWatch
 - Puerto: 8085
 
 ## Frontend

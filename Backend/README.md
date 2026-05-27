@@ -116,7 +116,7 @@ Responsable de:
 - Evidencia:
 	- `shipping-service` consume `shipping-queue` con `@SqsListener` (shipping-service/src/main/java/com/smartlogix/shipping_service/consumer/ShippingConsumer.java).
 	- `shipping-service` persiste `Shipment` y construye `NotificationEvent` (shipping-service/src/main/java/com/smartlogix/shipping_service/service/ShippingService.java).
-	- `shipping-service` publica a SNS con atributo `audience` (shipping-service/src/main/java/com/smartlogix/shipping_service/publisher/NotificationPublisher.java).
+	- `shipping-service` publica via REST a `notification-service` con `RestTemplate` (shipping-service/src/main/java/com/smartlogix/shipping_service/publisher/NotificationPublisher.java).
 
 4. Persistencia de notificaciones con control de duplicidad
 - Caso practico: notificaciones consume eventos y evita registrar duplicados por `eventId + audience`.
@@ -138,10 +138,10 @@ Responsable de:
 	- uso de anotaciones `jakarta.validation` para reglas de negocio en los DTO de evento (event-contracts/src/main/java/com/smartlogix/contracts/events/).
 
 7. Evidencia de desacoplamiento por infraestructura de mensajeria
-- Caso practico: el wiring crea colas y topic por separado y conecta SNS -> SQS para notificaciones.
+- Caso practico: el shipping-service publica notificaciones via REST directo al notification-service en vez de SNS.
 - Evidencia:
-	- script de inicializacion crea `orders-queue`, `shipping-queue`, `notification-events-queue` (init-sqs.sh/create-queues.sh).
-	- script configura suscripcion con filtro por audiencia (`CLIENT`, `OPERATOR`, `BOTH`) (init-sqs.sh/create-queues.sh).
+	- script de inicializacion crea `orders-queue`, `shipping-queue`, `notification-events-queue` (init-sqs.sh/).
+	- `NotificationPublisher` usa `RestTemplate` para enviar eventos al endpoint `POST /api/notifications` del notification-service.
 
 ## Patrones de diseno aplicados
 
@@ -295,6 +295,6 @@ Beneficio tecnico esperado:
 
 - Runtime Java 21 y Spring Boot para servicios de dominio.
 - Base de datos PostgreSQL para persistencia transaccional.
-- Infraestructura de mensajeria compatible con SQS/SNS para intercambio de eventos.
+- Infraestructura de mensajeria compatible con SQS para intercambio de eventos entre servicios y REST para notificaciones.
 - Observabilidad por logs y metricas para seguimiento operativo.
 - Despliegue objetivo en AWS con API Gateway/ALB, ECS, ECR, CloudWatch, Cognito y RDS + KMS.

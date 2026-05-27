@@ -103,19 +103,19 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 ---
 
-#### 2.2.2 Patrón Observer / Event-Driven (SQS/SNS)
-**Ubicación:** Todos los microservicios (`Backend/*-service`)
+#### 2.2.2 Patron Observer / Event-Driven (SQS/REST)
+**Ubicacion:** Todos los microservicios (`Backend/*-service`)
 
-**Problema que resuelve:** Los microservicios necesitan comunicarse entre sí sin acoplamiento directo. Por ejemplo, cuando se confirma un pedido en `orders-service`, se debe notificar a `shipping-service` para crear un despacho y a `notification-service` para enviar alertas. Un acoplamiento directo mediante HTTP crearía dependencias rígidas y puntos únicos de falla.
+**Problema que resuelve:** Los microservicios necesitan comunicarse entre si sin acoplamiento directo. Por ejemplo, cuando se confirma un pedido en `orders-service`, se debe notificar a `shipping-service` para crear un despacho y a `notification-service` para enviar alertas. Un acoplamiento directo mediante HTTP crearia dependencias rigidas y puntos unicos de falla.
 
-**Solución:** La comunicación entre servicios se realiza mediante eventos asíncronos a través de AWS SQS (colas) y SNS (tópicos). Cada servicio publica eventos cuando ocurre un cambio de estado y se suscribe a los eventos que le interesan. En desarrollo local se usa LocalStack para emular SQS/SNS.
+**Solucion:** La comunicacion entre servicios se realiza mediante eventos asincronos a traves de AWS SQS (colas) para el flujo core (orders -> inventory -> shipping). Las notificaciones del shipping-service se envian via REST directo al notification-service. En desarrollo local se usa LocalStack para emular SQS.
 
 ```
-OrderService ──publica──→ [ORDER-CONFIRMED] ──SQS──→ ShippingService
-                                          ──SNS──→ NotificationService
+OrderService --publica--> [ORDER-CONFIRMED] --SQS--> ShippingService
+                                                  --> [REST] --> NotificationService
 ```
 
-**Justificación:** Desacopla completamente los servicios. Cada servicio puede evolucionar, desplegarse y escalar independientemente. Si un servicio está caído, los eventos quedan en la cola hasta que se recupere, garantizando eventual consistency.
+**Justificacion:** Desacopla completamente los servicios. Cada servicio puede evolucionar, desplegarse y escalar independientemente. Si un servicio esta caido, los eventos quedan en la cola hasta que se recupere, garantizando eventual consistency.
 
 ---
 
@@ -169,7 +169,7 @@ OrderService ──publica──→ [ORDER-CONFIRMED] ──SQS──→ Shippin
 - `shipping_db` → shipping-service
 - `notification_db` → notification-service
 
-Cada servicio es dueño de sus datos y solo se comunica con otros servicios mediante eventos asíncronos (SQS/SNS), nunca accediendo directamente a la base de datos de otro servicio.
+Cada servicio es dueño de sus datos y solo se comunica con otros servicios mediante eventos asíncronos (SQS) o REST, nunca accediendo directamente a la base de datos de otro servicio.
 
 **Justificación:** Garantiza aislamiento total entre servicios. Cada equipo puede modificar el esquema de su base de datos sin afectar a otros. Permite escalar y optimizar cada base de datos según las necesidades específicas del servicio.
 
@@ -238,8 +238,8 @@ Todos los servicios comparten las mismas dependencias base:
 | `spring-boot-starter-web` | REST API | 3.x |
 | `spring-boot-starter-data-jpa` | Acceso a datos JPA | 3.x |
 | `postgresql` | Driver PostgreSQL | 42.x |
-| `spring-cloud-aws-sqs` | Mensajería SQS | 3.x |
-| `spring-cloud-aws-sns` | Notificaciones SNS | 3.x |
+| `spring-cloud-aws-sqs` | Mensajeria SQS | 3.x |
+| `spring-cloud-aws-sns` | Notificaciones SNS (solo shipping-service, para produccion) | 3.x |
 | `spring-boot-starter-actuator` | Health checks | 3.x |
 | `spring-boot-starter-test` | Testing (JUnit 5) | 3.x |
 | `lombok` | Reducción boilerplate | latest |
@@ -294,7 +294,7 @@ CREATE DATABASE nuevo_db;
 └────┬─────┘ └────┬─────┘ └────┬─────┘
      │            │            │
      └────────────┼────────────┘
-                  │ SQS/SNS (eventos asíncronos)
+                   │ SQS + REST (eventos asincronos y notificaciones)
                   ▼
 ┌─────────────────────────────────┐
 │     Notification Service       │

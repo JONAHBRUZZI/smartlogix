@@ -54,12 +54,6 @@
 			<artifactId>spring-cloud-aws-starter-sqs</artifactId>
 			<version>3.2.0</version>
 		</dependency>
-		<dependency>
-			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>sns</artifactId>
-			<version>${aws.sdk.version}</version>
-		</dependency>
-
 		<!-- CloudWatch Metrics -->
 		<dependency>
 			<groupId>io.micrometer</groupId>

@@ -3,8 +3,6 @@ services:
     image: postgres:15-alpine
     container_name: smartlogix-db
     restart: unless-stopped
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin123
@@ -22,7 +20,7 @@ services:
       -c max_worker_processes=2
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./Backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 15s
@@ -34,13 +32,13 @@ services:
       resources:
         limits:
           memory: 128M
-        reservations:
-          memory: 64M
 
   sqs-mock:
     image: softwaremill/elasticmq:latest
     container_name: smartlogix-sqs-mock
     restart: unless-stopped
+    volumes:
+      - ./elasticmq.conf:/opt/elasticmq.conf
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:9324"]
       interval: 5s
@@ -52,8 +50,6 @@ services:
       resources:
         limits:
           memory: 64M
-        reservations:
-          memory: 32M
 
   orders-service:
     image: jonahbruzzi/orders-service:latest
@@ -67,13 +63,9 @@ services:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_SQS_ENDPOINT=http://sqs-mock:9324
-      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:9324
       - ORDERS_QUEUE=orders-queue
       - SHIPPING_QUEUE=shipping-queue
-      - CLOUDWATCH_LOG_GROUP=/smartlogix/orders-service
-      - CLOUDWATCH_LOG_STREAM=production
-      - SPRING_PROFILES_ACTIVE=local-cloudwatch
-      - JAVA_TOOL_OPTIONS=-Xmx64m -Xms32m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      - JAVA_TOOL_OPTIONS=-Xmx80m -Xms40m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -84,9 +76,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
-        reservations:
-          memory: 80M
+          memory: 200M
 
   inventory-service:
     image: jonahbruzzi/inventory-service:latest
@@ -100,12 +90,8 @@ services:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_SQS_ENDPOINT=http://sqs-mock:9324
-      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:9324
       - SHIPPING_QUEUE=shipping-queue
-      - CLOUDWATCH_LOG_GROUP=/smartlogix/inventory-service
-      - CLOUDWATCH_LOG_STREAM=production
-      - SPRING_PROFILES_ACTIVE=local-cloudwatch
-      - JAVA_TOOL_OPTIONS=-Xmx64m -Xms32m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      - JAVA_TOOL_OPTIONS=-Xmx80m -Xms40m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -116,9 +102,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
-        reservations:
-          memory: 80M
+          memory: 200M
 
   shipping-service:
     image: jonahbruzzi/shipping-service:latest
@@ -132,13 +116,9 @@ services:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_SQS_ENDPOINT=http://sqs-mock:9324
-      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:9324
       - SHIPPING_QUEUE=shipping-queue
       - NOTIFICATION_SERVICE_URL=http://notification-service:8085
-      - CLOUDWATCH_LOG_GROUP=/smartlogix/shipping-service
-      - CLOUDWATCH_LOG_STREAM=production
-      - SPRING_PROFILES_ACTIVE=local-cloudwatch
-      - JAVA_TOOL_OPTIONS=-Xmx64m -Xms32m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      - JAVA_TOOL_OPTIONS=-Xmx80m -Xms40m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -149,9 +129,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
-        reservations:
-          memory: 80M
+          memory: 200M
 
   notification-service:
     image: jonahbruzzi/notification-service:latest
@@ -165,12 +143,8 @@ services:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_SQS_ENDPOINT=http://sqs-mock:9324
-      - AWS_CLOUDWATCH_ENDPOINT=http://sqs-mock:9324
       - NOTIFICATION_EVENTS_QUEUE=notification-events-queue
-      - CLOUDWATCH_LOG_GROUP=/smartlogix/notification-service
-      - CLOUDWATCH_LOG_STREAM=production
-      - SPRING_PROFILES_ACTIVE=local-cloudwatch
-      - JAVA_TOOL_OPTIONS=-Xmx64m -Xms32m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      - JAVA_TOOL_OPTIONS=-Xmx80m -Xms40m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -181,9 +155,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
-        reservations:
-          memory: 80M
+          memory: 200M
 
   api-gateway:
     image: nginx:alpine
@@ -192,7 +164,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./Backend/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - orders-service
       - inventory-service
@@ -204,8 +176,6 @@ services:
       resources:
         limits:
           memory: 32M
-        reservations:
-          memory: 16M
 
 networks:
   smartlogix-net:

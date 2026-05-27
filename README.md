@@ -25,7 +25,7 @@ Plataforma de gestión logística para PYMEs — inventario, pedidos, envíos y 
 ├─────────────────────────────────────────────────────┤
 │ RDS PostgreSQL — 5 bases, una por bounded context   │
 ├─────────────────────────────────────────────────────┤
-│ SQS + SNS — mensajería asíncrona y fan-out          │
+│ SQS + REST — mensajería asíncrona y notificaciones   │
 ├─────────────────────────────────────────────────────┤
 │ S3 + Glue + Redshift + QuickSight — analítica y BI  │
 └─────────────────────────────────────────────────────┘
@@ -39,7 +39,7 @@ Plataforma de gestión logística para PYMEs — inventario, pedidos, envíos y 
 |------|-----------|
 | **Frontend** | React 18, TypeScript 5.7, Vite 6, Tailwind CSS 3, shadcn, PWA |
 | **Backend** | Java 21, Spring Boot 3.5, JPA, Actuator, CloudWatch |
-| **Mensajería** | AWS SQS, SNS (LocalStack en dev) |
+| **Mensajería** | AWS SQS, REST (LocalStack en dev) |
 | **Persistencia** | PostgreSQL 15 (5 bases: orders, inventory, shipping, notification, identity) |
 | **Auth** | Cognito (prod) / Demo tokens (dev) |
 | **Infra** | Docker Compose (dev), ECS Fargate (prod), Nginx, CloudFormation |
@@ -154,7 +154,7 @@ SmartLogix/
 ├── Backend/
 │   ├── orders-service/     # CRUD pedidos, SQS publisher, idempotencia
 │   ├── inventory-service/  # Stock, validación, DataLoader seed
-│   ├── shipping-service/   # Envíos, tracking, SNS notificaciones
+│   ├── shipping-service/   # Envíos, tracking, REST notificaciones
 │   ├── notification-service/ # Persistencia de eventos de notificación
 │   ├── identity-service/   # Company, Role, User, UserSetting
 │   ├── event-contracts/    # DTOs compartidos (validación Jakarta)
