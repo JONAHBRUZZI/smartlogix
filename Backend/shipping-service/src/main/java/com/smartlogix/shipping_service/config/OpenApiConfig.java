@@ -1,0 +1,23 @@
+package com.smartlogix.shipping_service.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.Contact;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI shippingOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Shipping Service API")
+                        .version("1.0")
+                        .description("Gestion de envios: creacion, seguimiento, codigo QR y confirmacion de entrega")
+                        .contact(new Contact()
+                                .name("SmartLogix")
+                                .email("soporte@smartlogix.cl")));
+    }
+}
