@@ -1,0 +1,12 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": { "start": "node src/index.js" },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "cors": "^2.8.5"
+  }
+}
