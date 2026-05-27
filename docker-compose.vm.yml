@@ -12,7 +12,7 @@ services:
       -c effective_cache_size=64MB
       -c maintenance_work_mem=16MB
       -c wal_buffers=2MB
-      -c max_connections=20
+      -c max_connections=50
       -c work_mem=1MB
       -c max_wal_size=128MB
       -c min_wal_size=32MB
@@ -66,6 +66,7 @@ services:
       - ORDERS_QUEUE=orders-queue
       - SHIPPING_QUEUE=shipping-queue
       - JAVA_TOOL_OPTIONS=-Xmx80m -Xms40m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -92,6 +93,7 @@ services:
       - AWS_SQS_ENDPOINT=http://sqs-mock:9324
       - SHIPPING_QUEUE=shipping-queue
       - JAVA_TOOL_OPTIONS=-Xmx80m -Xms40m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -119,6 +121,7 @@ services:
       - SHIPPING_QUEUE=shipping-queue
       - NOTIFICATION_SERVICE_URL=http://notification-service:8085
       - JAVA_TOOL_OPTIONS=-Xmx80m -Xms40m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -145,6 +148,7 @@ services:
       - AWS_SQS_ENDPOINT=http://sqs-mock:9324
       - NOTIFICATION_EVENTS_QUEUE=notification-events-queue
       - JAVA_TOOL_OPTIONS=-Xmx80m -Xms40m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=16m -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
     depends_on:
       postgres-db:
         condition: service_healthy
