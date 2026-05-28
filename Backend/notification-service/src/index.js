@@ -105,4 +105,6 @@ async function start() {
   app.listen(PORT, () => console.log(`notification-service running on port ${PORT}`));
 }
 
+app.get('/health', (_req, res) => res.json({ status: 'UP' }));
+
 start();

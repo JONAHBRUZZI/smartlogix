@@ -221,11 +221,12 @@ async function handleOrderConfirmed(event) {
 async function start() {
   await ensureTables();
   app.listen(PORT, () => console.log(`inventory-service running on port ${PORT}`));
-
-  // Start SQS poller
   pollSqs('orders-queue', handleOrderConfirmed).catch(err =>
     console.error('SQS poller error:', err.message)
   );
 }
+
+// Health check
+app.get('/health', (_req, res) => res.json({ status: 'UP' }));
 
 start();

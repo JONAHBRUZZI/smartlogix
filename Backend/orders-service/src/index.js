@@ -11,6 +11,21 @@ app.use(express.json());
 const PORT = process.env.PORT || 8081;
 const ORDERS_QUEUE = process.env.ORDERS_QUEUE || 'orders-queue';
 
+async function ensureTables() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id SERIAL PRIMARY KEY,
+      customer_id INTEGER NOT NULL,
+      sku INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
+      status VARCHAR(30) NOT NULL DEFAULT 'CREATED',
+      created_at TIMESTAMP DEFAULT NOW(),
+      assigned_to VARCHAR(100),
+      cancel_reason VARCHAR(255)
+    )
+  `);
+}
+
 // Test endpoint
 app.get('/api/orders/test', (_req, res) => {
   res.send('El controlador de Ordenes de SmartLogix esta activo!');
@@ -175,6 +190,11 @@ app.put('/api/orders/:id/assign', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`orders-service running on port ${PORT}`);
-});
+// Health check
+app.get('/health', (_req, res) => res.json({ status: 'UP' }));
+
+async function start() {
+  await ensureTables();
+  app.listen(PORT, () => console.log(`orders-service running on port ${PORT}`));
+}
+start();

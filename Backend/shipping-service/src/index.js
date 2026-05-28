@@ -241,4 +241,6 @@ async function start() {
   pollSqs().catch(err => console.error('SQS poller error:', err.message));
 }
 
+app.get('/health', (_req, res) => res.json({ status: 'UP' }));
+
 start();
