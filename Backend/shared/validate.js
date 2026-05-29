@@ -8,28 +8,45 @@ function validateOrderBody(body) {
 
 function validateOrderStatus(status) {
   const valid = ['CREATED', 'EN_PREPARACION', 'EN_REPARTO', 'ENTREGADO', 'CANCELADO'];
-  if (!valid.includes(status)) throw Object.assign(new Error(`Status invalido: ${status}`), { status: 400 });
+  if (!valid.includes(status)) return ['Status invalido: ' + status];
+  return [];
 }
 
 function validateInventoryBody(body) {
-  if (!body || !body.sku || body.stock === undefined) throw Object.assign(new Error('sku y stock son requeridos'), { status: 400 });
+  const errors = [];
+  if (!body || !body.sku) errors.push('sku es requerido');
+  if (!body || body.stock === undefined) errors.push('stock es requerido');
+  return errors;
 }
 
 function validateSaleBody(body) {
-  if (!body || !body.sku || !body.quantity) throw Object.assign(new Error('sku y quantity son requeridos'), { status: 400 });
+  const errors = [];
+  if (!body || !body.sku) errors.push('sku es requerido');
+  if (!body || !body.quantity) errors.push('quantity es requerido');
+  return errors;
 }
 
 function validateShipmentBody(body) {
-  if (!body || !body.orderId || !body.sku || !body.quantity) throw Object.assign(new Error('orderId, sku, quantity requeridos'), { status: 400 });
+  const errors = [];
+  if (!body || !body.orderId) errors.push('orderId es requerido');
+  if (!body || !body.sku) errors.push('sku es requerido');
+  if (!body || !body.quantity) errors.push('quantity es requerido');
+  return errors;
 }
 
 function validateShipmentStage(stage) {
   const valid = ['EN_PREPARACION', 'EN_REPARTO', 'ENTREGADO', 'CANCELADO'];
-  if (!valid.includes(stage)) throw Object.assign(new Error(`Stage invalido: ${stage}`), { status: 400 });
+  if (!valid.includes(stage)) return ['Stage invalido: ' + stage];
+  return [];
 }
 
 function validateNotificationBody(body) {
-  if (!body || !body.eventId || !body.orderId || !body.stage || !body.message) throw Object.assign(new Error('eventId, orderId, stage, message requeridos'), { status: 400 });
+  const errors = [];
+  if (!body || !body.eventId) errors.push('eventId es requerido');
+  if (!body || !body.orderId) errors.push('orderId es requerido');
+  if (!body || !body.stage) errors.push('stage es requerido');
+  if (!body || !body.message) errors.push('message es requerido');
+  return errors;
 }
 
 module.exports = { validateOrderBody, validateOrderStatus, validateInventoryBody, validateSaleBody, validateShipmentBody, validateShipmentStage, validateNotificationBody };
