@@ -40,7 +40,7 @@ services:
       - INVENTORY_SERVICE_URL=http://inventory-service:8082
       - SHIPPING_SERVICE_URL=http://shipping-service:8084
       - PORT=8081
-      - ALLOWED_ORIGINS=*
+      - ALLOWED_ORIGINS=http://localhost:3000,https://smartlogix-five.vercel.app,http://localhost:80
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -58,7 +58,7 @@ services:
     environment:
       - DB_URL=postgresql://postgres:admin123@postgres-db:5432/inventory_db
       - PORT=8082
-      - ALLOWED_ORIGINS=*
+      - ALLOWED_ORIGINS=http://localhost:3000,https://smartlogix-five.vercel.app,http://localhost:80
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -77,7 +77,7 @@ services:
       - DB_URL=postgresql://postgres:admin123@postgres-db:5432/shipping_db
       - NOTIFICATION_SERVICE_URL=http://notification-service:8085
       - PORT=8084
-      - ALLOWED_ORIGINS=*
+      - ALLOWED_ORIGINS=http://localhost:3000,https://smartlogix-five.vercel.app,http://localhost:80
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -95,7 +95,7 @@ services:
     environment:
       - DB_URL=postgresql://postgres:admin123@postgres-db:5432/notification_db
       - PORT=8085
-      - ALLOWED_ORIGINS=*
+      - ALLOWED_ORIGINS=http://localhost:3000,https://smartlogix-five.vercel.app,http://localhost:80
     depends_on:
       postgres-db:
         condition: service_healthy

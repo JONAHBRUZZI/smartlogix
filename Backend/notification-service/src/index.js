@@ -1,12 +1,9 @@
 const express = require('express');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
 const { createPool } = require('../shared/db');
 const log = require('../shared/logger');
 const { validateNotificationBody } = require('../shared/validate');
 const { gracefulShutdown } = require('../shared/shutdown');
 
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || '*';
 const app = express();
 
 app.use(cors({

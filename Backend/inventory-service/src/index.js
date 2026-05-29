@@ -1,13 +1,10 @@
 const express = require('express');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
 const { createPool } = require('../shared/db');
 const log = require('../shared/logger');
 const { validateInventoryBody, validateSaleBody } = require('../shared/validate');
 const { gracefulShutdown } = require('../shared/shutdown');
 
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || '*';
 const app = express();
 
 app.use(cors({

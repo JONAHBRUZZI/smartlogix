@@ -1,30 +1,17 @@
 const express = require('express');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
 const { createPool } = require('../shared/db');
 const log = require('../shared/logger');
 const { validateOrderBody, validateOrderStatus } = require('../shared/validate');
 const { gracefulShutdown } = require('../shared/shutdown');
+const { applySecurity } = require('../shared/security');
 
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || '*';
 const app = express();
-
-app.use(cors({
-  origin: ALLOWED_ORIGINS === '*' ? '*' : ALLOWED_ORIGINS.split(',').map(s => s.trim()),
-  credentials: true,
-}));
+applySecurity(app);
 app.use(express.json({ limit: '1mb' }));
 
-app.use(rateLimit({
-  windowMs: 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX || '200', 10),
-  standardHeaders: true,
-  legacyHeaders: false, validate: { xForwardedForHeader: false },
-  message: { error: 'Too many requests, please try again later' },
-}));
-
 const PORT = process.env.PORT || 8081;
+const pool = createPool('orders_db');
 const INVENTORY_SERVICE_URL = process.env.INVENTORY_SERVICE_URL || 'http://inventory-service:8082';
 const SHIPPING_SERVICE_URL = process.env.SHIPPING_SERVICE_URL || 'http://shipping-service:8084';
 

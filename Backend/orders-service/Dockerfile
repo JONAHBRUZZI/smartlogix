@@ -1,4 +1,6 @@
 FROM node:22-alpine
+RUN apk add --no-cache wget
+RUN apk add --no-cache wget
 WORKDIR /app
 COPY orders-service/package*.json ./
 RUN npm install --omit=dev
