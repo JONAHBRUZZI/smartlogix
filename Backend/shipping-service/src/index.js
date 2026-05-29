@@ -4,22 +4,11 @@ const { createPool } = require('../shared/db');
 const log = require('../shared/logger');
 const { validateShipmentBody, validateShipmentStage } = require('../shared/validate');
 const { gracefulShutdown } = require('../shared/shutdown');
+const { applySecurity } = require('../shared/security');
 
 const app = express();
-
-app.use(cors({
-  origin: ALLOWED_ORIGINS === '*' ? '*' : ALLOWED_ORIGINS.split(',').map(s => s.trim()),
-  credentials: true,
-}));
+applySecurity(app);
 app.use(express.json({ limit: '1mb' }));
-
-app.use(rateLimit({
-  windowMs: 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX || '200', 10),
-  standardHeaders: true,
-  legacyHeaders: false, validate: { xForwardedForHeader: false },
-  message: { error: 'Too many requests, please try again later' },
-}));
 
 const PORT = process.env.PORT || 8084;
 const NOTIFICATION_URL = process.env.NOTIFICATION_SERVICE_URL || 'http://notification-service:8085';
