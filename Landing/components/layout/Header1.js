@@ -23,7 +23,7 @@ export default function Header1({ scroll, handleMobileMenuOpen }) {
                         })}
                     </nav>
                     <div className="flex items-center gap-2 shrink-0">
-                        <Link href="https://app.smartlogix.cl"
+                        <Link href="https://smartlogix-five.vercel.app"
                             className="hidden sm:inline-flex text-sm font-semibold text-brand-2 border-2 border-grey-300 hover:border-brand-2 px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap"
                         >Iniciar Sesión</Link>
                         <Link href="#demo"
