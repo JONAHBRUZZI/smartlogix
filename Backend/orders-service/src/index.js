@@ -197,5 +197,4 @@ async function start() {
   await ensureTables();
   app.listen(PORT, () => console.log(`orders-service running on port ${PORT}`));
 }
-if (require.main === module && !process.env.VITEST) { start(); }
-module.exports = app;
+start();
