@@ -172,7 +172,7 @@ export function InventoryPage() {
               </form>
             </DialogContent>
           </Dialog>
-          <span className="text-xs text-[#6B7280]">{counts.total} SKU � {counts.totalUnits} unids totales</span>
+          <span className="text-xs text-[#6B7280]">{counts.total} SKU · {counts.totalUnits} unids totales</span>
         </div>
       </div>
 

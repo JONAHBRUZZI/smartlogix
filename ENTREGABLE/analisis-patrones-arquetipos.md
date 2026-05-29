@@ -1,4 +1,4 @@
-﻿# Analisis de Patrones de Diseno y Arquetipos Arquitectonicos
+﻿# Análisis de Patrones de Diseño y Arquetipos Arquitectónicos
 
 **Proyecto:** SmartLogix
 **Equipo:** Jonah Bruzzi
@@ -7,7 +7,7 @@
 
 ---
 
-## 1. Patrones de Diseno Implementados
+## 1. Patrones de Diseño Implementados
 
 ### 1.1 Patron Repository (Backend - 4 microservicios)
 
@@ -115,7 +115,7 @@ export async function get<T>(path: string): Promise<T> {
 
 ---
 
-## 2. Arquetipos y Patrones Arquitectonicos
+## 2. Arquetipos y Patrones Arquitectónicos
 
 ### 2.1 Microservicios con Database per Service
 
@@ -183,7 +183,7 @@ Si algun paso falla, el warning se registra y el flujo continua (eventual consis
 | Rama | Proposito |
 |------|----------|
 | `main` | Código en produccion. Cada commit es deployable. |
-| `develop` | Integracion de features. (Simplificado: usamos main directamente por ser equipo pequeno) |
+| `develop` | Integración de features. (Simplificado: usamos main directamente por ser equipo pequeño) |
 
 ### Flujo de trabajo
 

@@ -22,7 +22,7 @@ export default function Pricing1() {
                             </div>
                             <div className="flex items-baseline gap-1 -mt-1">
                                 <span className="text-brand-1 font-bold text-lg">${plan.year}</span>
-                                <span className="text-white/60 text-xs">/ano</span>
+                                <span className="text-white/60 text-xs">/año</span>
                             </div>
                         </div>
                         <div className="border-t border-grey-200 mb-6"/>

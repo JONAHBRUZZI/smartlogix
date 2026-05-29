@@ -162,7 +162,7 @@ export function UsersPage() {
       )}
 
 
-      {/* Vista tipo card en m�vil, tabla en sm+ */}
+      {/* Vista tipo card en móvil, tabla en sm+ */}
       <div className="rounded border border-[#DCE0E2] bg-white">
         <div className="block sm:hidden">
           {filtered.length === 0 && (

@@ -19,7 +19,7 @@ Mostrar diagrama:
 Frontend (React/Vercel) -> Nginx BFF (:80) -> 4 microservicios -> 4 bases PostgreSQL
 ```
 
-- **Database per Service**: Cada microservicio es dueno de su BD. Aislamiento total.
+- **Database per Service**: Cada microservicio es dueño de su BD. Aislamiento total.
 - **API Gateway / BFF**: Nginx como punto único de entrada, CORS, routing.
 - **Saga Pattern**: orders-service orquesta la transaccion distribuida:
   1. Crea pedido
@@ -31,7 +31,7 @@ Frontend (React/Vercel) -> Nginx BFF (:80) -> 4 microservicios -> 4 bases Postgr
 
 ---
 
-## Diapositiva 3: Patrones de Diseno (2 min)
+## Diapositiva 3: Patrones de Diseño (2 min)
 **Indicadores 1 y 5: 3+ patrones implementados**
 
 1. **Repository** (`shared/db.js`): Encapsula acceso a datos. Pool de conexiones parametrizado. Si cambia el motor de BD, solo se modifica este archivo.
@@ -84,7 +84,7 @@ Evidencia:
 - Merge conflict resuelto: `docker-compose.node.yml` (befadc1)
 - Feature branches: `sns-to-rest`, `nodejs-migration`, `remove-sqs`
 
-**Justificación:** Para equipo pequeno, Trunk-Based evita sobrecarga de GitFlow completo. Cada commit a main es deployable.
+**Justificación:** Para equipo pequeño, Trunk-Based evita sobrecarga de GitFlow completo. Cada commit a main es deployable.
 
 ---
 
@@ -112,7 +112,7 @@ Evidencia:
 
 ## Diapositiva 8: Conclusiones (1 min)
 
-- 5 patrones de diseno implementados y justificados
+- 5 patrones de diseño implementados y justificados
 - 3 patrones arquitectonicos (DB per Service, BFF, Saga)
 - Estrategia de branching con evidencia de merges y conflictos
 - Buenas practicas: código modular, health checks, idempotencia, rate limiting
