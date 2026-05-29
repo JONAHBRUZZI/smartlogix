@@ -82,7 +82,7 @@ export default function Requestquote1() {
                                                 className="w-full px-4 py-3 border-2 border-grey-300 rounded-xl text-sm bg-grey-100 focus:border-brand-1 focus:bg-white focus:ring-4 focus:ring-brand-1/10 outline-none transition-all resize-y min-h-[80px]"/>
                                         </div>
                                     </div>
-                                    <button type="submit" className="w-full mt-6 flex items-center justify-center gap-2 bg-brand-1 text-brand-2 font-bold py-4 rounded-xl hover:bg-yellow-400 hover:-translate-y-0.5 transition-all shadow-lg shadow-brand-1/30">
+                                    <button type="submit" className="w-full mt-6 flex items-center justify-center gap-2 bg-brand-1 text-brand-2 font-bold py-4 rounded-xl hover:bg-yellow-400 hover:-translate-y-0.5 transition-all shadow-lg shadow-brand-1/30 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2" aria-label="Enviar solicitud de demo">
                                         Enviar Solicitud
                                     </button>
                                 </form>

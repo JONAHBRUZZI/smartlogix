@@ -18,17 +18,17 @@ export default function Hero1() {
                         SmartLogix simplifica la gestión de tu pequeño comercio. Vende, controla stock, gestiona pedidos y coordina despachos desde un solo panel.
                     </p>
                     <div className="flex flex-wrap gap-3 mb-10">
-                        <a href="https://smartlogix-five.vercel.app" className="inline-flex items-center gap-2 bg-brand-1 text-brand-2 font-bold px-8 py-4 rounded-xl hover:bg-yellow-400 transition-all hover:-translate-y-0.5 shadow-lg shadow-brand-1/30">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                        <a href="https://smartlogix-five.vercel.app" className="inline-flex items-center gap-2 bg-brand-1 text-brand-2 font-bold px-8 py-4 rounded-xl hover:bg-yellow-400 transition-all hover:-translate-y-0.5 shadow-lg shadow-brand-1/30 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-brand-2" aria-label="Acceder al software SmartLogix">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
                             Acceder al Software
                         </a>
-                        <a href="#demo" className="inline-flex items-center gap-2 bg-brand-1 text-brand-2 font-bold px-8 py-4 rounded-xl hover:bg-yellow-400 transition-all hover:-translate-y-0.5 shadow-lg shadow-brand-1/30">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        <a href="#demo" className="inline-flex items-center gap-2 bg-brand-1 text-brand-2 font-bold px-8 py-4 rounded-xl hover:bg-yellow-400 transition-all hover:-translate-y-0.5 shadow-lg shadow-brand-1/30 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-brand-2" aria-label="Solicitar demostracion gratuita">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                             Solicitar Demo Gratis
                         </a>
-                        <a href="#caracteristicas" className="inline-flex items-center gap-2 text-white font-semibold px-6 py-4 rounded-xl hover:bg-white/10 transition-all">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                            Ver cómo funciona
+                        <a href="#caracteristicas" className="inline-flex items-center gap-2 text-white font-semibold px-6 py-4 rounded-xl hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-white/50" aria-label="Ver como funciona SmartLogix">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                            Ver como funciona
                         </a>
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
