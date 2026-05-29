@@ -229,4 +229,5 @@ async function start() {
 // Health check
 app.get('/health', (_req, res) => res.json({ status: 'UP' }));
 
-start();
+if (require.main === module && !process.env.VITEST) { start(); }
+module.exports = app;
