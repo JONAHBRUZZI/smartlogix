@@ -10,10 +10,10 @@ function Pass  { $script:total++; $script:passed++ }
 function Fail  { $script:total++; $script:failed++ }
 function Warn  { $script:total++; $script:passed++; $script:warn++ }
 
-function Assert-GET    { param($n,$p,$s=200,$r)    Assert -Name $n -Method GET    -Path $p -ExpectedStatus $s -RequiredProps $r }
-function Assert-POST   { param($n,$p,$b,$s=201,$r) Assert -Name $n -Method POST   -Path $p -Body $b -ExpectedStatus $s -RequiredProps $r }
-function Assert-PUT    { param($n,$p,$b,$s=200,$r) Assert -Name $n -Method PUT    -Path $p -Body $b -ExpectedStatus $s -RequiredProps $r }
-function Assert-DELETE { param($n,$p,$s=200)       Assert -Name $n -Method DELETE -Path $p -ExpectedStatus $s }
+function Assert-GET    { param($Name,$Path,$ExpectedStatus=200,$RequiredProps)           Assert -Name $Name -Method GET    -Path $Path -ExpectedStatus $ExpectedStatus -RequiredProps $RequiredProps }
+function Assert-POST   { param($Name,$Path,$Body,$ExpectedStatus=201,$RequiredProps)    Assert -Name $Name -Method POST   -Path $Path -Body $Body -ExpectedStatus $ExpectedStatus -RequiredProps $RequiredProps }
+function Assert-PUT    { param($Name,$Path,$Body,$ExpectedStatus=200,$RequiredProps)    Assert -Name $Name -Method PUT    -Path $Path -Body $Body -ExpectedStatus $ExpectedStatus -RequiredProps $RequiredProps }
+function Assert-DELETE { param($Name,$Path,$ExpectedStatus=200)                          Assert -Name $Name -Method DELETE -Path $Path -ExpectedStatus $ExpectedStatus }
 
 function Assert {
     param($Name, $Method, $Path, $Body, $ExpectedStatus = 200, [string[]]$RequiredProps, [switch]$SkipJson, [switch]$Raw)
