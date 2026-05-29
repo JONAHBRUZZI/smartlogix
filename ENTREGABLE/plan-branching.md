@@ -2,20 +2,20 @@
 
 **Proyecto:** SmartLogix
 **Repositorio:** https://github.com/JONAHBRUZZI/smartlogix
-**Estrategia:** GitHub Flow (simplificada)
+**Estrategia:** GitFlow (adaptado)
 
 ---
 
-## Estrategia elegida: GitHub Flow
+## Estrategia elegida: GitFlow
 
-SmartLogix usa una estrategia de branching basada en **GitHub Flow**, que es una simplificacion de GitFlow adecuada para equipos pequeños y despliegue continuo.
+SmartLogix usa una adaptacion de **GitFlow**, adecuada para proyectos con multiples colaboradores y entregas planificadas.
 
-### ¿Por que GitHub Flow?
+### ¿Por que GitFlow?
 
-- **Simplicidad:** Solo 2 tipos de ramas (main + feature branches).
-- **Despliegue continuo:** Cada merge a `main` dispara el deploy automatico a Vercel (frontend).
-- **Equipo pequeño:** No se necesita la complejidad de GitFlow (develop, release, hotfix).
-- **Integracion con Vercel:** Vercel hace preview deployments por cada PR, facilitando la revision.
+- **Desarrollo paralelo:** Permite trabajar en funcionalidades simultaneamente sin afectar produccion.
+- **Estabilidad:** `main` siempre contiene codigo probado y listo para produccion.
+- **Integracion:** `develop` actua como rama de integracion donde se prueban los features antes de promocionar a produccion.
+- **Trazabilidad:** Historial claro de que cambios entraron en cada release.
 
 ---
 
@@ -24,62 +24,86 @@ SmartLogix usa una estrategia de branching basada en **GitHub Flow**, que es una
 ```
 main (produccion)
   │
-  ├── feature/nombre-descriptivo
-  ├── fix/nombre-del-bug
-  └── docs/actualizacion-readme
+  └── develop (integracion)
+        │
+        ├── feature/nombre-descriptivo
+        ├── darlette
+        └── fix/nombre-del-bug
 ```
 
-### Rama principal: `main`
+---
 
-- **Proposito:** Codigo listo para produccion.
-- **Regla:** Nunca se hace push directo a `main`.
-- **Proteccion:** Vercel escucha `main` y despliega automaticamente a https://smartlogix-five.vercel.app.
-- **Estado esperado:** Siempre compila y pasa los tests.
+## Ramas principales
 
-### Ramas de trabajo
+### `main`
 
-| Prefijo | Proposito | Ejemplo |
-|---------|----------|---------|
-| `feature/` | Nueva funcionalidad | `feature/order-delete-endpoint` |
-| `fix/` | Correccion de bug | `fix/null-slice-error` |
-| `docs/` | Documentacion | `docs/readme-microservicios` |
+- **Proposito:** Codigo en produccion. Solo se mergea desde `develop` o desde un `hotfix`.
+- **Regla:** Nunca se hace push directo.
+- **Deploy:** Vercel escucha `main` y despliega automaticamente a https://smartlogix-five.vercel.app.
+- **Estado:** Siempre compila y pasa tests.
+
+### `develop`
+
+- **Proposito:** Rama de integracion. Todos los features se mergean aqui primero.
+- **Regla:** Se crea desde `main`. Es la rama mas activa.
+- **Flujo:** Los features se prueban en `develop` antes de llegar a `main`.
+
+---
+
+## Ramas de soporte
+
+| Prefijo | Proposito | Se crea desde | Se mergea a | Ejemplo |
+|---------|----------|---------------|-------------|---------|
+| `feature/` | Nueva funcionalidad | `develop` | `develop` | `feature/order-delete` |
+| `fix/` | Correccion de bug | `develop` | `develop` | `fix/null-slice-error` |
+| `hotfix/` | Bug critico en prod | `main` | `main` + `develop` | `hotfix/login-crash` |
+| Nombre persona | Rama personal de trabajo | `develop` | `develop` via PR | `darlette` |
 
 ---
 
 ## Flujo de trabajo paso a paso
 
-### 1. Crear rama desde main
+### 1. Crear rama de feature desde develop
 
 ```bash
-git checkout main
-git pull origin main
+git checkout develop
+git pull origin develop
 git checkout -b feature/mi-funcionalidad
 ```
 
 ### 2. Desarrollar y commitear
 
 ```bash
-# Hacer cambios...
 git add -A
 git commit -m "feat: descripcion breve del cambio"
 git push origin feature/mi-funcionalidad
 ```
 
-### 3. Crear Pull Request en GitHub
+### 3. Crear Pull Request hacia `develop`
 
-- Desde `feature/mi-funcionalidad` hacia `main`
-- Vercel crea un **preview deployment** automatico con URL unica
+En GitHub, crear PR desde `feature/mi-funcionalidad` hacia `develop`.
+
+- Vercel crea un **preview deployment** automatico
 - Revisar el preview antes de mergear
+- Usar **Squash and Merge** para mantener historial limpio
 
-### 4. Merge a main
+### 4. Promocionar a produccion (release)
 
-- Usar **Squash and Merge** para mantener el historial de `main` limpio
-- El merge dispara el deploy a produccion en Vercel
+Cuando `develop` esta estable y listo para produccion:
+
+```bash
+git checkout main
+git pull origin main
+git merge develop
+git push origin main
+```
+
+Esto dispara el deploy a produccion en Vercel.
 
 ### 5. Actualizar VM del backend (si aplica)
 
 ```bash
-# SSH a la VM de produccion
+# SSH a la VM
 ssh root@104.248.60.29
 cd ~/smartlogix
 git pull origin main
@@ -88,51 +112,64 @@ docker compose -f docker-compose.vm.yml up -d
 
 ---
 
+## Ramas activas actuales
+
+| Rama | Autor | Estado | Proposito |
+|------|-------|--------|----------|
+| `main` | JONAHBRUZZI | Activa, actualizada | Produccion |
+| `develop` | JONAHBRUZZI | 56 commits adelante | Integracion de features |
+| `darlette` | darlmorales | 35 commits adelante, PR #2 abierto | Rama personal de trabajo |
+
+---
+
+## Reglas del repositorio
+
+1. `main` siempre debe compilar (`npm run build` exitoso)
+2. No hacer push directo a `main` ni a `develop`
+3. Los cambios a `develop` entran via Pull Request
+4. Los cambios a `main` entran via merge desde `develop`
+5. Usar **Squash and Merge** para PRs
+6. Borrar la rama de feature despues del merge
+7. Mantener `develop` sincronizado con `main` despues de cada release
+
+---
+
 ## Convencion de commits
 
-Se sigue el formato de **Conventional Commits**:
+Se sigue **Conventional Commits**:
 
 ```
 <tipo>: <descripcion breve>
-
-[opcional: cuerpo con mas detalle]
 ```
-
-**Tipos:**
 
 | Tipo | Uso |
 |------|-----|
 | `feat` | Nueva funcionalidad |
 | `fix` | Correccion de bug |
-| `docs` | Cambios en documentacion |
-| `style` | Formato, espacios, punto-y-coma (sin cambio de logica) |
-| `refactor` | Refactorizacion de codigo |
-| `test` | Agregar o corregir tests |
-| `chore` | Tareas de build, config, dependencias |
+| `docs` | Documentacion |
+| `style` | Formato (sin cambio de logica) |
+| `refactor` | Refactorizacion |
+| `test` | Tests |
+| `chore` | Build, config, dependencias |
 
 **Ejemplos:**
 ```
 feat: agregar endpoint DELETE para pedidos
-fix: evitar error .slice() en null al cargar detalle de pedido
+fix: evitar error .slice() en null al cargar detalle
 docs: crear README para cada microservicio
 chore: eliminar archivos CloudFormation no usados
 ```
 
 ---
 
-## Ramas activas actuales
+## Diagrama de flujo
 
-| Rama | Estado | Proposito |
-|------|--------|----------|
-| `main` | Activa | Produccion |
-
----
-
-## Reglas
-
-1. `main` siempre debe compilar (`npm run build` exitoso)
-2. No hacer push directo a `main` (usar PR)
-3. Cada commit debe tener un mensaje descriptivo
-4. Usar prefijos de Conventional Commits
-5. Los PRs deben revisarse antes de mergear (idealmente)
-6. Mantener las ramas de feature efimeras (borrar despues del merge)
+```
+main         ★───★──────────────────────★─── produccion
+              \                         /
+develop        ★──★──★──★──★──★──★──★─ integracion
+                \   \      /
+feature/abc     ★─★─★     /
+                          /
+feature/xyz             ★─★─★
+```
