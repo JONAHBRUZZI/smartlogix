@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect, useRef, useState } from "react";
+﻿import { useMemo, useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Banknote, Boxes, Bell, ShoppingBag, ShoppingCart, Truck } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/auth";
@@ -15,7 +15,7 @@ import type { AlertItem, Order, Product, Sale, Shipment } from "@/types/domain";
 const quickActions = [
   { label: "Nuevo pedido", href: "/orders", icon: ShoppingBag, color: "bg-[#4B98CF]" },
   { label: "Ver inventario", href: "/inventory", icon: Boxes, color: "bg-[#4EB4A5]" },
-  { label: "Gestionar envios", href: "/shipments", icon: Truck, color: "bg-[#E3AA75]" },
+  { label: "Gestiónar envíos", href: "/shipments", icon: Truck, color: "bg-[#E3AA75]" },
   { label: "Notificaciones", href: "/notifications", icon: Bell, color: "bg-purple-500" },
 ];
 
@@ -106,7 +106,7 @@ export function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-[1.2px] text-muted-foreground">Don Juan / Bebidas y Confites</p>
-          <h1 className="text-xl font-bold text-foreground">Buenos dias, {session.name.split(" ")[0]}</h1>
+          <h1 className="text-xl font-bold text-foreground">Buenos días, {session.name.split(" ")[0]}</h1>
         </div>
         <span className="rounded-full bg-[#F5F7F9] px-3 py-1 text-xs font-medium text-muted-foreground">
           {profile?.label}
@@ -310,11 +310,11 @@ export function DashboardPage() {
                         "inline-flex rounded px-2 py-0.5 text-xs font-bold",
                         order.stage === "entregado" && "bg-green-50 text-green-600",
                         order.stage === "created" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                        order.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                        order.stage === "en_preparación" && "bg-[#E3AA75]/10 text-[#E3AA75]",
                         order.stage === "en_reparto" && "bg-purple-50 text-purple-600",
                         order.stage === "cancelado" && "bg-red-50 text-red-500",
                       )}>
-                        {order.stage === "created" ? "Pendiente" : order.stage === "en_preparacion" ? "Preparacion" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
+                        {order.stage === "created" ? "Pendiente" : order.stage === "en_preparación" ? "Preparación" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
                       </span>
                     </td>
                   </tr>
@@ -337,11 +337,11 @@ export function DashboardPage() {
                       "shrink-0 rounded px-2 py-0.5 text-xs font-bold",
                       order.stage === "entregado" && "bg-green-50 text-green-600",
                       order.stage === "created" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                      order.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                      order.stage === "en_preparación" && "bg-[#E3AA75]/10 text-[#E3AA75]",
                       order.stage === "en_reparto" && "bg-purple-50 text-purple-600",
                       order.stage === "cancelado" && "bg-red-50 text-red-500",
                     )}>
-                      {order.stage === "created" ? "Pendiente" : order.stage === "en_preparacion" ? "Preparacion" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
+                      {order.stage === "created" ? "Pendiente" : order.stage === "en_preparación" ? "Preparación" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
                     </span>
                 </div>
               ))}
@@ -356,7 +356,7 @@ export function DashboardPage() {
       {/* Shipments active */}
       <div className="rounded border border-border bg-white max-w-sm w-full mx-auto sm:max-w-none">
         <div className="flex items-center justify-between border-b border-[#ECEEF0] px-4 py-3">
-          <h2 className="text-sm font-bold text-foreground">Envios en curso</h2>
+          <h2 className="text-sm font-bold text-foreground">Envíos en curso</h2>
           <Link to="/shipments" className="flex items-center gap-1 text-xs font-semibold text-[#4B98CF] hover:text-[#346384]">
             Ver todos <ArrowRight className="h-3 w-3" />
           </Link>
@@ -385,10 +385,10 @@ export function DashboardPage() {
                       "inline-flex rounded px-2 py-0.5 text-xs font-bold",
                       s.stage === "entregado" && "bg-green-50 text-green-600",
                       s.stage === "en_reparto" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                      s.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                      s.stage === "en_preparación" && "bg-[#E3AA75]/10 text-[#E3AA75]",
                       s.stage === "cancelado" && "bg-red-50 text-red-500",
                     )}>
-                      {s.stage === "en_preparacion" ? "Preparacion" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
+                      {s.stage === "en_preparación" ? "Preparación" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
                     </span>
                   </td>
                   <td className="px-4 py-2.5 text-muted-foreground hidden md:table-cell">{s.carrier}</td>
@@ -398,7 +398,7 @@ export function DashboardPage() {
                 </tr>
               ))}
               {operationalShipments.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-6 text-center text-xs text-muted-foreground">Sin envios en curso</td></tr>
+                <tr><td colSpan={6} className="px-4 py-6 text-center text-xs text-muted-foreground">Sin envíos en curso</td></tr>
               )}
             </tbody>
           </table>
@@ -414,15 +414,15 @@ export function DashboardPage() {
                   "shrink-0 rounded px-2 py-0.5 text-xs font-bold",
                   s.stage === "entregado" && "bg-green-50 text-green-600",
                   s.stage === "en_reparto" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                  s.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                  s.stage === "en_preparación" && "bg-[#E3AA75]/10 text-[#E3AA75]",
                   s.stage === "cancelado" && "bg-red-50 text-red-500",
                 )}>
-                  {s.stage === "en_preparacion" ? "Preparacion" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
+                  {s.stage === "en_preparación" ? "Preparación" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
                 </span>
               </div>
             ))}
             {operationalShipments.length === 0 && (
-              <p className="px-4 py-6 text-center text-xs text-muted-foreground">Sin envios en curso</p>
+              <p className="px-4 py-6 text-center text-xs text-muted-foreground">Sin envíos en curso</p>
             )}
           </div>
         </div>

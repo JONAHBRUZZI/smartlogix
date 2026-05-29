@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Camera, Check, Clock, Package, Truck, User, QrCode } from "lucide-react";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { ApiOrder, ApiShipment } from "@/types/api";
 import type { Order, Shipment } from "@/types/domain";
 
-const STEP_LABELS = ["Preparacion", "En reparto", "Entregado"];
+const STEP_LABELS = ["Preparación", "En reparto", "Entregado"];
 
 function getStepIndex(stage: string) {
   const s = stage.toLowerCase();
@@ -47,8 +47,8 @@ export function ShipmentDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-24">
         <Package className="h-12 w-12 text-[#DCE0E2]" />
-        <p className="mt-4 font-medium text-[#6B7280]">Envio no encontrado</p>
-        <Link to="/deliveries" className="mt-2 text-sm text-[#4B98CF] hover:underline">Volver a envios</Link>
+        <p className="mt-4 font-medium text-[#6B7280]">Envío no encontrado</p>
+        <Link to="/deliveries" className="mt-2 text-sm text-[#4B98CF] hover:underline">Volver a envíos</Link>
       </div>
     );
   }
@@ -56,13 +56,13 @@ export function ShipmentDetailPage() {
   return (
     <div className="space-y-5 max-w-sm w-full mx-auto sm:max-w-3xl md:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl px-2">
       <Link to="/deliveries" className="inline-flex items-center gap-1 text-xs text-[#6B7280] hover:text-[#112b4a]">
-        <ArrowLeft className="h-3.5 w-3.5" /> Envios
+        <ArrowLeft className="h-3.5 w-3.5" /> Envíos
       </Link>
 
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Detalle de envio</p>
+          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Detalle de envío</p>
           <h1 className="text-xl font-bold text-[#112b4a] font-mono">{shipment.tracking}</h1>
           <p className="text-sm text-[#6B7280]">Pedido #{shipment.orderId} · {customerName}</p>
         </div>
@@ -73,7 +73,7 @@ export function ShipmentDetailPage() {
           shipment.stage === "cancelado" ? "bg-red-50 text-red-500" :
           "bg-[#E3AA75]/10 text-[#E3AA75]"
         )}>
-          {shipment.stage === "en_preparacion" ? "Preparacion" :
+          {shipment.stage === "en_preparación" ? "Preparación" :
            shipment.stage === "en_reparto" ? "En reparto" :
            shipment.stage === "entregado" ? "Entregado" :
            shipment.stage === "cancelado" ? "Cancelado" : shipment.stage}
@@ -106,13 +106,13 @@ export function ShipmentDetailPage() {
       {/* Cancelled banner */}
       {isCancelled && (
         <div className="rounded border border-red-200 bg-red-50 p-5">
-          <p className="text-sm font-bold text-red-600">Envio cancelado</p>
-          <p className="text-xs text-red-500 mt-1">Este envio fue cancelado y no tiene progreso activo.</p>
+          <p className="text-sm font-bold text-red-600">Envío cancelado</p>
+          <p className="text-xs text-red-500 mt-1">Este envío fue cancelado y no tiene progreso activo.</p>
         </div>
       )}
 
       {/* QR code for pickup - show when EN_PREPARACION */}
-      {shipment.stage === "en_preparacion" && (
+      {shipment.stage === "en_preparación" && (
         <div className="rounded border border-[#DCE0E2] bg-white p-5">
           <div className="flex items-center gap-2 mb-3">
             <QrCode className="h-4 w-4 text-[#4B98CF]" />
@@ -132,7 +132,7 @@ export function ShipmentDetailPage() {
       {/* Info grid */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded border border-[#DCE0E2] bg-white p-5">
-          <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Informacion</p>
+          <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Información</p>
           <div className="space-y-3">
             {[
               { label: "Pedido", value: `#${shipment.orderId}` },
@@ -193,7 +193,7 @@ export function ShipmentDetailPage() {
             <div className="flex items-center gap-3 rounded bg-[#F8FAFB] px-4 py-3">
               <User className="h-4 w-4 text-[#6B7280]" />
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Codigo del cliente</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Código del cliente</p>
                 <p className="text-sm font-semibold text-[#112b4a]">{shipment.customerCode}</p>
               </div>
             </div>

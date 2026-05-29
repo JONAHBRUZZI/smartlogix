@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Download, Minus, PackagePlus, Plus, Search, Trash2, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/auth";
@@ -109,7 +109,7 @@ export function InventoryPage() {
                     <Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} placeholder="COCA-COLA-2L" className="h-9 text-sm" />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Categoria</label>
+                    <label className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Categoría</label>
                     <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v as ProductCategory })}>
                       <SelectTrigger size="sm" className="h-9 w-full"><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -172,7 +172,7 @@ export function InventoryPage() {
               </form>
             </DialogContent>
           </Dialog>
-          <span className="text-xs text-[#6B7280]">{counts.total} SKU � {counts.totalUnits} unids totales</span>
+          <span className="text-xs text-[#6B7280]">{counts.total} SKU � {counts.totalUnits} unids totales</span>
         </div>
       </div>
 
@@ -196,7 +196,7 @@ export function InventoryPage() {
                 filter === f ? "bg-[#4B98CF] text-white" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {f === "all" ? "Todos" : f === "critical" ? "Critico" : f === "warning" ? "Bajo" : "Estable"}
+              {f === "all" ? "Todos" : f === "critical" ? "Crítico" : f === "warning" ? "Bajo" : "Estable"}
             </button>
           ))}
         </div>
@@ -255,7 +255,7 @@ export function InventoryPage() {
                     product.status === "warning" && "bg-[#E3AA75]/10 text-[#E3AA75]",
                     product.status === "critical" && "bg-red-50 text-red-500",
                   )}>
-                    {product.status === "healthy" ? "Estable" : product.status === "warning" ? "Bajo" : "Critico"}
+                    {product.status === "healthy" ? "Estable" : product.status === "warning" ? "Bajo" : "Crítico"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
@@ -270,11 +270,11 @@ export function InventoryPage() {
                         className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-red-500 hover:bg-red-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       ><Minus className="h-4 w-4" /></button>
                       <button
-                        onClick={() => handleAdjust(product, 1, "Reposicion rapida")}
+                        onClick={() => handleAdjust(product, 1, "Reposición rápida")}
                         className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] text-green-600 hover:bg-green-50 active:scale-[0.95] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       ><Plus className="h-4 w-4" /></button>
                       <button
-                        onClick={() => handleAdjust(product, 10, "Reposicion +10")}
+                        onClick={() => handleAdjust(product, 10, "Reposición +10")}
                         className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] sm:min-h-[44px] px-1.5 sm:px-2 text-[10px] sm:text-xs font-semibold text-green-600 hover:bg-green-50 active:scale-[0.98]"
                       >+10</button>
                     </div>
@@ -292,7 +292,7 @@ export function InventoryPage() {
                             vendor: session?.name ?? "Vendedor"
                           })
                         }).catch(() => {});
-                        alert("Aviso de stock critico enviado al administrador");
+                        alert("Aviso de stock crítico enviado al administrador");
                       }}
                       className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] px-2.5 py-1 text-[10px] sm:text-xs font-semibold text-[#E3AA75] hover:bg-amber-50 active:scale-[0.98]"
                     >
@@ -320,7 +320,7 @@ export function InventoryPage() {
               <button onClick={() => setDeleteConfirm(null)} className="p-1 rounded hover:bg-gray-100"><X className="h-4 w-4" /></button>
             </div>
             <p className="text-sm text-[#6B7280]">
-              �Estas seguro de eliminar <strong>{deleteConfirm.name}</strong> ({deleteConfirm.sku})?
+              �Estas seguro de eliminar <strong>{deleteConfirm.name}</strong> ({deleteConfirm.sku})?
             </p>
             <div className="flex gap-2 justify-end">
               <Button variant="outline" size="sm" onClick={() => setDeleteConfirm(null)}>Cancelar</Button>

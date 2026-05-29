@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Box, Check, Clock, History, Package, Truck, AlertTriangle } from "lucide-react";
 import { managedUsers } from "@/app/user-directory";
@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 import type { ApiNotificationRecord, ApiOrder, ApiShipment } from "@/types/api";
 import type { Order, Shipment } from "@/types/domain";
 
-const STAGES = ["created", "en_preparacion", "en_reparto", "entregado"];
-const STAGE_LABELS = ["Recibido", "Preparacion", "En reparto", "Entregado"];
+const STAGES = ["created", "en_preparación", "en_reparto", "entregado"];
+const STAGE_LABELS = ["Recibido", "Preparación", "En reparto", "Entregado"];
 
 export function OrderDetailPage() {
   const { orderId } = useParams();
@@ -62,14 +62,14 @@ export function OrderDetailPage() {
   const badgeClass = () =>
     order.stage === "entregado" ? "bg-green-50 text-green-600" :
     order.stage === "created" ? "bg-[#4B98CF]/10 text-[#4B98CF]" :
-    order.stage === "en_preparacion" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
+    order.stage === "en_preparación" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
     order.stage === "en_reparto" ? "bg-purple-50 text-purple-600" :
     order.stage === "cancelado" ? "bg-red-50 text-red-500" :
     "bg-muted text-muted-foreground";
 
   const badgeLabel = () =>
     order.stage === "created" ? "Pendiente" :
-    order.stage === "en_preparacion" ? "Preparacion" :
+    order.stage === "en_preparación" ? "Preparación" :
     order.stage === "en_reparto" ? "En reparto" :
     order.stage === "entregado" ? "Entregado" :
     order.stage === "cancelado" ? "Cancelado" : order.stage;
@@ -145,7 +145,7 @@ export function OrderDetailPage() {
 
         {operationalShipment && (
           <div className="rounded border border-[#DCE0E2] bg-white p-5">
-            <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Envio</p>
+            <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Envío</p>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-[#6B7280]">Tracking</span>
@@ -164,7 +164,7 @@ export function OrderDetailPage() {
       <div className="rounded border border-[#DCE0E2] bg-white p-5">
         <div className="flex items-center gap-2 mb-4">
           <History className="h-4 w-4 text-[#6B7280]" />
-          <p className="text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Linea de tiempo</p>
+          <p className="text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Línea de tiempo</p>
         </div>
         <div className="space-y-0">
           {timeline.map((event) => (

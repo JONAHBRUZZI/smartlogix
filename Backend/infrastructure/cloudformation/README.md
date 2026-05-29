@@ -1,4 +1,4 @@
-# SmartLogix CloudFormation (Costo Optimizado para Lab Estudiantil)
+﻿# SmartLogix CloudFormation (Costo Optimizado para Lab Estudiantil)
 
 Este paquete crea una arquitectura AWS con foco en bajo costo y servicios base para tu backend.
 
@@ -28,7 +28,7 @@ Este paquete crea una arquitectura AWS con foco en bajo costo y servicios base p
 4. `04-compute-ecs.yml`
 - ECS Fargate para 4 microservicios
 - ALB con rutas por path
-- CloudWatch Logs con retencion corta configurable (default 3 dias)
+- CloudWatch Logs con retencion corta configurable (default 3 días)
 - Credenciales DB inyectadas desde Secrets Manager (no texto plano)
 
 5. `05-pipeline-single-service.yml`
@@ -70,7 +70,7 @@ Este script automatiza:
   -DeployPipelines
 ```
 
-### Ejemplo rapido (sin build/push ni smoke)
+### Ejemplo rápido (sin build/push ni smoke)
 
 ```powershell
 .\infrastructure\cloudformation\deploy-lab.ps1 `
@@ -186,10 +186,10 @@ aws cloudformation deploy \
 1. Usa una sola instancia RDS micro para los 4 servicios (como ya haces con DBs separadas).
 2. Para ahorrar al maximo, deja solo `orders-service` en 1 replica y los otros en `DesiredCount=0` cuando no los uses.
 3. Mantente en 1 tarea por servicio y ajusta CPU/Memoria solo si hay errores de memoria.
-4. Mantiene CloudWatch Logs en 3 dias de retencion.
+4. Mantiene CloudWatch Logs en 3 días de retencion.
 5. Usa Secrets Manager para credenciales (ya aplicado en `04-compute-ecs.yml`).
 6. Desactiva stacks al terminar laboratorios largos.
-7. Evita NAT Gateway en este escenario; aqui no se crea para ahorrar costo fijo.
+7. Evita NAT Gateway en este escenario; aquí no se crea para ahorrar costo fijo.
 8. Usa llaves administradas AWS (`alias/aws/sqs` y `alias/aws/sns`) para evitar costo fijo de CMK propia.
 
 ## Nota importante

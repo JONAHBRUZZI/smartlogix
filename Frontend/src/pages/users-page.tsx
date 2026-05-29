@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Check, ChevronDown, Edit2, MoreHorizontal, Search, ShieldCheck, UserPlus, X } from "lucide-react";
 import { getRoleProfile } from "@/app/access";
 import { getVisibleNavItems } from "@/components/layout/navigation";
@@ -107,7 +107,7 @@ export function UsersPage() {
     <div className="space-y-4 max-w-md mx-auto sm:max-w-3xl md:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl px-2">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Administracion</p>
+          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Administración</p>
           <h1 className="text-xl font-bold text-[#112b4a]">Usuarios y roles</h1>
         </div>
         <button
@@ -162,7 +162,7 @@ export function UsersPage() {
       )}
 
 
-      {/* Vista tipo card en m�vil, tabla en sm+ */}
+      {/* Vista tipo card en m�vil, tabla en sm+ */}
       <div className="rounded border border-[#DCE0E2] bg-white">
         <div className="block sm:hidden">
           {filtered.length === 0 && (
@@ -236,7 +236,7 @@ export function UsersPage() {
                 <th className="px-4 py-3 hidden sm:table-cell">Equipo</th>
                 <th className="px-4 py-3">Rol</th>
                 <th className="px-4 py-3 w-20">Activo</th>
-                <th className="px-4 py-3 hidden md:table-cell">Ultimo acceso</th>
+                <th className="px-4 py-3 hidden md:table-cell">Último acceso</th>
                 <th className="px-4 py-3 hidden lg:table-cell">Modulos</th>
                 <th className="px-4 py-3 w-10"></th>
               </tr>
@@ -338,12 +338,12 @@ export function UsersPage() {
                   { perm: "Ver pedidos", key: "orders.view" },
                   { perm: "Crear pedidos", key: "orders.create" },
                   { perm: "Validar pedidos", key: "orders.review" },
-                  { perm: "Ver envios", key: "shipments.view" },
-                  { perm: "Gestionar envios", key: "shipments.update" },
+                  { perm: "Ver envíos", key: "shipments.view" },
+                  { perm: "Gestiónar envíos", key: "shipments.update" },
                   { perm: "Crear despachos", key: "shipments.dispatch" },
                   { perm: "Ver alertas", key: "alerts.view" },
                   { perm: "Ver usuarios", key: "users.view" },
-                  { perm: "Gestionar usuarios", key: "users.manage" },
+                  { perm: "Gestiónar usuarios", key: "users.manage" },
                 ].map(({ perm, key }) => (
                   <tr key={key} className="border-b border-[#F5F7F9]">
                     <td className="py-2 pr-4 font-medium text-[#112b4a]">{perm}</td>
@@ -354,7 +354,7 @@ export function UsersPage() {
                           {has ? (
                             <Check className="mx-auto h-4 w-4 text-[#4EB4A5]" />
                           ) : (
-                            <span className="text-[#DCE0E2]">�</span>
+                            <span className="text-[#DCE0E2]">�</span>
                           )}
                         </td>
                       );

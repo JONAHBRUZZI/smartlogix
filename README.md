@@ -1,4 +1,4 @@
-# SmartLogix - Plataforma de Gestion Logistica
+﻿# SmartLogix - Plataforma de Gestión Logística
 
 **Repositorio:** https://github.com/JONAHBRUZZI/smartlogix
 **VM:** http://104.248.60.29
@@ -28,7 +28,7 @@
 
 ## Stack
 
-| Capa | Tecnologia |
+| Capa | Tecnología |
 |------|-----------|
 | Frontend | React 18, TypeScript 5.7, Vite 6, Tailwind, shadcn/ui, PWA |
 | Backend | Node.js 22, Express 4, pg |
@@ -39,7 +39,7 @@
 
 ---
 
-## Inicio rapido
+## Inicio rápido
 
 ```bash
 # Clonar
@@ -85,7 +85,7 @@ curl http://localhost:80/healthz
 ## Endpoints API
 
 ### Orders (:8081)
-| Metodo | Ruta | Descripcion |
+| Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET | /api/orders/test | Health check |
 | POST | /api/orders | Crear orden |
@@ -97,7 +97,7 @@ curl http://localhost:80/healthz
 | GET | /api/customers | Listar clientes |
 
 ### Inventory (:8082)
-| Metodo | Ruta | Descripcion |
+| Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET | /api/inventory | Listar productos |
 | GET | /api/inventory/:sku | Consultar SKU |
@@ -108,16 +108,16 @@ curl http://localhost:80/healthz
 | POST | /api/sales | Registrar venta |
 
 ### Shipping (:8084)
-| Metodo | Ruta | Descripcion |
+| Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | /api/shipments | Listar envios |
-| GET | /api/shipments/:orderId | Envio por orden |
-| POST | /api/shipments | Crear envio + tracking |
+| GET | /api/shipments | Listar envíos |
+| GET | /api/shipments/:orderId | Envío por orden |
+| POST | /api/shipments | Crear envío + tracking |
 | PUT | /api/shipments/:id/stage?stage=X | Cambiar etapa |
-| GET | /api/shipments/:id/qr | Codigo QR |
+| GET | /api/shipments/:id/qr | Código QR |
 
 ### Notification (:8085)
-| Metodo | Ruta | Descripcion |
+| Método | Ruta | Descripción |
 |--------|------|-------------|
 | POST | /api/notifications | Persistir evento |
 | GET | /api/notifications/order/:id | Trazabilidad de orden |
@@ -133,13 +133,13 @@ curl -s -X POST http://localhost:80/api/orders \
   -H "Content-Type: application/json" \
   -d '{"customerId":1,"sku":"100001","quantity":3}'
 
-# 2. Confirmar (ajusta stock + crea envio + notifica)
+# 2. Confirmar (ajusta stock + crea envío + notifica)
 curl -s -X PUT http://localhost:80/api/orders/1/confirm
 
 # 3. Ver trazabilidad
 curl -s http://localhost:80/api/notifications/order/1 | python3 -m json.tool
 
-# 4. Avanzar envio
+# 4. Avanzar envío
 curl -s -X PUT "http://localhost:80/api/shipments/1/stage?stage=EN_REPARTO"
 curl -s -X PUT "http://localhost:80/api/shipments/1/stage?stage=ENTREGADO" \
   -H "Content-Type: application/json" \

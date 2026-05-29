@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { Banknote, Check, CreditCard, Minus, Plus, Search, ShoppingCart, Trash2, X } from "lucide-react";
 import { useAuth } from "@/app/auth";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -19,8 +19,8 @@ const CATEGORY_LABELS: Record<ProductCategory, string> = {
 const PAYMENT_LABELS: Record<PaymentMethod, string> = {
   cash: "Efectivo",
   transfer: "Transferencia",
-  debit: "Debito",
-  credit: "Credito",
+  debit: "Débito",
+  credit: "Crédito",
 };
 
 export function PosPage() {
@@ -114,7 +114,7 @@ export function PosPage() {
       {items.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 py-12">
           <ShoppingCart className="h-10 w-10 text-muted-foreground/40" />
-          <p className="text-sm text-muted-foreground">Carrito vacio</p>
+          <p className="text-sm text-muted-foreground">Carrito vacío</p>
           <p className="text-xs text-muted-foreground/60">Agrega productos desde el listado</p>
         </div>
       ) : (
@@ -177,7 +177,7 @@ export function PosPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Metodo de pago</span>
+              <span className="text-xs text-muted-foreground">Método de pago</span>
               <div className="flex gap-1">
                 {(["cash", "transfer"] as PaymentMethod[]).map((pm) => (
                   <button

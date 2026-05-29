@@ -1,4 +1,4 @@
-import { Boxes, Clock, MapPin, Package, Truck } from "lucide-react";
+﻿import { Boxes, Clock, MapPin, Package, Truck } from "lucide-react";
 import { useAuth } from "@/app/auth";
 import { getRoleProfile } from "@/app/access";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -35,7 +35,7 @@ export function ProfilePage() {
     ...(shipments ?? []).slice(0, 2).map((s) => ({
       id: `shipment-${s.id}`,
       type: "shipment" as const,
-      title: `Envio ${s.tracking}`,
+      title: `Envío ${s.tracking}`,
       detail: `Pedido #${s.orderId} - ${s.stage}`,
       time: s.createdAt,
       icon: Truck,
@@ -98,7 +98,7 @@ export function ProfilePage() {
               <span className="font-bold text-[#112b4a]">{orders?.length ?? 0}</span>
             </div>
             <div className="flex items-center justify-between rounded bg-[#F5F7F9] px-3 py-2 text-xs">
-              <span className="text-[#6B7280]">Envios</span>
+              <span className="text-[#6B7280]">Envíos</span>
               <span className="font-bold text-[#112b4a]">{shipments?.length ?? 0}</span>
             </div>
           </div>
@@ -146,7 +146,7 @@ export function ProfilePage() {
               <div className="rounded border border-[#DCE0E2] bg-white p-8 text-center">
                 <p className="text-sm text-[#6B7280]">Sin actividad reciente</p>
                 <p className="mt-1 text-xs text-[#6B7280]/70">
-                  Crea pedidos desde la seccion de ordenes para ver actividad aqui.
+                  Crea pedidos desde la sección de ordenes para ver actividad aquí.
                 </p>
               </div>
             )}

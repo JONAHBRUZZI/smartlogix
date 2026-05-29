@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+﻿import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { ApiSource } from "@/hooks/use-api-query";
@@ -39,7 +39,7 @@ export function BackendStatusBanner({ source, error, entity }: BackendStatusBann
     return (
       <Card className="border-danger/25 bg-danger/10">
         <CardContent className="flex flex-col gap-2 p-3 text-xs text-foreground sm:flex-row sm:items-center sm:justify-between sm:p-4 sm:text-sm">
-          <p className="leading-snug">{entity} requiere autenticacion valida. Inicia sesion nuevamente.</p>
+          <p className="leading-snug">{entity} requiere autenticacion valida. Inicia sesión nuevamente.</p>
           <Badge variant="danger">401 Unauthorized</Badge>
         </CardContent>
       </Card>

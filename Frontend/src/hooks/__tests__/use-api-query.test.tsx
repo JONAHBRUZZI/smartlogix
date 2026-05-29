@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { ApiRequestError } from "@/lib/api-client";
@@ -21,7 +21,7 @@ describe("useApiQuery", () => {
     expect(result.current.source).toBe("live");
   });
 
-  it("carga datos exitosamente", async () => {
+  it("carga datos éxitosamente", async () => {
     globalThis.fetch = vi.fn().mockResolvedValue(
       new Response(JSON.stringify(mockOrders), { status: 200, headers: { "Content-Type": "application/json" } })
     );
@@ -43,13 +43,13 @@ describe("useApiQuery", () => {
     expect(result.current.error).toBeTruthy();
   });
 
-  it("error 401 muestra sesion expirada", async () => {
+  it("error 401 muestra sesión expirada", async () => {
     globalThis.fetch = vi.fn().mockRejectedValue(new ApiRequestError("x", 401));
     const { result } = renderHook(() =>
       useApiQuery({ path: "/api/orders", transform: (d: ApiOrder[]) => d })
     );
     await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.error).toContain("Sesion expirada");
+    expect(result.current.error).toContain("Sesión expirada");
   });
 
   it("error 403 muestra permisos", async () => {

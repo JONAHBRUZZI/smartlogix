@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Key, LogIn, Mail } from "lucide-react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { getDefaultPathForRole, isPathAllowedForRole } from "@/app/access";
@@ -55,7 +55,7 @@ export function LoginPage() {
             <span className="text-xl font-bold text-white">S</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-800">SmartLogix</h1>
-          <p className="mt-1 text-sm text-slate-500">Control logistico para PYMEs</p>
+          <p className="mt-1 text-sm text-slate-500">Control logístico para PYMEs</p>
         </div>
 
         <div className="rounded-lg border border-[#DCE0E2] bg-white p-6 shadow-sm">
@@ -87,7 +87,7 @@ export function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contrasena"
+                placeholder="Contraseña"
                 autoComplete="current-password"
                 disabled={busy}
                 className="h-10 border-[#DDE0E2] bg-[#F8FBFD] pl-9 text-sm placeholder:text-[#6B7280]"
@@ -110,7 +110,7 @@ export function LoginPage() {
               ) : (
                 <>
                   <LogIn className="mr-2 h-4 w-4" />
-                  Iniciar sesion
+                  Iniciar sesión
                 </>
               )}
             </Button>
@@ -118,7 +118,7 @@ export function LoginPage() {
 
           <div className="mt-5 border-t border-[#ECEEF0] pt-4">
             <p className="mb-2 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">
-              Acceso rapido
+              Acceso rápido
             </p>
             <div className="space-y-1">
               {quickAccounts.map((account) => (

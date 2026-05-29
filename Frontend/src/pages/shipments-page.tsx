@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Check, Clock, Download, Package, Search, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import type { ApiOrder, ApiShipment } from "@/types/api";
 import type { Order, Shipment } from "@/types/domain";
 
-const STEP_LABELS = ["Preparacion", "En reparto", "Entregado"];
+const STEP_LABELS = ["Preparación", "En reparto", "Entregado"];
 
 export function ShipmentsPage() {
   const [query, setQuery] = useState("");
@@ -59,12 +59,12 @@ export function ShipmentsPage() {
   const stageColor = (stage: string) =>
     stage === "entregado" ? "bg-[#4EB4A5]/10 text-[#4EB4A5]" :
     stage === "en_reparto" ? "bg-purple-50 text-purple-600" :
-    stage === "en_preparacion" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
+    stage === "en_preparación" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
     stage === "cancelado" ? "bg-red-50 text-red-500" :
     "bg-[#4B98CF]/10 text-[#4B98CF]";
 
   const stageLabel = (stage: string) =>
-    stage === "en_preparacion" ? "Preparacion" :
+    stage === "en_preparación" ? "Preparación" :
     stage === "en_reparto" ? "En reparto" :
     stage === "entregado" ? "Entregado" :
     stage === "cancelado" ? "Cancelado" : stage;
@@ -73,7 +73,7 @@ export function ShipmentsPage() {
     <div className="space-y-4 max-w-sm w-full mx-auto sm:max-w-3xl md:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl px-2">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Envios</p>
+          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Envíos</p>
           <h1 className="text-xl font-bold text-[#112b4a]">
             {role === "shipper" ? "Mis entregas" : "Seguimiento de despachos"}
           </h1>
@@ -127,7 +127,7 @@ export function ShipmentsPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-[#4B98CF] font-mono">{shipment.tracking}</p>
-                    <p className="text-xs text-[#6B7280]">Pedido #{shipment.orderId} � SKU {shipment.sku}</p>
+                    <p className="text-xs text-[#6B7280]">Pedido #{shipment.orderId} � SKU {shipment.sku}</p>
                   </div>
                 </div>
 
@@ -164,8 +164,8 @@ export function ShipmentsPage() {
         {filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded border border-[#DCE0E2] bg-white py-16">
             <Package className="h-10 w-10 text-[#DCE0E2]" />
-            <p className="mt-3 text-sm font-medium text-[#6B7280]">Sin envios</p>
-            <p className="mt-1 text-xs text-[#6B7280]/70">Crea pedidos y confirma para generar envios automaticamente.</p>
+            <p className="mt-3 text-sm font-medium text-[#6B7280]">Sin envíos</p>
+            <p className="mt-1 text-xs text-[#6B7280]/70">Crea pedidos y confirma para generar envíos automáticamente.</p>
           </div>
         )}
       </div>

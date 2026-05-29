@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+﻿import { useEffect, useState, useMemo } from "react";
 import { Clock, FileText, Inbox, Package, Search, Truck, User, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { managedUsers } from "@/app/user-directory";
@@ -26,7 +26,7 @@ interface NotificationItem {
 const typeFilters: { value: NotifType; label: string }[] = [
   { value: "all", label: "Todas" },
   { value: "order", label: "Pedidos" },
-  { value: "shipment", label: "Envios" },
+  { value: "shipment", label: "Envíos" },
   { value: "inventory", label: "Inventario" },
   { value: "system", label: "Sistema" },
 ];
@@ -71,7 +71,7 @@ export function NotificationsPage() {
         type: "shipment",
         icon: Truck,
         iconBg: "bg-[#4EB4A5]",
-        title: `Envio ${s.tracking}`,
+        title: `Envío ${s.tracking}`,
         detail: `Pedido #${s.orderId} - SKU ${s.sku} - ${s.stage}`,
         link: "/shipments",
         time: s.createdAt,
@@ -86,8 +86,8 @@ export function NotificationsPage() {
         type: "system",
         icon: Clock,
         iconBg: "bg-purple-500",
-        title: "Sesion iniciada",
-        detail: "Tu sesion se inicio correctamente con rol administrador.",
+        title: "Sesión iniciada",
+        detail: "Tu sesión se inició correctamente con rol administrador.",
         link: "/profile",
         time: new Date(Date.now() - 60000).toISOString(),
         read: true
@@ -97,8 +97,8 @@ export function NotificationsPage() {
         type: "inventory",
         icon: Package,
         iconBg: "bg-red-500",
-        title: "Stock critico",
-        detail: "SKU 100004 alcanzo nivel critico: solo 5 unidades disponibles.",
+        title: "Stock crítico",
+        detail: "SKU 100004 alcanzo nivel crítico: solo 5 unidades disponibles.",
         link: "/inventory/100004",
         time: new Date(Date.now() - 600000).toISOString(),
         read: false
@@ -109,7 +109,7 @@ export function NotificationsPage() {
         icon: FileText,
         iconBg: "bg-[#6B7280]",
         title: "Backup completado",
-        detail: "Respaldo diario de base de datos completado exitosamente.",
+        detail: "Respaldo diario de base de datos completado éxitosamente.",
         link: "/dashboard",
         time: new Date(Date.now() - 3600000).toISOString(),
         read: false
@@ -193,7 +193,7 @@ export function NotificationsPage() {
             onClick={markAllRead}
             className="rounded border border-[#DCE0E2] px-3 py-1.5 text-xs font-semibold text-[#4B98CF] hover:bg-[#F5F7F9]"
           >
-            Marcar todas leidas
+            Marcar todas leídas
           </button>
           <button
             onClick={clearAll}

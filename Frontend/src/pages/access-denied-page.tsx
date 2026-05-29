@@ -1,4 +1,4 @@
-import { ArrowLeft, ShieldX } from "lucide-react";
+﻿import { ArrowLeft, ShieldX } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getDefaultPathForRole } from "@/app/access";
 import { useAuth } from "@/app/auth";
@@ -33,8 +33,8 @@ export function AccessDeniedPage() {
 
           <p className="text-sm text-red-900">
             {requestedPath
-              ? `El backend rechazo el acceso al recurso ${requestedPath}. Solicita permisos al equipo administrador o usa un perfil autorizado.`
-              : "El backend rechazo el acceso al recurso solicitado. Solicita permisos al equipo administrador o usa un perfil autorizado."}
+              ? `El backend rechazó el acceso al recurso ${requestedPath}. Solicita permisos al equipo administrador o usa un perfil autorizado.`
+              : "El backend rechazó el acceso al recurso solicitado. Solicita permisos al equipo administrador o usa un perfil autorizado."}
           </p>
 
           <Button
@@ -44,7 +44,7 @@ export function AccessDeniedPage() {
             }}
           >
             <ArrowLeft className="h-4 w-4" />
-            Volver a una seccion permitida
+            Volver a una sección permitida
           </Button>
         </CardContent>
       </Card>

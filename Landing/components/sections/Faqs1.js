@@ -1,4 +1,4 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 
 const faqs = [
     { q: "¿Qué necesito para usar SmartLogix?", a: "Solo un navegador web moderno y conexión a internet. SmartLogix funciona 100% en la nube, no necesitas instalar nada." },

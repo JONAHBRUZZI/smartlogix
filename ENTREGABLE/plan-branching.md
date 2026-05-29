@@ -1,4 +1,4 @@
-# Plan de Branching -- SmartLogix
+﻿# Plan de Branching -- SmartLogix
 
 **Proyecto:** SmartLogix
 **Repositorio:** https://github.com/JONAHBRUZZI/smartlogix
@@ -13,7 +13,7 @@ Trunk-Based Development con feature branches cortas. Una rama principal `main` d
 
 | Rama | Proposito |
 |------|----------|
-| `main` | Produccion. Cada commit es deployable. |
+| `main` | Producción. Cada commit es deployable. |
 
 ---
 
@@ -62,7 +62,7 @@ def3311 Agregar Swagger/OpenAPI
 
 ---
 
-## Justificacion
+## Justificación
 
 Trunk-Based Development elegido por:
 - Equipo de 1 persona (no requiere develop)

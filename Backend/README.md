@@ -1,4 +1,4 @@
-# SmartLogix Backend - Node.js
+﻿# SmartLogix Backend - Node.js
 
 ## Requisitos
 - Docker y Docker Compose
@@ -17,11 +17,11 @@ docker compose -f docker-compose.vm.yml up -d
 ```
 
 ## Servicios
-| Servicio | Puerto | DB | Descripcion |
+| Servicio | Puerto | DB | Descripción |
 |----------|--------|-----|-------------|
 | orders-service | 8081 | orders_db | Pedidos |
 | inventory-service | 8082 | inventory_db | Stock y ventas |
-| shipping-service | 8084 | shipping_db | Envios |
+| shipping-service | 8084 | shipping_db | Envíos |
 | notification-service | 8085 | notification_db | Trazabilidad |
 | nginx (BFF) | 80 | - | API Gateway |
 
@@ -31,7 +31,7 @@ docker compose -f docker-compose.vm.yml up -d
 - `PUT  /api/orders/:id/confirm` - Confirmar (dispara flujo completo)
 - `GET  /api/inventory` - Listar productos
 - `POST /api/inventory/:sku/adjust?delta=-5` - Ajustar stock
-- `GET  /api/shipments` - Listar envios
+- `GET  /api/shipments` - Listar envíos
 - `GET  /api/notifications/order/:id` - Trazabilidad de pedido
 
 ## Estructura de cada microservicio
@@ -44,7 +44,7 @@ service-name/
 ```
 
 ## Modulos compartidos
-`Backend/shared/` contiene codigo reutilizado:
+`Backend/shared/` contiene código reutilizado:
 - `db.js` - Pool PostgreSQL
 - `logger.js` - Logging estructurado
 - `validate.js` - Validacion de entradas

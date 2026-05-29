@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Box, Package, ShoppingBag, TrendingDown, TrendingUp } from "lucide-react";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -58,7 +58,7 @@ export function InventoryDetailPage() {
           resolvedProduct.status === "warning" && "bg-[#E3AA75]/10 text-[#E3AA75]",
           resolvedProduct.status === "critical" && "bg-red-50 text-red-500",
         )}>
-          {resolvedProduct.status === "healthy" ? "Estable" : resolvedProduct.status === "warning" ? "Bajo" : "Critico"}
+          {resolvedProduct.status === "healthy" ? "Estable" : resolvedProduct.status === "warning" ? "Bajo" : "Crítico"}
         </span>
       </div>
 
@@ -101,7 +101,7 @@ export function InventoryDetailPage() {
 
           {reason && (
             <div className="mt-3 rounded border border-[#4B98CF]/20 bg-[#4B98CF]/5 px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#4B98CF]">Ultimo ajuste</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#4B98CF]">Último ajuste</p>
               <p className="mt-1 text-sm text-[#112b4a]">{reason}</p>
               {adjustedAt && <p className="mt-0.5 text-[10px] text-[#6B7280]">{new Date(adjustedAt).toLocaleString("es-CL")}</p>}
             </div>
@@ -132,11 +132,11 @@ export function InventoryDetailPage() {
                       "rounded px-2 py-0.5 text-[10px] font-bold",
                       order.stage === "entregado" && "bg-green-50 text-green-600",
                       order.stage === "created" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                      order.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                      order.stage === "en_preparación" && "bg-[#E3AA75]/10 text-[#E3AA75]",
                       order.stage === "en_reparto" && "bg-purple-50 text-purple-600",
                       order.stage === "cancelado" && "bg-red-50 text-red-500",
                     )}>
-                      {order.stage === "created" ? "Pendiente" : order.stage === "en_preparacion" ? "Preparacion" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
+                      {order.stage === "created" ? "Pendiente" : order.stage === "en_preparación" ? "Preparación" : order.stage === "en_reparto" ? "En reparto" : order.stage === "entregado" ? "Entregado" : order.stage === "cancelado" ? "Cancelado" : order.stage}
                     </span>
                     <p className="mt-0.5 text-[10px] text-[#6B7280]">{new Date(order.createdAt).toLocaleDateString("es-CL")}</p>
                   </div>

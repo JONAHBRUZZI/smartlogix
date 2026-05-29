@@ -1,4 +1,4 @@
-export default function Hero1() {
+﻿export default function Hero1() {
     return (
         <section className="relative overflow-hidden bg-gradient-to-br from-brand-2 via-brand-5 to-brand-4 min-h-[600px] lg:min-h-[700px] flex items-center pt-20 lg:pt-0">
             <div className="absolute top-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full bg-brand-1/10 blur-3xl pointer-events-none"/>

@@ -1,4 +1,4 @@
-const { createApp, interServiceFetch } = require('../shared/app');
+﻿const { createApp, interServiceFetch } = require('../shared/app');
 const { validateOrderBody, validateOrderStatus } = require('../shared/validate');
 const log = require('../shared/logger');
 
@@ -54,7 +54,7 @@ app.put('/api/orders/:id/confirm', async (req, res) => {
     catch (e) { log.error('Inventory adjustment failed', { orderId, message: e.message }); errors.push(`Inventario: ${e.message}`); }
 
     try { await interServiceFetch(`${SHIPPING_URL}/api/shipments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: parseInt(orderId), customerId: order.customer_id, sku: order.sku, quantity: order.quantity }) }); }
-    catch (e) { log.error('Shipment creation failed', { orderId, message: e.message }); errors.push(`Envio: ${e.message}`); }
+    catch (e) { log.error('Shipment creation failed', { orderId, message: e.message }); errors.push(`Envío: ${e.message}`); }
 
     await pool.query("UPDATE orders SET status='EN_PREPARACION' WHERE id=$1", [orderId]);
     const updated = (await pool.query('SELECT * FROM orders WHERE id=$1', [orderId])).rows[0];

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -56,7 +56,7 @@ export function CalendarPage() {
           quantity: 2,
           carrier: "Transportista asignado",
           tracking: `SLX-${year}${month + 1}${d.toString().padStart(2, "0")}`,
-          stage: "en_preparacion",
+          stage: "en_preparación",
           eta: null,
           createdAt: new Date(year, month, d).toISOString(),
           shippedAt: null,
@@ -158,7 +158,7 @@ export function CalendarPage() {
                               "flex items-center gap-1 truncate rounded px-0.5 sm:px-1 py-0.5 text-[8px] sm:text-[9px] font-medium",
                               s.stage === "entregado" && "bg-green-50 text-green-600",
                               s.stage === "en_reparto" && "bg-[#4B98CF]/10 text-[#4B98CF]",
-                              s.stage === "en_preparacion" && "bg-[#E3AA75]/10 text-[#E3AA75]",
+                              s.stage === "en_preparación" && "bg-[#E3AA75]/10 text-[#E3AA75]",
                               s.stage === "cancelado" && "bg-red-50 text-red-500",
                               s.id.startsWith("sched-") && "bg-purple-50 text-purple-600",
                             )}
@@ -183,7 +183,7 @@ export function CalendarPage() {
       {/* Daily detail */}
       <div className="rounded border border-[#DCE0E2] bg-white">
         <div className="border-b border-[#ECEEF0] px-4 py-3">
-          <h2 className="text-sm font-bold text-[#112b4a]">Envios de hoy ({today.toLocaleDateString("es-CL")})</h2>
+          <h2 className="text-sm font-bold text-[#112b4a]">Envíos de hoy ({today.toLocaleDateString("es-CL")})</h2>
         </div>
         <div className="p-3">
           {shipments?.filter((s) => {
@@ -219,13 +219,13 @@ export function CalendarPage() {
                       s.stage === "en_reparto" && "bg-[#4B98CF]/10 text-[#4B98CF]",
                       s.stage === "cancelado" && "bg-red-50 text-red-500",
                     )}>
-                      {s.stage === "en_preparacion" ? "Preparacion" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
+                      {s.stage === "en_preparación" ? "Preparación" : s.stage === "en_reparto" ? "En reparto" : s.stage === "entregado" ? "Entregado" : s.stage === "cancelado" ? "Cancelado" : s.stage}
                     </span>
                   </Link>
                 ))}
             </div>
           ) : (
-            <p className="py-6 text-center text-xs text-[#6B7280]">No hay envios programados para hoy</p>
+            <p className="py-6 text-center text-xs text-[#6B7280]">No hay envíos programados para hoy</p>
           )}
         </div>
       </div>

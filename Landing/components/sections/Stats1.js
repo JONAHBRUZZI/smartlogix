@@ -1,7 +1,7 @@
-export default function Stats1() {
+﻿export default function Stats1() {
     const stats = [
         { icon: "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10", value: "+500", label: "Comercios Activos" },
-        { icon: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z M3.27 6.96L12 12.01l8.73-5.05 M12 22.08V12", value: "+50k", label: "Pedidos Gestionados" },
+        { icon: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z M3.27 6.96L12 12.01l8.73-5.05 M12 22.08V12", value: "+50k", label: "Pedidos Gestiónados" },
         { icon: "M12 1v22 M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6", value: "+120k", label: "Productos Vendidos" },
         { icon: "M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3", value: "99%", label: "Satisfacción Cliente" },
     ]

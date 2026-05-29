@@ -1,7 +1,7 @@
-const steps = [
+﻿const steps = [
     { emoji: "🏪", title: "Regístrate y configura", desc: "Crea tu cuenta en minutos. Agrega productos, categorías y precios. Todo listo para vender." },
     { emoji: "🛒", title: "Vende desde el POS", desc: "Punto de venta rápido e intuitivo. Stock se descuenta automáticamente con cada venta." },
-    { emoji: "🚚", title: "Gestiona pedidos y despachos", desc: "Confirma pedidos, asigna repartidores y sigue cada entrega con código QR en tiempo real." },
+    { emoji: "🚚", title: "Gestióna pedidos y despachos", desc: "Confirma pedidos, asigna repartidores y sigue cada entrega con código QR en tiempo real." },
     { emoji: "📊", title: "Analiza y crece", desc: "Dashboard completo con métricas de ventas, pedidos y stock. Toma decisiones con datos reales." },
 ]
 

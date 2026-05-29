@@ -1,4 +1,4 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 
 export default function Requestquote1() {
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', business: '', message: '' })
@@ -8,7 +8,7 @@ export default function Requestquote1() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        const msg = `Hola SmartLogix,%0A%0A*Solicitud de Demo*%0A%0ANombre: ${formData.name}%0AEmail: ${formData.email}%0ATelefono: ${formData.phone}%0ANegocio: ${formData.business}%0AMensaje: ${formData.message}`
+        const msg = `Hola SmartLogix,%0A%0A*Solicitud de Demo*%0A%0ANombre: ${formData.name}%0AEmail: ${formData.email}%0ATeléfono: ${formData.phone}%0ANegocio: ${formData.business}%0AMensaje: ${formData.message}`
         setSubmitted(true)
         window.open(`https://wa.me/56938980598?text=${msg}`, '_blank')
     }
@@ -26,9 +26,9 @@ export default function Requestquote1() {
                         <h2 className="text-white font-extrabold leading-tight mb-5" style={{fontSize: 'clamp(2rem, 4vw, 3rem)'}}>
                             Solicita una Demo<br/><span className="text-brand-1">Gratis</span>
                         </h2>
-                        <p className="text-lg text-white/80 mb-10">Cuentanos sobre tu negocio y te mostraremos como SmartLogix puede ayudarte. Sin compromiso, sin tarjeta de credito.</p>
+                        <p className="text-lg text-white/80 mb-10">Cuéntanos sobre tu negocio y te mostraremos como SmartLogix puede ayudarte. Sin compromiso, sin tarjeta de credito.</p>
                         <div className="space-y-5">
-                            {[["Demo personalizada","Adaptada a las necesidades de tu negocio"],["14 dias de prueba gratis","Acceso completo a todas las funcionalidades"],["Sin compromiso","Cancela cuando quieras, sin preguntas"]].map(([title, desc], i) => (
+                            {[["Demo personalizada","Adaptada a las necesidades de tu negocio"],["14 días de prueba gratis","Acceso completo a todas las funcionalidades"],["Sin compromiso","Cancela cuando quieras, sin preguntas"]].map(([title, desc], i) => (
                                 <div key={i} className="flex items-start gap-4">
                                     <div className="w-12 h-12 rounded-xl bg-brand-1 flex items-center justify-center shrink-0">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#034460" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -48,7 +48,7 @@ export default function Requestquote1() {
                                     <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-5">
                                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16BA8F" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                                     </div>
-                                    <h4 className="text-brand-2 font-extrabold text-2xl mb-3">Gracias por tu interes!</h4>
+                                    <h4 className="text-brand-2 font-extrabold text-2xl mb-3">Gracias por tu interés!</h4>
                                     <p className="text-grey-500">Te contactaremos pronto para coordinar tu demo personalizada.</p>
                                 </div>
                             ) : (
@@ -67,7 +67,7 @@ export default function Requestquote1() {
                                                 className="w-full px-4 py-3 border-2 border-grey-300 rounded-xl text-sm bg-grey-100 focus:border-brand-1 focus:bg-white focus:ring-4 focus:ring-brand-1/10 outline-none transition-all"/>
                                         </div>
                                         <div>
-                                            <label className="block text-brand-2 font-semibold text-sm mb-1.5">Telefono</label>
+                                            <label className="block text-brand-2 font-semibold text-sm mb-1.5">Teléfono</label>
                                             <input name="phone" type="tel" placeholder="+56 9 1234 5678" value={formData.phone} onChange={handleChange}
                                                 className="w-full px-4 py-3 border-2 border-grey-300 rounded-xl text-sm bg-grey-100 focus:border-brand-1 focus:bg-white focus:ring-4 focus:ring-brand-1/10 outline-none transition-all"/>
                                         </div>
@@ -77,8 +77,8 @@ export default function Requestquote1() {
                                                 className="w-full px-4 py-3 border-2 border-grey-300 rounded-xl text-sm bg-grey-100 focus:border-brand-1 focus:bg-white focus:ring-4 focus:ring-brand-1/10 outline-none transition-all"/>
                                         </div>
                                         <div>
-                                            <label className="block text-brand-2 font-semibold text-sm mb-1.5">Cuentanos sobre tu negocio</label>
-                                            <textarea name="message" rows={3} placeholder="Que tipo de productos vendes? Cuantos empleados tienes?" value={formData.message} onChange={handleChange}
+                                            <label className="block text-brand-2 font-semibold text-sm mb-1.5">Cuéntanos sobre tu negocio</label>
+                                            <textarea name="message" rows={3} placeholder="Que tipo de productos vendes? Cuántos empleados tienes?" value={formData.message} onChange={handleChange}
                                                 className="w-full px-4 py-3 border-2 border-grey-300 rounded-xl text-sm bg-grey-100 focus:border-brand-1 focus:bg-white focus:ring-4 focus:ring-brand-1/10 outline-none transition-all resize-y min-h-[80px]"/>
                                         </div>
                                     </div>

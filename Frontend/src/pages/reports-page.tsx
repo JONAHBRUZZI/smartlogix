@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, BarChart3, Boxes, CalendarDays, Clock, Download, Package, Search, ShoppingBag, ShoppingCart, Table2, Truck } from "lucide-react";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useOperationalWorkspace } from "@/hooks/use-operational-workspace";
@@ -13,15 +13,15 @@ type ViewMode = "charts" | "table";
 type ActiveTab = "orders" | "shipments" | "stock" | "sales";
 
 const PERIODS: { value: Period; label: string }[] = [
-  { value: "7d", label: "7 dias" },
-  { value: "30d", label: "30 dias" },
-  { value: "90d", label: "90 dias" },
+  { value: "7d", label: "7 días" },
+  { value: "30d", label: "30 días" },
+  { value: "90d", label: "90 días" },
   { value: "all", label: "Todo" },
 ];
 
 const TABS: { value: ActiveTab; label: string; icon: typeof BarChart3 }[] = [
   { value: "orders", label: "Pedidos", icon: ShoppingBag },
-  { value: "shipments", label: "Envios", icon: Truck },
+  { value: "shipments", label: "Envíos", icon: Truck },
   { value: "stock", label: "Stock", icon: Boxes },
   { value: "sales", label: "Ventas", icon: ShoppingCart },
 ];
@@ -252,7 +252,7 @@ export function ReportsPage() {
       label: `SKU ${p.sku}`,
       value: p.stock,
       color: p.stock <= 5 ? "#CF4B4B" : p.stock <= 20 ? "#E3AA75" : "#4EB4A5",
-      detail: p.stock <= 5 ? "Critico" : p.stock <= 20 ? "Bajo" : "OK",
+      detail: p.stock <= 5 ? "Crítico" : p.stock <= 20 ? "Bajo" : "OK",
     }));
 
     const deliveryRate = filteredShipments.length > 0
@@ -401,8 +401,8 @@ export function ReportsPage() {
           : [
               { label: "Pedidos totales", value: reportData.totalOrders, icon: ShoppingBag, color: "#4B98CF", trend: "+12%", trendUp: true },
               { label: "Tasa de entrega", value: `${reportData.deliveryRate}%`, icon: Truck, color: "#4EB4A5", trend: "+5%", trendUp: true },
-              { label: "Stock bajo", value: `${reportData.lowStock}/${reportData.totalProducts}`, icon: Package, color: "#E3AA75", trend: "Critico", trendUp: false },
-              { label: "Envios activos", value: reportData.totalShipments, icon: Clock, color: "#5163C5", trend: "En curso", trendUp: true },
+              { label: "Stock bajo", value: `${reportData.lowStock}/${reportData.totalProducts}`, icon: Package, color: "#E3AA75", trend: "Crítico", trendUp: false },
+              { label: "Envíos activos", value: reportData.totalShipments, icon: Clock, color: "#5163C5", trend: "En curso", trendUp: true },
             ]
         ).map((kpi) => (
           <div key={kpi.label} className="group rounded border border-[#DCE0E2] bg-white p-4 transition hover:border-[#4B98CF] hover:shadow-sm">
@@ -477,7 +477,7 @@ export function ReportsPage() {
             {activeTab === "shipments" && (
               <>
                 <div className="rounded border border-[#DCE0E2] bg-white p-5">
-                  <p className="mb-3 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Envios por estado</p>
+                  <p className="mb-3 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Envíos por estado</p>
                   <div className="space-y-3">
                     {reportData.shipmentsByStage.map((s) => (
                       <div key={s.label} onClick={() => setSelectedBar({ label: s.label, value: s.value })} className="cursor-pointer">
@@ -490,7 +490,7 @@ export function ReportsPage() {
                   </div>
                 </div>
                 <div className="rounded border border-[#DCE0E2] bg-white p-5">
-                  <p className="mb-3 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Resumen de envios</p>
+                  <p className="mb-3 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Resumen de envíos</p>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="rounded bg-[#F5F7F9] p-4 text-center">
                       <p className="text-2xl font-bold text-[#4EB4A5]">{filteredShipments.filter((s) => s.stage === "entregado").length}</p>
@@ -501,8 +501,8 @@ export function ReportsPage() {
 
   . . .
 
-              <p className="text-2xl font-bold text-[#E3AA75]">{filteredShipments.filter((s) => s.stage === "en_preparacion" || s.stage === "en_reparto").length}</p>
-                      <p className="text-[10px] font-medium text-[#6B7280]">En preparacion</p>
+              <p className="text-2xl font-bold text-[#E3AA75]">{filteredShipments.filter((s) => s.stage === "en_preparación" || s.stage === "en_reparto").length}</p>
+                      <p className="text-[10px] font-medium text-[#6B7280]">En preparación</p>
                     </div>
                   </div>
                 </div>
@@ -646,7 +646,7 @@ export function ReportsPage() {
                       <td className="px-4 py-2.5">{p.stock}</td>
                       <td className="px-4 py-2.5">
                         <span className={cn("rounded px-2 py-0.5 text-[10px] font-bold", p.stock <= 5 ? "bg-red-50 text-red-500" : "bg-green-50 text-green-600")}>
-                          {p.stock <= 5 ? "Critico" : "OK"}
+                          {p.stock <= 5 ? "Crítico" : "OK"}
                         </span>
                       </td>
                     </tr>

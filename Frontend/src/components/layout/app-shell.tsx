@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/app/auth";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -54,7 +54,7 @@ export function AppShell() {
                 onClick={logout}
                 className="mt-4 flex w-full items-center gap-3 rounded px-3 py-2.5 text-sm font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
               >
-                Cerrar sesion
+                Cerrar sesión
               </button>
             </nav>
           </div>

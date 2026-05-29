@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type PropsWithChildren } from "react";
+﻿import { createContext, useContext, useEffect, useMemo, useRef, useState, type PropsWithChildren } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { getDefaultPathForRole, isPathAllowedForRole } from "@/app/access";
 import { readApiConfig, writeApiConfig } from "@/lib/api-config";
@@ -203,7 +203,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setError(null);
         return nextSession;
       } catch {
-        clearActiveSession("Tu sesion expiro. Vuelve a iniciar sesion.");
+        clearActiveSession("Tu sesión expiro. Vuelve a iniciar sesión.");
         return null;
       } finally {
         refreshPromiseRef.current = null;
@@ -217,12 +217,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     setApiAuthErrorListener((status) => {
       if (status === 401) {
-        clearActiveSession("Tu sesion expiro o el token ya no es valido. Vuelve a iniciar sesion.");
+        clearActiveSession("Tu sesión expiro o el token ya no es valido. Vuelve a iniciar sesión.");
         return;
       }
 
       if (status === 403) {
-        setError((currentError) => currentError ?? "El backend rechazo la solicitud (403). Revisa permisos, rutas o configuracion del proxy.");
+        setError((currentError) => currentError ?? "El backend rechazó la solicitud (403). Revisa permisos, rutas o configuración del proxy.");
       }
     });
 
@@ -275,7 +275,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
           persistSession(nextSession);
           return nextSession;
         } catch (loginError) {
-          const message = loginError instanceof Error ? loginError.message : "No se pudo iniciar sesion.";
+          const message = loginError instanceof Error ? loginError.message : "No se pudo iniciar sesión.";
           setError(message);
           throw loginError;
         } finally {
@@ -290,7 +290,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
             await globalSignOut(currentSession.token);
           }
         } catch {
-          // noop: cerramos la sesion local aunque Cognito no confirme el sign-out.
+          // noop: cerramos la sesión local aunque Cognito no confirme el sign-out.
         } finally {
           clearActiveSession(null);
         }

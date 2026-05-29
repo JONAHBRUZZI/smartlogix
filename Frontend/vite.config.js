@@ -1,4 +1,4 @@
-var _a, _b;
+﻿var _a, _b;
 /// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
@@ -21,7 +21,7 @@ export default defineConfig({
             manifest: {
                 name: "SmartLogix",
                 short_name: "SmartLogix",
-                description: "Dashboard logistico mobile-first para inventario, pedidos, envios y alertas.",
+                description: "Dashboard logístico mobile-first para inventario, pedidos, envíos y alertas.",
                 theme_color: "#0f172a",
                 background_color: "#f6f7f3",
                 display: "standalone",

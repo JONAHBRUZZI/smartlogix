@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Download, Pencil, Plus, Search, Trash2, User, UserPlus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -83,7 +83,7 @@ export function CustomersPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Clientes</p>
-          <h1 className="text-xl font-bold text-[#112b4a]">Gestion de clientes</h1>
+          <h1 className="text-xl font-bold text-[#112b4a]">Gestión de clientes</h1>
         </div>
         <div className="flex items-center gap-2">
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setFormError(""); setEditCustomer(null); setForm({ name: "", phone: "", address: "", email: "" }); } }}>
@@ -99,7 +99,7 @@ export function CustomersPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Telefono</label>
+                    <label className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Teléfono</label>
                     <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+56912345678" className="h-9 text-sm" />
                   </div>
                   <div className="space-y-1">

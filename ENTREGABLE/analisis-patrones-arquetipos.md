@@ -1,4 +1,4 @@
-# Analisis de Patrones de Diseno y Arquetipos Arquitectonicos
+﻿# Analisis de Patrones de Diseno y Arquetipos Arquitectonicos
 
 **Proyecto:** SmartLogix
 **Equipo:** Jonah Bruzzi
@@ -11,11 +11,11 @@
 
 ### 1.1 Patron Repository (Backend - 4 microservicios)
 
-**Ubicacion:** `Backend/shared/db.js` y cada `src/index.js`
+**Ubicación:** `Backend/shared/db.js` y cada `src/index.js`
 
 **Problema que resuelve:** Separar la logica de acceso a datos de la logica de negocio. Sin un patron Repository, las consultas SQL estarian dispersas en los handlers HTTP, dificultando el mantenimiento y las pruebas.
 
-**Implementacion:** El modulo `shared/db.js` exporta una funcion `createPool(dbName)` que configura un pool de conexiones PostgreSQL usando `pg`. Cada microservicio importa este modulo y ejecuta consultas parametrizadas. Las tablas se crean automaticamente con `CREATE TABLE IF NOT EXISTS` en la funcion `ensureTables()`.
+**Implementación:** El modulo `shared/db.js` exporta una funcion `createPool(dbName)` que configura un pool de conexiones PostgreSQL usando `pg`. Cada microservicio importa este modulo y ejecuta consultas parametrizadas. Las tablas se crean automáticamente con `CREATE TABLE IF NOT EXISTS` en la funcion `ensureTables()`.
 
 ```javascript
 // shared/db.js
@@ -26,21 +26,21 @@ function createPool(dbName) {
 }
 ```
 
-**Justificacion:** Encapsula la configuracion de conexion. Si se cambia de PostgreSQL a otro motor, solo se modifica `db.js`. El pool de 3 conexiones mantiene bajo consumo de recursos.
+**Justificación:** Encapsula la configuración de conexion. Si se cambia de PostgreSQL a otro motor, solo se modifica `db.js`. El pool de 3 conexiones mantiene bajo consumo de recursos.
 
 ---
 
 ### 1.2 Patron Observer / Event-Driven (via REST)
 
-**Ubicacion:** orders-service, shipping-service, notification-service
+**Ubicación:** orders-service, shipping-service, notification-service
 
-**Problema que resuelve:** Cuando se confirma un pedido, se debe notificar a inventory (ajustar stock), shipping (crear envio) y notification (registrar evento) sin acoplamiento fuerte entre servicios.
+**Problema que resuelve:** Cuando se confirma un pedido, se debe notificar a inventory (ajustar stock), shipping (crear envío) y notification (registrar evento) sin acoplamiento fuerte entre servicios.
 
-**Implementacion:** El patron Observer se implementa via llamadas REST directas entre servicios. orders-service actua como sujeto que notifica a los observadores (inventory, shipping) mediante HTTP. shipping-service a su vez notifica a notification-service.
+**Implementación:** El patron Observer se implementa via llamadas REST directas entre servicios. orders-service actua como sujeto que notifica a los observadores (inventory, shipping) mediante HTTP. shipping-service a su vez notifica a notification-service.
 
 ```
 orders-service --REST--> inventory-service (ajusta stock)
-orders-service --REST--> shipping-service (crea envio)
+orders-service --REST--> shipping-service (crea envío)
 shipping-service --REST--> notification-service (registra evento)
 ```
 
@@ -50,34 +50,34 @@ await fetch(`${INVENTORY_URL}/api/inventory/${sku}/adjust?delta=-${qty}`);
 await fetch(`${SHIPPING_URL}/api/shipments`, { body: shipmentData });
 ```
 
-**Justificacion:** Desacopla servicios sin depender de brokers de mensajeria externos. Cada servicio falla independientemente. Facil de extender: agregar un nuevo observer es agregar una llamada REST.
+**Justificación:** Desacopla servicios sin depender de brokers de mensajeria externos. Cada servicio falla independientemente. Facil de extender: agregar un nuevo observer es agregar una llamada REST.
 
 ---
 
 ### 1.3 Patron Factory Method (Creacion de servicios)
 
-**Ubicacion:** `Backend/shared/` y cada `src/index.js`
+**Ubicación:** `Backend/shared/` y cada `src/index.js`
 
-**Problema que resuelve:** Cada microservicio necesita una instancia unica de pool de BD, logger, y configuracion de Express sin repetir codigo de inicializacion.
+**Problema que resuelve:** Cada microservicio necesita una instancia única de pool de BD, logger, y configuración de Express sin repetir código de inicializacion.
 
-**Implementacion:** Los modulos compartidos (`shared/db.js`, `shared/logger.js`, `shared/validate.js`, `shared/shutdown.js`) exportan funciones factory que cada servicio invoca para crear sus dependencias.
+**Implementación:** Los modulos compartidos (`shared/db.js`, `shared/logger.js`, `shared/validate.js`, `shared/shutdown.js`) exportan funciones factory que cada servicio invoca para crear sus dependencias.
 
 ```javascript
 const pool = createPool('orders_db');        // Factory: crea pool para orders
 const log = require('../shared/logger');      // Singleton: logger compartido
 ```
 
-**Justificacion:** Evita duplicacion de codigo entre los 4 microservicios. Si se cambia la configuracion de BD, se modifica un solo archivo. Facilita pruebas unitarias al permitir inyeccion de dependencias mock.
+**Justificación:** Evita duplicacion de código entre los 4 microservicios. Si se cambia la configuración de BD, se modifica un solo archivo. Facilita pruebas unitarias al permitir inyeccion de dependencias mock.
 
 ---
 
 ### 1.4 Patron Adapter (Frontend)
 
-**Ubicacion:** `Frontend/src/lib/api-adapters.ts`
+**Ubicación:** `Frontend/src/lib/api-adapters.ts`
 
 **Problema que resuelve:** Los datos que vienen de la API REST (snake_case, tipos planos) no coinciden con el modelo de dominio del frontend (camelCase, tipos enriquecidos).
 
-**Implementacion:** El modulo `api-adapters.ts` transforma las respuestas de la API al modelo del frontend:
+**Implementación:** El modulo `api-adapters.ts` transforma las respuestas de la API al modelo del frontend:
 
 ```typescript
 export function adaptOrder(raw: ApiOrder): Order {
@@ -91,17 +91,17 @@ export function adaptOrder(raw: ApiOrder): Order {
 }
 ```
 
-**Justificacion:** Aisla los cambios de API del resto de la aplicacion. Si el backend cambia el formato de respuesta, solo se modifica el adapter.
+**Justificación:** Aisla los cambios de API del resto de la aplicacion. Si el backend cambia el formato de respuesta, solo se modifica el adapter.
 
 ---
 
 ### 1.5 Patron Proxy (Frontend - API Client)
 
-**Ubicacion:** `Frontend/src/lib/api-client.ts`
+**Ubicación:** `Frontend/src/lib/api-client.ts`
 
 **Problema que resuelve:** Centralizar todas las llamadas HTTP, manejo de errores, autenticacion y headers en un solo lugar.
 
-**Implementacion:** `api-client.ts` proporciona funciones `get`, `post`, `put` que envuelven `fetch` con manejo de errores estandarizado, headers comunes, y transformacion de respuestas.
+**Implementación:** `api-client.ts` proporciona funciones `get`, `post`, `put` que envuelven `fetch` con manejo de errores estandarizado, headers comunes, y transformacion de respuestas.
 
 ```typescript
 export async function get<T>(path: string): Promise<T> {
@@ -111,7 +111,7 @@ export async function get<T>(path: string): Promise<T> {
 }
 ```
 
-**Justificacion:** Si se cambia de fetch a axios, solo se modifica este archivo. Manejo de errores consistente en toda la app. Facil de mockear en pruebas.
+**Justificación:** Si se cambia de fetch a axios, solo se modifica este archivo. Manejo de errores consistente en toda la app. Facil de mockear en pruebas.
 
 ---
 
@@ -121,18 +121,18 @@ export async function get<T>(path: string): Promise<T> {
 
 **Problema que resuelve:** Un sistema monolitico con una sola base de datos crea acoplamiento en el esquema, dificulta el escalado independiente y convierte cualquier cambio de schema en un riesgo global.
 
-**Implementacion:** 4 bases de datos independientes, una por cada bounded context:
+**Implementación:** 4 bases de datos independientes, una por cada bounded context:
 
 | Servicio | Base de datos | Responsabilidad |
 |----------|--------------|----------------|
 | orders-service | orders_db | Pedidos |
 | inventory-service | inventory_db | Stock y ventas |
-| shipping-service | shipping_db | Envios y tracking |
+| shipping-service | shipping_db | Envíos y tracking |
 | notification-service | notification_db | Trazabilidad |
 
 Cada servicio crea sus propias tablas al iniciar (`CREATE TABLE IF NOT EXISTS`).
 
-**Justificacion:** Aislamiento total entre servicios. Cada equipo puede modificar su esquema sin afectar a otros. Permite escalar y optimizar cada BD segun necesidades del servicio.
+**Justificación:** Aislamiento total entre servicios. Cada equipo puede modificar su esquema sin afectar a otros. Permite escalar y optimizar cada BD segun necesidades del servicio.
 
 ---
 
@@ -140,7 +140,7 @@ Cada servicio crea sus propias tablas al iniciar (`CREATE TABLE IF NOT EXISTS`).
 
 **Problema que resuelve:** Exponer 4 microservicios en diferentes puertos al frontend crearia complejidad de CORS, multiples dominios, y logica de routing en el cliente.
 
-**Implementacion:** Nginx actua como API Gateway en puerto 80, enrutando por path:
+**Implementación:** Nginx actua como API Gateway en puerto 80, enrutando por path:
 
 ```nginx
 location /api/orders      -> orders-service:8081
@@ -151,7 +151,7 @@ location /api/notifications -> notification-service:8085
 location /api/customers   -> orders-service:8081
 ```
 
-**Justificacion:** Punto unico de entrada. Oculta topologia interna. Permite agregar rate limiting, autenticacion y CORS en un solo lugar. Facilita el versionado de API.
+**Justificación:** Punto único de entrada. Oculta topologia interna. Permite agregar rate limiting, autenticacion y CORS en un solo lugar. Facilita el versionado de API.
 
 ---
 
@@ -159,20 +159,20 @@ location /api/customers   -> orders-service:8081
 
 **Problema que resuelve:** El proceso "crear pedido -> validar stock -> confirmar -> generar despacho -> notificar" es una transaccion distribuida entre 4 servicios con bases de datos independientes. No se puede usar ACID tradicional.
 
-**Implementacion:** Saga orquestada donde orders-service es el coordinador:
+**Implementación:** Saga orquestada donde orders-service es el coordinador:
 
 ```
 1. orders-service: crea pedido en orders_db (status=CREATED)
 2. orders-service: PUT /confirm dispara la saga
    a. REST -> inventory-service: ajusta stock (-quantity)
-   b. REST -> shipping-service: crea envio + tracking
+   b. REST -> shipping-service: crea envío + tracking
       c. REST -> notification-service: persiste evento SHIPMENT_CREATED
 3. orders-service: actualiza status a EN_PREPARACION
 ```
 
 Si algun paso falla, el warning se registra y el flujo continua (eventual consistency). Para cancelaciones, se ejecuta la compensacion inversa (restaurar stock).
 
-**Justificacion:** Garantiza la consistencia eventual del negocio sin bloquear servicios. Cada paso es independiente y trazable.
+**Justificación:** Garantiza la consistencia eventual del negocio sin bloquear servicios. Cada paso es independiente y trazable.
 
 ---
 
@@ -182,7 +182,7 @@ Si algun paso falla, el warning se registra y el flujo continua (eventual consis
 
 | Rama | Proposito |
 |------|----------|
-| `main` | Codigo en produccion. Cada commit es deployable. |
+| `main` | Código en produccion. Cada commit es deployable. |
 | `develop` | Integracion de features. (Simplificado: usamos main directamente por ser equipo pequeno) |
 
 ### Flujo de trabajo
@@ -207,10 +207,10 @@ main
 
 ## 4. Buenas Practicas y Pruebas
 
-### 4.1 Codigo limpio y modular
+### 4.1 Código limpio y modular
 
 - **Separacion de concerns:** Cada servicio tiene `src/index.js` (rutas), modulos compartidos en `shared/` (db, logger, validate, shutdown)
-- **Modulos compartidos:** `Backend/shared/` contiene codigo reutilizado por los 4 servicios
+- **Modulos compartidos:** `Backend/shared/` contiene código reutilizado por los 4 servicios
 - **Validacion centralizada:** `shared/validate.js` con funciones de validacion por entidad
 - **Manejo de errores:** `try/catch` en cada handler, `sendError()` estandarizado
 - **Logging estructurado:** Timestamps ISO 8601, nivel de log configurable

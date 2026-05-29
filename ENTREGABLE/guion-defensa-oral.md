@@ -1,9 +1,9 @@
-# SmartLogix - Guion de Defensa Oral (15 minutos)
+﻿# SmartLogix - Guión de Defensa Oral (15 minutos)
 
 ---
 
 ## Diapositiva 1: Portada (1 min)
-**SmartLogix: Plataforma de Gestion Logistica para PYMEs**
+**SmartLogix: Plataforma de Gestión Logística para PYMEs**
 
 - Caso real: "Don Juan - Bebidas y Confites"
 - Stack: Node.js + Express + PostgreSQL + React + Docker
@@ -20,14 +20,14 @@ Frontend (React/Vercel) -> Nginx BFF (:80) -> 4 microservicios -> 4 bases Postgr
 ```
 
 - **Database per Service**: Cada microservicio es dueno de su BD. Aislamiento total.
-- **API Gateway / BFF**: Nginx como punto unico de entrada, CORS, routing.
+- **API Gateway / BFF**: Nginx como punto único de entrada, CORS, routing.
 - **Saga Pattern**: orders-service orquesta la transaccion distribuida:
   1. Crea pedido
   2. Ajusta inventario (compensacion si falla)
-  3. Crea envio
+  3. Crea envío
   4. Notifica
 
-**Justificacion:** Escalabilidad independiente. Si inventory tiene mas carga, solo se escala ese servicio. No hay acoplamiento entre esquemas.
+**Justificación:** Escalabilidad independiente. Si inventory tiene mas carga, solo se escala ese servicio. No hay acoplamiento entre esquemas.
 
 ---
 
@@ -42,9 +42,9 @@ Frontend (React/Vercel) -> Nginx BFF (:80) -> 4 microservicios -> 4 bases Postgr
 
 4. **Adapter** (Frontend): `api-adapters.ts` transforma snake_case de la API a camelCase del dominio. Aisla cambios de backend.
 
-5. **Proxy** (Frontend): `api-client.ts` centraliza llamadas HTTP, errores, headers. Single source of truth para comunicacion.
+5. **Proxy** (Frontend): `api-client.ts` centraliza llamadas HTTP, errores, headers. Single source of truth para comúnicacion.
 
-**Justificacion:** Cada patron resuelve un problema especifico de acoplamiento, mantenibilidad y escalabilidad.
+**Justificación:** Cada patron resuelve un problema especifico de acoplamiento, mantenibilidad y escalabilidad.
 
 ---
 
@@ -84,12 +84,12 @@ Evidencia:
 - Merge conflict resuelto: `docker-compose.node.yml` (befadc1)
 - Feature branches: `sns-to-rest`, `nodejs-migration`, `remove-sqs`
 
-**Justificacion:** Para equipo pequeno, Trunk-Based evita sobrecarga de GitFlow completo. Cada commit a main es deployable.
+**Justificación:** Para equipo pequeno, Trunk-Based evita sobrecarga de GitFlow completo. Cada commit a main es deployable.
 
 ---
 
 ## Diapositiva 6: Buenas Practicas (2 min)
-**Indicadores 4 y 8: Codigo limpio, pruebas, calidad**
+**Indicadores 4 y 8: Código limpio, pruebas, calidad**
 
 - **Modularidad**: `shared/` con db, logger, validate, shutdown para los 4 servicios
 - **Validacion**: `validate.js` centraliza reglas de negocio por entidad
@@ -115,6 +115,6 @@ Evidencia:
 - 5 patrones de diseno implementados y justificados
 - 3 patrones arquitectonicos (DB per Service, BFF, Saga)
 - Estrategia de branching con evidencia de merges y conflictos
-- Buenas practicas: codigo modular, health checks, idempotencia, rate limiting
+- Buenas practicas: código modular, health checks, idempotencia, rate limiting
 - Stack ligero: Node.js + Express (500 MB RAM total vs 1.6 GB Java)
 - Desplegado en VM + Vercel, listo para produccion

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDefaultPathForRole } from "@/app/access";
 import { useAuth } from "@/app/auth";
@@ -114,7 +114,7 @@ export function AlertsPage() {
       <PageHeader
         eyebrow="Alertas"
         title="Lo urgente primero"
-        description="La cola se recalcula con el estado operativo actual para que la prioridad venga de lo que el equipo ya hizo en pedidos, stock y envios."
+        description="La cola se recalcula con el estado operativo actual para que la prioridad venga de lo que el equipo ya hizo en pedidos, stock y envíos."
         action={<Button variant="secondary" onClick={refreshAll}>Actualizar datos</Button>}
       />
 
@@ -126,7 +126,7 @@ export function AlertsPage() {
           { value: "critical", label: "Criticas" },
           { value: "stock", label: "Stock" },
           { value: "order", label: "Pedidos" },
-          { value: "shipment", label: "Envios" },
+          { value: "shipment", label: "Envíos" },
           { value: "notification", label: "Notificaciones" }
         ]}
       />

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+﻿import { useCallback, useMemo, useRef, useState } from "react";
 import { Camera, Package, QrCode, Search, Truck, User, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/app/auth";
@@ -102,7 +102,7 @@ export function ShipperDeliveryPage() {
     setSubmitting(true);
     try {
       await updateShipmentStage(stageShipment, "en_reparto");
-      setFeedback({ type: "success", msg: "Retiro confirmado. Envio en reparto." });
+      setFeedback({ type: "success", msg: "Retiro confirmado. Envío en reparto." });
       setTimeout(() => { setStageShipment(null); setStageAction(null); refreshShipments(); }, 1200);
     } catch {
       setFeedback({ type: "error", msg: "Error al confirmar retiro" });
@@ -112,7 +112,7 @@ export function ShipperDeliveryPage() {
   async function confirmDelivery() {
     if (!stageShipment) return;
     if (!customerCode.trim()) {
-      setFeedback({ type: "error", msg: "Ingresa el codigo del cliente" });
+      setFeedback({ type: "error", msg: "Ingresa el código del cliente" });
       return;
     }
     if (!recipientRut.trim()) {
@@ -127,7 +127,7 @@ export function ShipperDeliveryPage() {
         recipientRut: formatRut(recipientRut),
         customerCode: customerCode.trim()
       });
-      setFeedback({ type: "success", msg: "Entrega registrada con exito" });
+      setFeedback({ type: "success", msg: "Entrega registrada con éxito" });
       setTimeout(() => { setStageShipment(null); setStageAction(null); refreshShipments(); }, 1200);
     } catch {
       setFeedback({ type: "error", msg: "Error al registrar la entrega" });
@@ -155,8 +155,8 @@ export function ShipperDeliveryPage() {
     <div className="space-y-4 max-w-sm w-full mx-auto sm:max-w-3xl md:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl px-2">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Envios</p>
-          <h1 className="text-xl font-bold text-[#112b4a]">Gestion de envios</h1>
+          <p className="text-[0.6875rem] font-bold uppercase tracking-[1.2px] text-[#6B7280]">Envíos</p>
+          <h1 className="text-xl font-bold text-[#112b4a]">Gestión de envíos</h1>
         </div>
         <div className="flex items-center gap-3 text-xs text-[#6B7280]">
           <span>{counts.total} total</span>
@@ -212,13 +212,13 @@ export function ShipperDeliveryPage() {
                 <div className="flex items-center gap-2 sm:ml-auto flex-wrap">
                   <span className={cn(
                     "rounded px-2 py-0.5 text-[10px] font-bold",
-                    shipment.stage === "en_preparacion" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
+                    shipment.stage === "en_preparación" ? "bg-[#E3AA75]/10 text-[#E3AA75]" :
                     shipment.stage === "en_reparto" ? "bg-purple-50 text-purple-600" :
                     shipment.stage === "entregado" ? "bg-green-50 text-green-600" :
                     shipment.stage === "cancelado" ? "bg-red-50 text-red-500" :
                     "bg-[#4B98CF]/10 text-[#4B98CF]"
                   )}>
-                    {shipment.stage === "en_preparacion" ? "Preparacion" :
+                    {shipment.stage === "en_preparación" ? "Preparación" :
                      shipment.stage === "en_reparto" ? "En reparto" :
                      shipment.stage === "entregado" ? "Entregado" :
                      shipment.stage === "cancelado" ? "Cancelado" : shipment.stage}
@@ -226,7 +226,7 @@ export function ShipperDeliveryPage() {
 
                   {canUpdate && shipment.stage !== "entregado" && shipment.stage !== "cancelado" && (
                     <div className="flex items-center gap-1">
-                      {shipment.stage === "en_preparacion" && (
+                      {shipment.stage === "en_preparación" && (
                         <>
                           <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleQrScan(shipment); }} className="rounded border border-[#DCE0E2] px-2.5 py-1 text-[10px] font-semibold text-[#4B98CF] hover:bg-[#4B98CF]/5 flex items-center gap-1">
                             <QrCode className="h-3 w-3" /> QR
@@ -260,8 +260,8 @@ export function ShipperDeliveryPage() {
         {filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded border border-[#DCE0E2] bg-white py-16">
             <Package className="h-10 w-10 text-[#DCE0E2]" />
-            <p className="mt-3 text-sm font-medium text-[#6B7280]">Sin envios pendientes</p>
-            <p className="mt-1 text-xs text-[#6B7280]/70">Los pedidos confirmados apareceran aqui.</p>
+            <p className="mt-3 text-sm font-medium text-[#6B7280]">Sin envíos pendientes</p>
+            <p className="mt-1 text-xs text-[#6B7280]/70">Los pedidos confirmados aparecerán aquí.</p>
           </div>
         )}
       </div>
@@ -280,7 +280,7 @@ export function ShipperDeliveryPage() {
                 </p>
               </div>
             </div>
-            <p className="text-xs text-[#6B7280]">Escanea este codigo para confirmar el retiro de la tienda</p>
+            <p className="text-xs text-[#6B7280]">Escanea este código para confirmar el retiro de la tienda</p>
             <p className="text-xs font-mono text-[#4B98CF]">{showQrModal.tracking}</p>
             <Button size="sm" className="w-full bg-[#4B98CF] hover:bg-[#346384] text-white" onClick={() => { setShowQrModal(null); handlePickup(showQrModal); }}>
               Confirmar retiro
@@ -335,11 +335,11 @@ export function ShipperDeliveryPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-[0.92px] text-muted-foreground mb-1">Codigo del cliente</label>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.92px] text-muted-foreground mb-1">Código del cliente</label>
                 <input
                   value={customerCode}
                   onChange={(e) => setCustomerCode(e.target.value)}
-                  placeholder="Ingresa el codigo proporcionado por el cliente"
+                  placeholder="Ingresa el código proporcionado por el cliente"
                   className="h-9 w-full rounded border border-input bg-white px-3 text-sm"
                 />
               </div>

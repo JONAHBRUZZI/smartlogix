@@ -74,14 +74,14 @@ export function Topbar({ title, onMenu, onLogout, role, sessionName, sessionUser
       avatar: "shipment",
       avatarInitials: "EN",
       avatarClass: "bg-[#4B98CF]",
-      message: "Envio TRACK-C9F68B15 en transito",
+      message: "Envío TRACK-C9F68B15 en transito",
       time: "Hace 5 min",
     },
     {
       id: "3",
       avatar: "inventory",
       avatarClass: "bg-[#4EB4A5]",
-      message: "Stock critico: SKU 100004 solo 5 unids",
+      message: "Stock crítico: SKU 100004 solo 5 unids",
       time: "Hace 10 min",
     },
     {
@@ -198,7 +198,7 @@ export function Topbar({ title, onMenu, onLogout, role, sessionName, sessionUser
                 className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-[#F5F7F9]"
               >
                 <LogOut className="h-4 w-4" />
-                Cerrar sesion
+                Cerrar sesión
               </button>
             </div>
           )}

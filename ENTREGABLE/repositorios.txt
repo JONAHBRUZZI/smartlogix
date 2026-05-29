@@ -1,4 +1,4 @@
-# Repositorios del Proyecto SmartLogix
+﻿# Repositorios del Proyecto SmartLogix
 
 ## Repositorio Principal
 https://github.com/JONAHBRUZZI/smartlogix
@@ -14,15 +14,15 @@ Contiene el proyecto completo SmartLogix:
 ## Componentes
 
 ### Frontend (NPM)
-- **Ubicacion:** Frontend/
-- **Descripcion:** SPA con React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, PWA
+- **Ubicación:** Frontend/
+- **Descripción:** SPA con React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, PWA
 - **Ejecutar:** `npm install && npm run dev`
 - **Build:** `npm run build`
 - **Deploy:** Vercel (https://smartlogix-five.vercel.app)
 
 ### Backend For Frontend (BFF)
-- **Ubicacion:** Backend/nginx/
-- **Descripcion:** Nginx como API Gateway, reverse proxy y BFF
+- **Ubicación:** Backend/nginx/
+- **Descripción:** Nginx como API Gateway, reverse proxy y BFF
 - **Puerto:** 80
 - **Funcion:** Enruta peticiones del frontend a los 4 microservicios
 
@@ -41,7 +41,7 @@ Contiene el proyecto completo SmartLogix:
 ### Microservicio: shipping-service
 - **Puerto:** 8084
 - **Base de datos:** shipping_db
-- **Responsabilidad:** Envios, tracking, codigo QR, confirmacion de entrega
+- **Responsabilidad:** Envíos, tracking, código QR, confirmacion de entrega
 - **Imagen Docker:** jonahbruzzi/shipping-service:node
 
 ### Microservicio: notification-service
@@ -56,9 +56,9 @@ Contiene el proyecto completo SmartLogix:
 
 ### Docker Compose
 - **node.yml:** Desarrollo con build local
-- **vm.yml:** Produccion con imagenes pre-built
+- **vm.yml:** Producción con imagenes pre-built
 - **optimized.yml:** Optimizado para 1GB RAM
-- **prod.yml:** Produccion completo
+- **prod.yml:** Producción completo
 
 ### Docker Hub
 - https://hub.docker.com/r/jonahbruzzi/orders-service
@@ -66,6 +66,6 @@ Contiene el proyecto completo SmartLogix:
 - https://hub.docker.com/r/jonahbruzzi/shipping-service
 - https://hub.docker.com/r/jonahbruzzi/notification-service
 
-### VM Produccion
+### VM Producción
 - **IP:** 104.248.60.29
 - **Stack:** Docker Compose + Nginx + Node.js + PostgreSQL
