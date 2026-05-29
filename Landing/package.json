@@ -1,25 +1,29 @@
 {
-    "name": "smartlogix-landing",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "next start",
-        "lint": "next lint",
-        "sass": "sass --watch public/assets/scss/style.scss:public/assets/css/style.css"
-    },
-    "dependencies": {
-        "@tailwindcss/postcss": "^4.3.0",
-        "eslint": "^9.17.0",
-        "eslint-config-next": "16.1.1",
-        "next": "16.1.1",
-        "react": "^19.2.1",
-        "react-dom": "^19.2.1",
-        "react-modal-video": "^2.0.0",
-        "sass": "^1.83.0",
-        "swiper": "^11.1.15",
-        "tailwindcss": "^4.3.0",
-        "wowjs": "^1.1.3"
-    }
+  "name": "smartlogix-landing",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "sass": "sass --watch public/assets/scss/style.scss:public/assets/css/style.css",
+    "doctor": "npx react-doctor@latest"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.3.0",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "16.1.1",
+    "next": "16.1.1",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "react-modal-video": "^2.0.0",
+    "sass": "^1.83.0",
+    "swiper": "^11.1.15",
+    "tailwindcss": "^4.3.0",
+    "wowjs": "^1.1.3"
+  },
+  "devDependencies": {
+    "react-doctor": "^0.2.11"
+  }
 }
