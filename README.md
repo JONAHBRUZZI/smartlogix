@@ -1,8 +1,8 @@
 # SmartLogix
 
-Plataforma de gestión logística para PYMEs — inventario, pedidos, envíos y notificaciones en tiempo real.
+Plataforma de gestion logistica para PYMEs -- inventario, pedidos, envios y notificaciones en tiempo real.
 
-> **Caso real:** Negocio "Don Juan – Bebidas y Confites" (10 SKUs, 3 clientes, reparto local).
+> **Caso real:** Negocio "Don Juan -- Bebidas y Confites" (10 SKUs, 3 clientes, reparto local).
 
 ---
 
@@ -10,44 +10,39 @@ Plataforma de gestión logística para PYMEs — inventario, pedidos, envíos y 
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│ Frontend — React 18 + Vite + Tailwind + PWA         │
+│ Frontend -- React 18 + Vite + Tailwind + PWA        │
 │ Despliegue: Vercel / S3 + CloudFront                │
 ├─────────────────────────────────────────────────────┤
-│ API Gateway — Nginx (reverse proxy, TLS, rate limit)│
-│ Despliegue: EC2 / ALB                               │
+│ API Gateway -- Nginx (reverse proxy, port 80)       │
 ├──────────┬──────────┬──────────┬────────────────────┤
 │ orders   │ inventory│ shipping │ notification       │
-│ Spring   │ Spring   │ Spring   │ Spring Boot 3.5.11 │
-│ Boot 3.4 │ Boot 3.5 │ Boot 3.5 │ Java 21            │
+│ Express  │ Express  │ Express  │ Express            │
+│ Node.js  │ Node.js  │ Node.js  │ Node.js            │
 │ :8081    │ :8082    │ :8084    │ :8085              │
 ├──────────┴──────────┴──────────┴────────────────────┤
-│ identity-service (Company, Role, User) :8083         │
+│ PostgreSQL 15 -- 4 bases, una por bounded context   │
 ├─────────────────────────────────────────────────────┤
-│ RDS PostgreSQL — 5 bases, una por bounded context   │
-├─────────────────────────────────────────────────────┤
-│ SQS + SNS — mensajería asíncrona y fan-out          │
-├─────────────────────────────────────────────────────┤
-│ S3 + Glue + Redshift + QuickSight — analítica y BI  │
+│ SQS (ElasticMQ) -- mensajeria asincrona             │
 └─────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Stack Tecnológico
+## Stack Tecnologico
 
-| Capa | Tecnología |
+| Capa | Tecnologia |
 |------|-----------|
 | **Frontend** | React 18, TypeScript 5.7, Vite 6, Tailwind CSS 3, shadcn, PWA |
-| **Backend** | Java 21, Spring Boot 3.5, JPA, Actuator, CloudWatch |
-| **Mensajería** | AWS SQS, SNS (LocalStack en dev) |
-| **Persistencia** | PostgreSQL 15 (5 bases: orders, inventory, shipping, notification, identity) |
-| **Auth** | Cognito (prod) / Demo tokens (dev) |
-| **Infra** | Docker Compose (dev), ECS Fargate (prod), Nginx, CloudFormation |
-| **Calidad** | TypeScript strict, SOLID, clean code, Error Boundary |
+| **Backend** | Node.js 22, Express 4, pg, AWS SDK SQS |
+| **Mensajeria** | ElasticMQ (dev) / AWS SQS (prod) |
+| **Persistencia** | PostgreSQL 15 -- 4 bases (orders_db, inventory_db, shipping_db, notification_db) |
+| **API Gateway** | Nginx Alpine (reverse proxy) |
+| **Infra** | Docker Compose (dev), ECS Fargate (prod), CloudFormation |
+| **RAM en VM** | ~500 MB total (vs ~1.6 GB con Java) |
 
 ---
 
-## Inicio rápido
+## Inicio rapido
 
 ### 1. Clonar
 
@@ -56,156 +51,107 @@ git clone https://github.com/JONAHBRUZZI/smartlogix.git
 cd SmartLogix
 ```
 
-### 2. Frontend (modo demo — sin backend)
+### 2. Levantar backend
 
 ```bash
-cd Frontend
-npm install
-npm run dev -- --port 3000
+docker compose -f docker-compose.node.yml up -d
 ```
 
-Abrir `http://localhost:3000`. Login demo:
-
-| Usuario | Contraseña | Rol |
-|---------|-----------|-----|
-| `admin@smartlogix.cl` | `Smartlogix123!` | Dueño |
-| `operaciones@smartlogix.cl` | `Smartlogix123!` | Operador |
-| `bodega@smartlogix.cl` | `Smartlogix123!` | Bodega |
-| `transportista@smartlogix.cl` | `Smartlogix123!` | Transportista |
-
-> En localhost el login usa tokens demo automáticamente. Los datos iniciales representan un negocio de bebidas y confites con 10 productos, 10 pedidos, 4 envíos y 8 alertas.
-
-### 3. Backend (requiere Docker Desktop)
+### 3. Verificar
 
 ```bash
-cd Backend
-docker compose up -d
+curl http://localhost:80/healthz
+curl http://localhost:80/api/orders/test
 ```
 
-La primera ejecución descarga imágenes y compila los JARs (~10 min). Luego:
+### 4. Desplegar en VM (1 vCPU / 2 GB)
 
 ```bash
-docker exec -i smartlogix-db psql -U postgres < seed.sql
+docker compose -f docker-compose.vm.yml up -d
 ```
-
-Servicios expuestos:
-
-| Servicio | Puerto |
-|----------|--------|
-| API Gateway (Nginx) | `8080` |
-| orders-service | `8081` |
-| inventory-service | `8082` |
-| identity-service | `8083` |
-| shipping-service | `8084` |
-| notification-service | `8085` |
-| LocalStack | `4567` |
-
-### 4. Deploy a Vercel
-
-```bash
-cd Frontend
-npm i -g vercel
-vercel login
-vercel
-```
-
-Variables de entorno en Vercel: `VITE_API_BASE_URL` = URL del API Gateway.
 
 ---
 
-## Datos semilla — Negocio Bebidas y Confites
+## Flujo de negocio
 
-| SKU | Producto | Stock |
-|-----|----------|-------|
-| 100001 | Coca-Cola 2L | 48 |
-| 100002 | Pepsi 2L | 72 |
-| 100003 | Sprite 2L | 65 |
-| 100004 | Agua Mineral 500ml | 120 |
-| 100005 | Jugo Watt's 1L | 35 |
-| 100006 | Cerveza Corona 355ml | 90 |
-| 100007 | Chocolate Trencito | 3 ⚠️ |
-| 100008 | Galletas McKay | 15 |
-| 100009 | Papas Lays 200g | 8 |
-| 100010 | Chicles Frugelé | 2 🔴 |
+```
+POST /api/orders (crear pedido)
+  -> PUT /api/orders/{id}/confirm
+    -> POST inventory-service (ajusta stock)
+    -> SQS orders-queue (evento ORDER_CONFIRMED)
+    -> POST shipping-service (crea envio)
+      -> POST notification-service (REST, notificacion SHIPMENT_CREATED)
+```
 
-**Clientes:** Bar El Rincón, Kiosco Don Pepe, Distribuidora Sur.
-**Canales:** Teléfono, WhatsApp, Correo.
-**Transportista:** Luis Castro (reparto local).
+- **Mensajeria asincrona**: orders-service -> SQS -> inventory-service -> SQS -> shipping-service
+- **Notificaciones**: shipping-service -> REST POST -> notification-service
 
 ---
 
-## Estructura del repositorio
+## Endpoints API
+
+### Orders Service (:8081)
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | /api/orders | Crear orden |
+| GET | /api/orders | Listar todas |
+| GET | /api/orders/test | Health check |
+| PUT | /api/orders/:id/status?status={STATUS} | Cambiar estado |
+| PUT | /api/orders/:id/confirm | Confirmar orden |
+| PUT | /api/orders/:id/cancel | Cancelar orden |
+| PUT | /api/orders/:id/assign?transporter={NAME} | Asignar transportista |
+
+### Inventory Service (:8082)
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | /api/inventory | Listar inventario |
+| GET | /api/inventory/:sku | Consultar SKU |
+| POST | /api/inventory | Agregar producto |
+| PUT | /api/inventory/:sku | Actualizar stock |
+| POST | /api/inventory/:sku/adjust?delta={N} | Ajustar stock (+/-) |
+| GET | /api/sales | Listar ventas |
+| POST | /api/sales | Registrar venta |
+
+### Shipping Service (:8084)
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | /api/shipments | Listar envios |
+| GET | /api/shipments/:orderId | Envio por orden |
+| POST | /api/shipments | Crear envio |
+| PUT | /api/shipments/:id/stage?stage={STATUS} | Cambiar etapa |
+| GET | /api/shipments/:id/qr | QR del envio |
+
+### Notification Service (:8085)
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | /api/notifications | Persistir notificacion |
+| GET | /api/notifications/order/:orderId | Notificaciones por orden |
+| GET | /api/notifications/audience/:audience | Notificaciones por audiencia |
+
+---
+
+## Estructura del proyecto
 
 ```
 SmartLogix/
-├── Frontend/
-│   ├── src/
-│   │   ├── app/            # Router, Auth, Control de acceso RBAC
-│   │   ├── components/     # UI (shadcn), Layout (sidebar, mobile-nav, topbar)
-│   │   ├── data/           # Mock data (modo demo)
-│   │   ├── hooks/          # useApiQuery, useOperationalWorkspace, usePermissions
-│   │   ├── lib/            # api-client (clase + DI), adapters, auth, export-csv
-│   │   ├── pages/          # Dashboard, Orders, Inventory, Shipments, Login...
-│   │   ├── styles/         # Tailwind + custom utilities (touch, safe-area)
-│   │   └── types/          # api.ts, domain.ts
-│   ├── vercel.json         # Deploy Vercel config
-│   ├── vite.config.ts      # PWA + proxy dev
-│   └── tailwind.config.ts  # Tema SmartLogix
 ├── Backend/
-│   ├── orders-service/     # CRUD pedidos, SQS publisher, idempotencia
-│   ├── inventory-service/  # Stock, validación, DataLoader seed
-│   ├── shipping-service/   # Envíos, tracking, SNS notificaciones
-│   ├── notification-service/ # Persistencia de eventos de notificación
-│   ├── identity-service/   # Company, Role, User, UserSetting
-│   ├── event-contracts/    # DTOs compartidos (validación Jakarta)
-│   ├── nginx/              # API Gateway config
-│   ├── docker-compose.yml  # 7 contenedores (Postgres, LocalStack, 5 servicios)
-│   ├── seed.sql            # Datos de prueba negocio bebidas/confites
-│   └── infrastructure/     # CloudFormation (VPC, RDS, ECS, pipeline)
-├── ARQUITECTURA_FINAL_AWS_SMARTLOGIX.md
-├── ARQUITECTURA_Y_CONFIGURACION.md
-├── ESTRUCTURA_DATOS.md
-└── MODELO_NEGOCIO_CHILE.md
+│   ├── orders-service/           # Express + pg + SQS
+│   ├── inventory-service/        # Express + pg + SQS
+│   ├── shipping-service/         # Express + pg + REST notificaciones
+│   ├── notification-service/     # Express + pg
+│   ├── nginx/                    # API Gateway config
+│   ├── scripts/                  # Utilidades
+│   ├── infrastructure/           # CloudFormation (AWS prod)
+│   ├── init-db.sql               # Creacion de bases de datos
+│   └── seed.sql                  # Datos de prueba
+├── Frontend/                     # React SPA + Vite + TypeScript
+├── Landing/                      # Next.js landing page
+├── docker-compose.node.yml       # Dev con build local
+├── docker-compose.vm.yml         # VM con imagenes pre-built
+├── docker-compose.optimized.yml  # Produccion optimizado
+├── docker-compose.prod.yml       # Produccion completo
+├── elasticmq.conf                # Configuracion de colas SQS
+├── README.md
+├── MODELO_NEGOCIO_CHILE.md
+└── ESTRUCTURA_DATOS.md
 ```
-
----
-
-## Modelo de negocio
-
-SaaS B2B multi-tenant con pricing escalonado para el mercado chileno.
-
-| Plan | Precio CLP | Pedidos/mes |
-|------|-----------|-------------|
-| **Starter** | $49.900 | 250 |
-| **Professional** | $129.900 | 1,500 |
-| **Enterprise** | $299.900 | 5,000 |
-
-Detalles completos en [MODELO_NEGOCIO_CHILE.md](MODELO_NEGOCIO_CHILE.md).
-
----
-
-## Principios aplicados
-
-- **SOLID:** ApiClient con DI, CSV genérico Open/Closed, Error Boundaries
-- **Clean Code:** `user-registry.ts` como fuente única de verdad, `normalizeFromMap` funcional
-- **DRY:** 0 funciones duplicadas, helpers consolidados en `api-adapters.ts`
-- **Mobile-first:** Touch targets 44px, `safe-area` iOS, PWA instalable, `overflow-x-auto scroll-x`
-- **Seguridad:** Sin secretos hardcodeados, CSV injection sanitizado, tokens en variables
-
----
-
-## Scripts
-
-| Comando | Descripción |
-|---------|-------------|
-| `npm run dev` | Servidor Vite + HMR |
-| `npm run build` | Build producción |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run lint` | `tsc --noEmit` |
-| `Frontend/start-dev.ps1` | Script PowerShell con firewall + inicio automático |
-
----
-
-## Licencia
-
-MIT

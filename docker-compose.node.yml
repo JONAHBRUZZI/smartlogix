@@ -47,6 +47,7 @@ services:
           memory: 128M
 
   orders-service:
+    build: ./Backend/orders-service
     image: jonahbruzzi/orders-service:node
     container_name: smartlogix-orders
     restart: unless-stopped
@@ -71,6 +72,7 @@ services:
           memory: 128M
 
   inventory-service:
+    build: ./Backend/inventory-service
     image: jonahbruzzi/inventory-service:node
     container_name: smartlogix-inventory
     restart: unless-stopped
@@ -95,6 +97,7 @@ services:
           memory: 128M
 
   shipping-service:
+    build: ./Backend/shipping-service
     image: jonahbruzzi/shipping-service:node
     container_name: smartlogix-shipping
     restart: unless-stopped
@@ -120,6 +123,7 @@ services:
           memory: 128M
 
   notification-service:
+    build: ./Backend/notification-service
     image: jonahbruzzi/notification-service:node
     container_name: smartlogix-notification
     restart: unless-stopped
