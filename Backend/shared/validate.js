@@ -1,102 +1,35 @@
 function validateOrderBody(body) {
   const errors = [];
-  if (!body || typeof body !== 'object') return ['Body must be a JSON object'];
-  if (!body.customerId || typeof body.customerId !== 'number' && isNaN(Number(body.customerId))) {
-    errors.push('customerId must be a number');
-  }
-  if (!body.sku || typeof body.sku !== 'string') {
-    errors.push('sku must be a string');
-  }
-  if (body.quantity === undefined || body.quantity === null || isNaN(Number(body.quantity)) || Number(body.quantity) <= 0) {
-    errors.push('quantity must be a positive number');
-  }
-  return errors;
+  if (!body || !body.customerId) errors.push('customerId es requerido');
+  if (!body || !body.sku) errors.push('sku es requerido');
+  if (!body || !body.quantity || body.quantity < 1) errors.push('quantity debe ser >= 1');
+  if (errors.length) throw Object.assign(new Error(errors.join(', ')), { status: 400, errors });
+}
+
+function validateOrderStatus(status) {
+  const valid = ['CREATED', 'EN_PREPARACION', 'EN_REPARTO', 'ENTREGADO', 'CANCELADO'];
+  if (!valid.includes(status)) throw Object.assign(new Error(`Status invalido: ${status}`), { status: 400 });
 }
 
 function validateInventoryBody(body) {
-  const errors = [];
-  if (!body || typeof body !== 'object') return ['Body must be a JSON object'];
-  if (!body.sku || typeof body.sku !== 'string') {
-    errors.push('sku must be a string');
-  }
-  if (body.stock === undefined || body.stock === null || isNaN(Number(body.stock)) || Number(body.stock) < 0) {
-    errors.push('stock must be a non-negative number');
-  }
-  return errors;
+  if (!body || !body.sku || body.stock === undefined) throw Object.assign(new Error('sku y stock son requeridos'), { status: 400 });
 }
 
 function validateSaleBody(body) {
-  const errors = [];
-  if (!body || typeof body !== 'object') return ['Body must be a JSON object'];
-  if (!body.sku || typeof body.sku !== 'string') {
-    errors.push('sku must be a string');
-  }
-  if (body.quantity === undefined || body.quantity === null || isNaN(Number(body.quantity)) || Number(body.quantity) <= 0) {
-    errors.push('quantity must be a positive number');
-  }
-  return errors;
+  if (!body || !body.sku || !body.quantity) throw Object.assign(new Error('sku y quantity son requeridos'), { status: 400 });
 }
 
 function validateShipmentBody(body) {
-  const errors = [];
-  if (!body || typeof body !== 'object') return ['Body must be a JSON object'];
-  if (!body.orderId || isNaN(Number(body.orderId))) {
-    errors.push('orderId must be a number');
-  }
-  if (!body.customerId || isNaN(Number(body.customerId))) {
-    errors.push('customerId must be a number');
-  }
-  if (!body.sku || typeof body.sku !== 'string') {
-    errors.push('sku must be a string');
-  }
-  if (body.quantity === undefined || body.quantity === null || isNaN(Number(body.quantity)) || Number(body.quantity) <= 0) {
-    errors.push('quantity must be a positive number');
-  }
-  return errors;
-}
-
-function validateNotificationBody(body) {
-  const errors = [];
-  if (!body || typeof body !== 'object') return ['Body must be a JSON object'];
-  if (!body.eventId || typeof body.eventId !== 'string') {
-    errors.push('eventId must be a string');
-  }
-  if (!body.orderId || isNaN(Number(body.orderId))) {
-    errors.push('orderId must be a number');
-  }
-  if (!body.stage || typeof body.stage !== 'string') {
-    errors.push('stage must be a string');
-  }
-  if (!body.message || typeof body.message !== 'string') {
-    errors.push('message must be a string');
-  }
-  return errors;
-}
-
-const VALID_ORDER_STATUSES = ['CREATED', 'EN_PREPARACION', 'EN_REPARTO', 'ENTREGADO', 'CANCELADO'];
-const VALID_SHIPMENT_STAGES = ['EN_PREPARACION', 'EN_REPARTO', 'ENTREGADO', 'CANCELADO'];
-
-function validateOrderStatus(status) {
-  if (!status || !VALID_ORDER_STATUSES.includes(status)) {
-    return `Invalid status: ${status}. Must be one of: ${VALID_ORDER_STATUSES.join(', ')}`;
-  }
-  return null;
+  if (!body || !body.orderId || !body.sku || !body.quantity) throw Object.assign(new Error('orderId, sku, quantity requeridos'), { status: 400 });
 }
 
 function validateShipmentStage(stage) {
-  if (!stage || !VALID_SHIPMENT_STAGES.includes(stage)) {
-    return `Invalid stage: ${stage}. Must be one of: ${VALID_SHIPMENT_STAGES.join(', ')}`;
-  }
-  return null;
+  const valid = ['EN_PREPARACION', 'EN_REPARTO', 'ENTREGADO', 'CANCELADO'];
+  if (!valid.includes(stage)) throw Object.assign(new Error(`Stage invalido: ${stage}`), { status: 400 });
 }
 
-module.exports = {
-  validateOrderBody,
-  validateInventoryBody,
-  validateSaleBody,
-  validateShipmentBody,
-  validateNotificationBody,
-  validateOrderStatus,
-  validateShipmentStage,
-  VALID_ORDER_STATUSES,
-};
+function validateNotificationBody(body) {
+  if (!body || !body.eventId || !body.orderId || !body.stage || !body.message) throw Object.assign(new Error('eventId, orderId, stage, message requeridos'), { status: 400 });
+}
+
+module.exports = { validateOrderBody, validateOrderStatus, validateInventoryBody, validateSaleBody, validateShipmentBody, validateShipmentStage, validateNotificationBody };

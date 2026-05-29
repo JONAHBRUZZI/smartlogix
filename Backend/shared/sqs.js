@@ -13,11 +13,8 @@ function createSqsClient() {
 }
 
 function getQueueUrl(queueName) {
-  if (process.env.AWS_SQS_ENDPOINT) {
-    const endpoint = process.env.AWS_SQS_ENDPOINT;
-    return `${endpoint}/queue/${queueName}`;
-  }
-  return `http://localhost:4566/queue/${queueName}`;
+  const endpoint = process.env.AWS_SQS_ENDPOINT || 'http://localhost:4566';
+  return `${endpoint}/queue/${queueName}`;
 }
 
 async function sendMessage(sqs, queueName, body) {
@@ -28,4 +25,4 @@ async function sendMessage(sqs, queueName, body) {
   return sqs.send(cmd);
 }
 
-module.exports = { createSqsClient, getQueueUrl, sendMessage, SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageCommand };
+module.exports = { createSqsClient, sendMessage, getQueueUrl, ReceiveMessageCommand, DeleteMessageCommand };
