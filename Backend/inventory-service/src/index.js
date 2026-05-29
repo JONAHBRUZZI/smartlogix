@@ -3,7 +3,6 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
 const { createPool } = require('../shared/db');
-const { createSqsClient, sendMessage, getQueueUrl, ReceiveMessageCommand, DeleteMessageCommand } = require('../shared/sqs');
 const log = require('../shared/logger');
 const { validateInventoryBody, validateSaleBody } = require('../shared/validate');
 const { gracefulShutdown } = require('../shared/shutdown');
@@ -26,12 +25,7 @@ app.use(rateLimit({
 }));
 
 const PORT = process.env.PORT || 8082;
-const SHIPPING_QUEUE = process.env.SHIPPING_QUEUE || 'shipping-queue';
-const ORDERS_QUEUE = process.env.ORDERS_QUEUE || 'orders-queue';
 const pool = createPool('inventory_db');
-const sqs = createSqsClient();
-const PROCESSED_EVENTS = new Set();
-const sqsPollingFlag = { shuttingDown: false };
 
 async function ensureTables() {
   await pool.query(`
@@ -195,69 +189,6 @@ app.post('/api/sales', async (req, res) => {
   }
 });
 
-async function pollSqs(queueName, handler) {
-  while (!sqsPollingFlag.shuttingDown) {
-    try {
-      const cmd = new ReceiveMessageCommand({
-        QueueUrl: getQueueUrl(queueName),
-        MaxNumberOfMessages: 5,
-        WaitTimeSeconds: 10,
-      });
-      const data = await sqs.send(cmd);
-      if (data.Messages) {
-        for (const msg of data.Messages) {
-          try {
-            const body = JSON.parse(msg.Body);
-            const eventKey = `ORDER_CONFIRMED:${body.orderId}`;
-
-            if (PROCESSED_EVENTS.has(eventKey)) {
-              await sqs.send(new DeleteMessageCommand({
-                QueueUrl: getQueueUrl(queueName),
-                ReceiptHandle: msg.ReceiptHandle,
-              }));
-              continue;
-            }
-
-            await handler(body);
-            PROCESSED_EVENTS.add(eventKey);
-
-            await pool.query(
-              'INSERT INTO processed_events (event_type, event_key) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-              ['ORDER_CONFIRMED', eventKey]
-            );
-
-            await sqs.send(new DeleteMessageCommand({
-              QueueUrl: getQueueUrl(queueName),
-              ReceiptHandle: msg.ReceiptHandle,
-            }));
-          } catch (e) {
-            log.error('Error processing SQS message', { message: e.message });
-          }
-        }
-      }
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        log.error('SQS poll error', { message: err.message });
-      }
-      await new Promise(r => setTimeout(r, 5000));
-    }
-  }
-  log.info('SQS poller stopped');
-}
-
-async function handleOrderConfirmed(event) {
-  log.info('Order confirmed', { orderId: event.orderId, sku: event.sku, quantity: event.quantity });
-  await sendMessage(sqs, SHIPPING_QUEUE, {
-    eventId: uuidv4(),
-    orderId: event.orderId,
-    customerId: event.customerId,
-    sku: event.sku,
-    quantity: event.quantity,
-    eventType: 'SHIPPING_CREATED',
-    timestamp: new Date().toISOString(),
-  });
-}
-
 app.get('/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1');
@@ -270,10 +201,7 @@ app.get('/health', async (_req, res) => {
 async function start() {
   await ensureTables();
   const server = app.listen(PORT, () => log.info(`inventory-service running on port ${PORT}`));
-  gracefulShutdown(server, pool, sqsPollingFlag, 'inventory-service');
-  pollSqs(ORDERS_QUEUE, handleOrderConfirmed).catch(err =>
-    log.error('SQS poller fatal error', { message: err.message })
-  );
+  gracefulShutdown(server, pool, null, 'inventory-service');
 }
 
 start();

@@ -31,19 +31,6 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
-
-  sqs-mock:
-    image: softwaremill/elasticmq:1.6.7
-    container_name: smartlogix-sqs-mock
-    restart: unless-stopped
-    volumes:
-      - ./elasticmq.conf:/opt/elasticmq.conf
-    networks:
-      - smartlogix-net
-    deploy:
-      resources:
-        limits:
           memory: 128M
 
   orders-service:
@@ -72,8 +59,6 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
-      sqs-mock:
-        condition: service_started
     networks:
       - smartlogix-net
     deploy:
@@ -106,8 +91,6 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
-      sqs-mock:
-        condition: service_started
     networks:
       - smartlogix-net
     deploy:
@@ -140,8 +123,6 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
-      sqs-mock:
-        condition: service_started
     networks:
       - smartlogix-net
     deploy:

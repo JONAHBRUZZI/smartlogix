@@ -3,7 +3,6 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
 const { createPool } = require('../shared/db');
-const { createSqsClient, sendMessage } = require('../shared/sqs');
 const log = require('../shared/logger');
 const { validateOrderBody, validateOrderStatus } = require('../shared/validate');
 const { gracefulShutdown } = require('../shared/shutdown');
@@ -26,11 +25,8 @@ app.use(rateLimit({
 }));
 
 const PORT = process.env.PORT || 8081;
-const ORDERS_QUEUE = process.env.ORDERS_QUEUE || 'orders-queue';
 const INVENTORY_SERVICE_URL = process.env.INVENTORY_SERVICE_URL || 'http://inventory-service:8082';
 const SHIPPING_SERVICE_URL = process.env.SHIPPING_SERVICE_URL || 'http://shipping-service:8084';
-const pool = createPool('orders_db');
-const sqs = createSqsClient();
 
 async function ensureTables() {
   await pool.query(`
@@ -155,21 +151,6 @@ app.put('/api/orders/:id/confirm', async (req, res) => {
     } catch (e) {
       log.error('Shipment creation failed', { orderId, message: e.message });
       errors.push(`Envio: ${e.message}`);
-    }
-
-    try {
-      await sendMessage(sqs, ORDERS_QUEUE, {
-        eventId: uuidv4(),
-        orderId: parseInt(orderId, 10),
-        customerId: order.customer_id,
-        sku: order.sku,
-        quantity: order.quantity,
-        eventType: 'ORDER_CONFIRMED',
-        timestamp: new Date().toISOString(),
-      });
-    } catch (e) {
-      log.error('SQS publish failed', { orderId, message: e.message });
-      errors.push(`Mensajeria: ${e.message}`);
     }
 
     await pool.query(

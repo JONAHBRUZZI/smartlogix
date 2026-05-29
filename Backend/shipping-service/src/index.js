@@ -3,7 +3,6 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
 const { createPool } = require('../shared/db');
-const { createSqsClient, getQueueUrl, ReceiveMessageCommand, DeleteMessageCommand } = require('../shared/sqs');
 const log = require('../shared/logger');
 const { validateShipmentBody, validateShipmentStage } = require('../shared/validate');
 const { gracefulShutdown } = require('../shared/shutdown');
@@ -27,11 +26,7 @@ app.use(rateLimit({
 
 const PORT = process.env.PORT || 8084;
 const NOTIFICATION_URL = process.env.NOTIFICATION_SERVICE_URL || 'http://notification-service:8085';
-const SHIPPING_QUEUE = process.env.SHIPPING_QUEUE || 'shipping-queue';
 const pool = createPool('shipping_db');
-const sqs = createSqsClient();
-const PROCESSED_EVENTS = new Set();
-const sqsPollingFlag = { shuttingDown: false };
 
 async function ensureTables() {
   await pool.query(`
@@ -199,77 +194,10 @@ app.get('/api/shipments/:id/qr', async (req, res) => {
   }
 });
 
-async function pollSqs() {
-  const queueUrl = getQueueUrl(SHIPPING_QUEUE);
-
-  while (!sqsPollingFlag.shuttingDown) {
-    try {
-      const data = await sqs.send(new ReceiveMessageCommand({
-        QueueUrl: queueUrl, MaxNumberOfMessages: 5, WaitTimeSeconds: 10,
-      }));
-      if (data.Messages) {
-        for (const msg of data.Messages) {
-          let processed = false;
-          try {
-            const body = JSON.parse(msg.Body);
-            const eventKey = `SHIPPING_CREATED:${body.orderId}`;
-
-            if (PROCESSED_EVENTS.has(eventKey)) {
-              processed = true;
-              continue;
-            }
-
-            if (body.eventType === 'SHIPPING_CREATED') {
-              const existing = await pool.query('SELECT * FROM shipments WHERE order_id = $1', [body.orderId]);
-              if (!existing.rows.length) {
-                const tracking = 'TRACK-' + uuidv4().substring(0, 8).toUpperCase();
-                const result = await pool.query(
-                  `INSERT INTO shipments (order_id, customer_id, sku, quantity, status, tracking_number, created_at)
-                   VALUES ($1, $2, $3, $4, 'EN_PREPARACION', $5, NOW()) RETURNING *`,
-                  [body.orderId, body.customerId, body.sku, body.quantity, tracking]
-                );
-                await sendNotification(result.rows[0], 'SHIPMENT_CREATED',
-                  `Envio creado con tracking ${tracking}`);
-              }
-              PROCESSED_EVENTS.add(eventKey);
-
-              await pool.query(
-                'INSERT INTO processed_events (event_type, event_key) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-                ['SHIPPING_CREATED', eventKey]
-              );
-            }
-            processed = true;
-          } catch (e) {
-            log.error('Error processing shipping message', { message: e.message });
-          } finally {
-            if (processed) {
-              await sqs.send(new DeleteMessageCommand({ QueueUrl: queueUrl, ReceiptHandle: msg.ReceiptHandle }));
-            }
-          }
-        }
-      }
-    } catch (err) {
-      log.error('SQS poll error', { message: err.message });
-      await new Promise(r => setTimeout(r, 5000));
-    }
-  }
-  log.info('SQS poller stopped');
-}
-
-app.get('/health', async (_req, res) => {
-  try {
-    await pool.query('SELECT 1');
-    res.json({ status: 'UP', db: 'connected' });
-  } catch {
-    res.status(503).json({ status: 'DEGRADED', db: 'disconnected' });
-  }
-});
-
 async function start() {
   await ensureTables();
   const server = app.listen(PORT, () => log.info(`shipping-service running on port ${PORT}`));
-  gracefulShutdown(server, pool, sqsPollingFlag, 'shipping-service');
-  pollSqs().catch(err => log.error('SQS poller fatal error', { message: err.message }));
+  gracefulShutdown(server, pool, null, 'shipping-service');
 }
 
 start();
