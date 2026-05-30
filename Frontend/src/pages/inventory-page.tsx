@@ -1,5 +1,5 @@
 ﻿import { useMemo, useState } from "react";
-import { Download, Minus, PackagePlus, Plus, Search, Trash2, X } from "lucide-react";
+import { Download, Minus, PackagePlus, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/auth";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -25,6 +25,7 @@ export function InventoryPage() {
   const [form, setForm] = useState({ sku: "", name: "", category: "bebidas" as ProductCategory, stock: 0, price: 0, cost: 0 });
   const [formError, setFormError] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<{ sku: string; name: string } | null>(null);
+  const [editProduct, setEditProduct] = useState<Product | null>(null);
   const { can, role } = usePermissions();
   const { session } = useAuth();
   const canAdjust = can("inventory.adjust");
@@ -47,6 +48,28 @@ export function InventoryPage() {
   async function handleAdd(data: { sku: string; name: string; stock: number; price: number; cost: number; category: ProductCategory }) {
     await addProduct(data);
     refresh();
+  }
+
+  async function handleEdit(e: React.FormEvent) {
+    e.preventDefault();
+    setFormError("");
+    if (!form.sku.trim() || !form.name.trim()) { setFormError("SKU y Nombre son obligatorios"); return; }
+    if (form.stock < 0 || form.price < 0 || form.cost < 0) { setFormError("Stock, Precio y Costo no pueden ser negativos"); return; }
+    if (!editProduct) return;
+    await apiFetch(`/api/inventory/${encodeURIComponent(editProduct.sku)}`, {
+      method: "PUT",
+      body: JSON.stringify({ name: form.name, price: form.price, cost: form.cost, category: form.category, stock: form.stock })
+    });
+    setEditProduct(null);
+    setForm({ sku: "", name: "", category: "bebidas", stock: 0, price: 0, cost: 0 });
+    setDialogOpen(false);
+    refresh();
+  }
+
+  function openEdit(product: Product) {
+    setEditProduct(product);
+    setForm({ sku: product.sku, name: product.name, category: product.category, stock: product.stock, price: product.price, cost: product.cost });
+    setDialogOpen(true);
   }
 
   async function handleDelete(sku: string) {
@@ -88,13 +111,13 @@ export function InventoryPage() {
           >
             <Download className="h-3.5 w-3.5" /> Exportar
           </button>
-          <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setFormError(""); } }}>
+          <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setFormError(""); setEditProduct(null); setForm({ sku: "", name: "", category: "bebidas", stock: 0, price: 0, cost: 0 }); } }}>
             <DialogTrigger render={<Button className="flex items-center gap-1.5 h-9 px-3 text-xs font-semibold bg-[#4B98CF] hover:bg-[#346384] text-white"><PackagePlus className="h-3.5 w-3.5" />Agregar producto</Button>} />
             <DialogContent showCloseButton={false}>
               <DialogHeader>
-                <DialogTitle>Nuevo producto</DialogTitle>
+                <DialogTitle>{editProduct ? "Editar producto" : "Nuevo producto"}</DialogTitle>
               </DialogHeader>
-              <form onSubmit={async (e) => {
+              <form onSubmit={editProduct ? handleEdit : async (e) => {
                 e.preventDefault();
                 setFormError("");
                 if (!form.sku.trim() || !form.name.trim()) { setFormError("SKU y Nombre son obligatorios"); return; }
@@ -106,7 +129,7 @@ export function InventoryPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">SKU</label>
-                    <Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} placeholder="COCA-COLA-2L" className="h-9 text-sm" />
+                    <Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} placeholder="COCA-COLA-2L" className="h-9 text-sm" disabled={!!editProduct} />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Categoría</label>
@@ -227,11 +250,18 @@ export function InventoryPage() {
                       product.status === "critical" && "bg-red-500",
                     )} />
                     {isOwner && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ sku: product.sku, name: product.name }); }}
-                        className="p-0.5 rounded text-red-400 hover:bg-red-50 hover:text-red-600"
-                        title="Eliminar producto"
-                      ><Trash2 className="h-3.5 w-3.5" /></button>
+                      <>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); openEdit(product); }}
+                          className="p-0.5 rounded text-[#4B98CF] hover:bg-[#4B98CF]/10 hover:text-[#346384]"
+                          title="Editar producto"
+                        ><Pencil className="h-3.5 w-3.5" /></button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ sku: product.sku, name: product.name }); }}
+                          className="p-0.5 rounded text-red-400 hover:bg-red-50 hover:text-red-600"
+                          title="Eliminar producto"
+                        ><Trash2 className="h-3.5 w-3.5" /></button>
+                      </>
                     )}
                   </div>
                 </td>

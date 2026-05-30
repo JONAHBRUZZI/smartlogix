@@ -1,5 +1,5 @@
 ﻿import { useMemo, useState } from "react";
-import { Download, Pencil, Plus, Search, Trash2, User, UserPlus } from "lucide-react";
+import { Download, Pencil, Plus, Search, Trash2, User, UserPlus, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useAutoRefresh } from "@/hooks/use-auto-refresh";
@@ -20,6 +20,7 @@ export function CustomersPage() {
   const [form, setForm] = useState({ name: "", phone: "", address: "", email: "" });
   const [formError, setFormError] = useState("");
   const [creating, setCreating] = useState(false);
+  const [deleteCustomer, setDeleteCustomer] = useState<Customer | null>(null);
 
   const { data: customers, loading, refresh } = useApiQuery<ApiCustomer[], Customer[]>({
     path: "/api/customers", transform: (r) => r.map(adaptCustomer)
@@ -73,7 +74,6 @@ export function CustomersPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("¿Eliminar este cliente?")) return;
     await apiFetch(`/api/customers/${id}`, { method: "DELETE" });
     refresh();
   }
@@ -152,7 +152,7 @@ export function CustomersPage() {
                 <button onClick={() => openEdit(customer)} className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] text-[#4B98CF] hover:bg-[#4B98CF]/5 active:scale-[0.95] transition-colors" title="Editar">
                   <Pencil className="h-4 w-4" />
                 </button>
-                <button onClick={() => handleDelete(customer.id)} className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] text-red-400 hover:bg-red-50 hover:text-red-600 active:scale-[0.95] transition-colors" title="Eliminar">
+                <button onClick={() => setDeleteCustomer(customer)} className="inline-flex items-center justify-center rounded-lg border border-border min-h-[36px] min-w-[36px] text-red-400 hover:bg-red-50 hover:text-red-600 active:scale-[0.95] transition-colors" title="Eliminar">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -167,6 +167,28 @@ export function CustomersPage() {
           </div>
         )}
       </div>
+
+      {deleteCustomer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setDeleteCustomer(null)}>
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-sm text-[#112b4a]">Eliminar cliente</h3>
+              <button onClick={() => setDeleteCustomer(null)} className="p-1 rounded hover:bg-gray-100">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-sm text-[#6B7280]">
+              ¿Seguro que deseas eliminar a <strong>{deleteCustomer.name}</strong>? Esta accion no se puede deshacer.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setDeleteCustomer(null)}>Volver</Button>
+              <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white" onClick={() => { handleDelete(deleteCustomer.id); setDeleteCustomer(null); }}>
+                Eliminar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

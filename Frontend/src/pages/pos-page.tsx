@@ -179,7 +179,7 @@ export function PosPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Método de pago</span>
               <div className="flex gap-1">
-                {(["cash", "transfer"] as PaymentMethod[]).map((pm) => (
+                {(["cash", "debit", "credit", "transfer"] as PaymentMethod[]).map((pm) => (
                   <button
                     key={pm}
                     onClick={() => setPaymentMethod(pm)}
