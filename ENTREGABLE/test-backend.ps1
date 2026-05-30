@@ -307,16 +307,21 @@ if ($shipments -and $shipments.Count -gt 0) {
     Validate-That "tracking_number no nulo" ($ship.tracking_number -ne $null -and $ship.tracking_number.Length -gt 0)
     Validate-That "tracking tiene formato TRACK-" ($ship.tracking_number -match "^TRACK-")
 
-    # Avanzar etapas
-    $s1 = Assert-PUT "Envio -> EN_REPARTO" "/api/shipments/$($ship.id)/stage?stage=EN_REPARTO" -RequiredProps @("id","status")
-    Validate-That "Status = EN_REPARTO" ($s1.status -eq "EN_REPARTO")
+    # Avanzar etapas - requiere pickup_code generado al crear el envio
+    $pcode = if ($ship.pickup_code) { $ship.pickup_code } else { "" }
+    $s1 = Assert-PUT "Envio -> EN_REPARTO" "/api/shipments/$($ship.id)/stage?stage=EN_REPARTO" -Body @{
+        pickupCode = $pcode
+    } -RequiredProps @("id","status")
+    if ($s1) { Validate-That "Status = EN_REPARTO" ($s1.status -eq "EN_REPARTO") }
 
     $s2 = Assert-PUT "Envio -> ENTREGADO con datos" "/api/shipments/$($ship.id)/stage?stage=ENTREGADO" -Body @{
         customerCode = "C-001"; recipientRut = "12345678-9"
     } -RequiredProps @("id","status")
-    Validate-That "Status = ENTREGADO" ($s2.status -eq "ENTREGADO")
-    Validate-That "customer_code = C-001" ($s2.customer_code -eq "C-001")
-    Validate-That "recipient_rut = 12345678-9" ($s2.recipient_rut -eq "12345678-9")
+    if ($s2) {
+        Validate-That "Status = ENTREGADO" ($s2.status -eq "ENTREGADO")
+        Validate-That "customer_code = C-001" ($s2.customer_code -eq "C-001")
+        Validate-That "recipient_rut = 12345678-9" ($s2.recipient_rut -eq "12345678-9")
+    }
 
     # Etapa invalida
     Assert-PUT "Etapa invalida (400)" "/api/shipments/$($ship.id)/stage?stage=INVALIDO" -ExpectedStatus 400
@@ -371,7 +376,10 @@ $flowShipment = Assert-GET "E2E: Buscar envio del pedido" "/api/shipments/$($flo
 
 # 6. Avanzar envio hasta entregado
 if ($flowShipment -and $flowShipment.id) {
-    Assert-PUT "E2E: Envio -> EN_REPARTO" "/api/shipments/$($flowShipment.id)/stage?stage=EN_REPARTO"
+    $flowPcode = if ($flowShipment.pickup_code) { $flowShipment.pickup_code } else { "" }
+    Assert-PUT "E2E: Envio -> EN_REPARTO" "/api/shipments/$($flowShipment.id)/stage?stage=EN_REPARTO" -Body @{
+        pickupCode = $flowPcode
+    }
     Assert-PUT "E2E: Envio -> ENTREGADO" "/api/shipments/$($flowShipment.id)/stage?stage=ENTREGADO" -Body @{
         customerCode = "E2E-CUST-001"; recipientRut = "99999999-9"
     }
