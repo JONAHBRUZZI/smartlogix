@@ -102,7 +102,7 @@ export function adaptShipment(apiShipment: ApiShipment): Shipment {
     customerId: String(apiShipment.customerId),
     sku: String(apiShipment.sku),
     quantity: apiShipment.quantity,
-    carrier: apiShipment.trackingNumber ? "Transportista asignado" : "Pendiente de asignacion",
+    carrier: "Sin asignar",
     tracking: apiShipment.trackingNumber ?? "Pendiente",
     stage,
     eta: apiShipment.status === 'EN_REPARTO'

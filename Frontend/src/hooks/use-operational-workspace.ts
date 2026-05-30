@@ -71,15 +71,20 @@ export function useOperationalWorkspace({
   }, [safeOrders]);
 
   const operationalShipments = useMemo<OperationalShipment[]>(() => {
+    const assignedMap = new Map<string, string>();
+    safeOrders.forEach((o) => {
+      if (o.assignedTo) assignedMap.set(o.id, o.assignedTo);
+    });
     return safeShipments
       .map((shipment) => ({
         ...shipment,
+        carrier: assignedMap.get(shipment.orderId) ?? shipment.carrier,
         isManual: false,
         operationalNote: null,
         operationalUpdatedAt: null,
       }))
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [safeShipments]);
+  }, [safeShipments, safeOrders]);
 
   const validationQueue = useMemo(() => operationalOrders.filter((o) => o.needsReview), [operationalOrders]);
   const dispatchQueue = useMemo(() => operationalOrders.filter((o) => o.canConfirm), [operationalOrders]);
