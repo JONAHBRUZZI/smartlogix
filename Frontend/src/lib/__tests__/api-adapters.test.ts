@@ -123,11 +123,11 @@ describe("adaptShipment", () => {
     expect(r.orderId).toBe("10");
     expect(r.stage).toBe("en_reparto");
     expect(r.tracking).toBe("TRACK-12345678");
-    expect(r.carrier).toBe("Transportista asignado");
+    expect(r.carrier).toBe("Sin asignar");
   });
   it("carrier pendiente sin tracking", () => {
     const r = adaptShipment({ ...api, trackingNumber: null });
-    expect(r.carrier).toBe("Pendiente de asignacion");
+    expect(r.carrier).toBe("Sin asignar");
     expect(r.tracking).toBe("Pendiente");
   });
   it("exception si cancelado", () => {
