@@ -7,20 +7,20 @@
 -- 1. INVENTARIO: 4 productos de tecnología --------------------
 \c inventory_db
 
-INSERT INTO inventory (sku, stock)
-SELECT 'LAPTOP-HP-15', 25
+INSERT INTO inventory (sku, name, stock, price, cost, category)
+SELECT 'LAPTOP-HP-15', 'Laptop HP 15 pulgadas', 25, 450000, 320000, 'electronica'
 WHERE NOT EXISTS (SELECT 1 FROM inventory WHERE sku = 'LAPTOP-HP-15');
 
-INSERT INTO inventory (sku, stock)
-SELECT 'MONITOR-DELL-24', 40
+INSERT INTO inventory (sku, name, stock, price, cost, category)
+SELECT 'MONITOR-DELL-24', 'Monitor Dell 24 pulgadas', 40, 180000, 120000, 'electronica'
 WHERE NOT EXISTS (SELECT 1 FROM inventory WHERE sku = 'MONITOR-DELL-24');
 
-INSERT INTO inventory (sku, stock)
-SELECT 'TECLADO-LOGI', 60
+INSERT INTO inventory (sku, name, stock, price, cost, category)
+SELECT 'TECLADO-LOGI', 'Teclado Logitech K120', 60, 25000, 15000, 'accesorios'
 WHERE NOT EXISTS (SELECT 1 FROM inventory WHERE sku = 'TECLADO-LOGI');
 
-INSERT INTO inventory (sku, stock)
-SELECT 'MOUSE-LOGI', 80
+INSERT INTO inventory (sku, name, stock, price, cost, category)
+SELECT 'MOUSE-LOGI', 'Mouse Logitech M170', 80, 12000, 7000, 'accesorios'
 WHERE NOT EXISTS (SELECT 1 FROM inventory WHERE sku = 'MOUSE-LOGI');
 
 -- 2. CLIENTES -------------------------------------------------

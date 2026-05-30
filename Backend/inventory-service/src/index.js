@@ -5,7 +5,14 @@ const log = require('../shared/logger');
 const { app, pool, sendError, start } = createApp('inventory_db', process.env.PORT || 8082);
 
 async function ensureTables() {
-  await pool.query(`CREATE TABLE IF NOT EXISTS inventory (id SERIAL PRIMARY KEY, sku VARCHAR(100) NOT NULL, stock INTEGER DEFAULT 0)`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS inventory (
+    id SERIAL PRIMARY KEY, sku VARCHAR(100) NOT NULL, name VARCHAR(200) NOT NULL DEFAULT '',
+    stock INTEGER DEFAULT 0, price INTEGER DEFAULT 0, cost INTEGER DEFAULT 0,
+    category VARCHAR(50) DEFAULT 'otros')`);
+  await pool.query(`ALTER TABLE inventory ADD COLUMN IF NOT EXISTS name VARCHAR(200) NOT NULL DEFAULT ''`);
+  await pool.query(`ALTER TABLE inventory ADD COLUMN IF NOT EXISTS price INTEGER DEFAULT 0`);
+  await pool.query(`ALTER TABLE inventory ADD COLUMN IF NOT EXISTS cost INTEGER DEFAULT 0`);
+  await pool.query(`ALTER TABLE inventory ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'otros'`);
   await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_inventory_sku ON inventory (sku)`);
   await pool.query(`CREATE TABLE IF NOT EXISTS sales (id SERIAL PRIMARY KEY, sku VARCHAR(100) NOT NULL, quantity INTEGER NOT NULL, sale_date TIMESTAMP DEFAULT NOW())`);
   await pool.query(`CREATE TABLE IF NOT EXISTS processed_events (event_type VARCHAR(64) NOT NULL, event_key VARCHAR(128) NOT NULL, processed_at TIMESTAMP DEFAULT NOW(), PRIMARY KEY (event_type, event_key))`);
@@ -30,17 +37,26 @@ app.post('/api/inventory', async (req, res) => {
     if (errors.length) return res.status(400).json({ error: errors.join(', ') });
     if ((await pool.query('SELECT 1 FROM inventory WHERE sku=$1', [req.body.sku])).rows.length)
       return res.status(409).json({ error: 'SKU ya existe' });
-    const result = await pool.query('INSERT INTO inventory (sku, stock) VALUES ($1,$2) RETURNING *', [req.body.sku, req.body.stock || 0]);
+    const result = await pool.query(
+      'INSERT INTO inventory (sku, name, stock, price, cost, category) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
+      [req.body.sku, req.body.name || req.body.sku, req.body.stock || 0, req.body.price || 0, req.body.cost || 0, req.body.category || 'otros']);
     res.status(201).json(result.rows[0]);
   } catch (err) { sendError(res, 500, 'Failed to create inventory', err); }
 });
 
 app.put('/api/inventory/:sku', async (req, res) => {
   try {
-    if (req.body.stock === undefined || isNaN(Number(req.body.stock)) || Number(req.body.stock) < 0)
-      return res.status(400).json({ error: 'stock must be >= 0' });
-    const r = await pool.query('UPDATE inventory SET stock=$1 WHERE sku=$2 RETURNING *', [Number(req.body.stock), req.params.sku]);
-    if (!r.rows.length) return res.status(404).json({ error: 'SKU no encontrado' });
+    const existing = (await pool.query('SELECT * FROM inventory WHERE sku=$1', [req.params.sku])).rows[0];
+    if (!existing) return res.status(404).json({ error: 'SKU no encontrado' });
+    const name = req.body.name ?? existing.name;
+    const price = req.body.price !== undefined ? Number(req.body.price) : existing.price;
+    const cost = req.body.cost !== undefined ? Number(req.body.cost) : existing.cost;
+    const category = req.body.category ?? existing.category;
+    const stock = req.body.stock !== undefined ? Number(req.body.stock) : existing.stock;
+    if (stock < 0) return res.status(400).json({ error: 'stock must be >= 0' });
+    const r = await pool.query(
+      'UPDATE inventory SET name=$1, price=$2, cost=$3, category=$4, stock=$5 WHERE sku=$6 RETURNING *',
+      [name, price, cost, category, stock, req.params.sku]);
     res.json(r.rows[0]);
   } catch (err) { sendError(res, 500, 'Failed to update inventory', err); }
 });

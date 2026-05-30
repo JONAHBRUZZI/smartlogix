@@ -127,17 +127,6 @@ export function useOperationalWorkspace({
   }
 
   async function recordSale(sale: Sale) {
-    await apiFetch("/api/sales", {
-      method: "POST",
-      body: JSON.stringify({
-        items: JSON.stringify(sale.items),
-        total: sale.total,
-        paymentMethod: sale.paymentMethod,
-        vendorId: sale.vendorId,
-        vendorName: sale.vendorName,
-        createdAt: new Date(sale.createdAt),
-      }),
-    });
     for (const item of sale.items) {
       await apiFetch(`/api/inventory/${encodeURIComponent(item.sku)}/adjust?delta=${-item.quantity}`, {
         method: "POST",
