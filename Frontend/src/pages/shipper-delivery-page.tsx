@@ -19,6 +19,7 @@ export function ShipperDeliveryPage() {
   const [stageAction, setStageAction] = useState<"pickup" | "delivery" | null>(null);
   const [recipientRut, setRecipientRut] = useState("");
   const [customerCode, setCustomerCode] = useState("");
+  const [pickupCode, setPickupCode] = useState("");
   const [proofImage, setProofImage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
@@ -81,6 +82,7 @@ export function ShipperDeliveryPage() {
   async function handlePickup(shipment: Shipment) {
     setStageShipment(shipment);
     setStageAction("pickup");
+    setPickupCode("");
     setFeedback(null);
   }
 
@@ -99,13 +101,17 @@ export function ShipperDeliveryPage() {
 
   async function confirmPickup() {
     if (!stageShipment) return;
+    if (!pickupCode.trim()) {
+      setFeedback({ type: "error", msg: "Ingresa el codigo de retiro" });
+      return;
+    }
     setSubmitting(true);
     try {
-      await updateShipmentStage(stageShipment, "en_reparto");
-      setFeedback({ type: "success", msg: "Retiro confirmado. Envío en reparto." });
-      setTimeout(() => { setStageShipment(null); setStageAction(null); refreshShipments(); }, 1200);
+      await updateShipmentStage(stageShipment, "en_reparto", undefined, { pickupCode: pickupCode.trim().toUpperCase() });
+      setFeedback({ type: "success", msg: "Retiro confirmado. Envio en reparto." });
+      setTimeout(() => { setStageShipment(null); setStageAction(null); setPickupCode(""); refreshShipments(); }, 1200);
     } catch {
-      setFeedback({ type: "error", msg: "Error al confirmar retiro" });
+      setFeedback({ type: "error", msg: "Codigo de retiro incorrecto" });
     } finally { setSubmitting(false); }
   }
 
@@ -303,6 +309,17 @@ export function ShipperDeliveryPage() {
               <p className="text-xs text-[#6B7280]">Pedido #{stageShipment.orderId} · SKU {stageShipment.sku} · {stageShipment.quantity} unids</p>
             </div>
             <p className="text-sm text-[#6B7280] mb-4">Confirma que retiraste el pedido de la tienda para iniciar el reparto.</p>
+            <div className="mb-4">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.92px] text-muted-foreground mb-1">Codigo de retiro</label>
+              <input
+                value={pickupCode}
+                onChange={(e) => setPickupCode(e.target.value.toUpperCase())}
+                placeholder="Ingresa el codigo de 6 digitos"
+                className="h-10 w-full rounded border border-input bg-white px-3 text-sm text-center font-mono tracking-[4px]"
+                maxLength={6}
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Solicita el codigo al administrador</p>
+            </div>
             {feedback && (
               <div className={cn("rounded px-3 py-2 text-xs font-medium mb-3", feedback.type === "error" ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600")}>
                 {feedback.msg}

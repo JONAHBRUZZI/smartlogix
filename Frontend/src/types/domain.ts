@@ -67,6 +67,7 @@ export interface Shipment {
   quantity: number;
   carrier: string;
   tracking: string;
+  pickupCode?: string | null;
   stage: ShipmentStage;
   eta: string | null;
   createdAt: string;

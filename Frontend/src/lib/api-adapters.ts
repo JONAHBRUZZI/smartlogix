@@ -112,6 +112,7 @@ export function adaptShipment(apiShipment: ApiShipment): Shipment {
     shippedAt: apiShipment.shippedAt ?? null,
     exception: stage === "cancelado" ? "Envio cancelado" : undefined,
     proofOfDeliveryImage: apiShipment.proofOfDeliveryImage ?? null,
+    pickupCode: apiShipment.pickupCode ?? null,
     recipientRut: apiShipment.recipientRut ?? null,
     customerCode: apiShipment.customerCode ?? null
   };

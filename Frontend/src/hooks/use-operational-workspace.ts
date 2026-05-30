@@ -182,7 +182,7 @@ export function useOperationalWorkspace({
     await apiFetch(`/api/orders/${orderId}`, { method: "DELETE" });
   }
 
-  async function updateShipmentStage(shipment: Shipment, stage: ShipmentStage, _note?: string, proof?: { proofOfDeliveryImage?: string; recipientRut?: string; customerCode?: string }) {
+  async function updateShipmentStage(shipment: Shipment, stage: ShipmentStage, _note?: string, proof?: { proofOfDeliveryImage?: string; recipientRut?: string; customerCode?: string; pickupCode?: string }) {
     const body = proof ? JSON.stringify(proof) : undefined;
     await apiFetch(`/api/shipments/${shipment.id}/stage?stage=${stage}`, { method: "PUT", body });
   }

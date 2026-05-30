@@ -9,9 +9,17 @@ async function ensureTables() {
   await pool.query(`CREATE TABLE IF NOT EXISTS shipments (
     id SERIAL PRIMARY KEY, order_id INTEGER NOT NULL, customer_id INTEGER NOT NULL,
     sku VARCHAR(100) NOT NULL, quantity INTEGER NOT NULL, status VARCHAR(30) DEFAULT 'EN_PREPARACION',
-    tracking_number VARCHAR(20), created_at TIMESTAMP DEFAULT NOW(), shipped_at TIMESTAMP,
+    tracking_number VARCHAR(20), pickup_code VARCHAR(10), created_at TIMESTAMP DEFAULT NOW(), shipped_at TIMESTAMP,
     customer_code VARCHAR(20), recipient_rut VARCHAR(15), proof_of_delivery_image TEXT)`);
+  await pool.query(`ALTER TABLE shipments ADD COLUMN IF NOT EXISTS pickup_code VARCHAR(10)`);
   await pool.query(`CREATE TABLE IF NOT EXISTS processed_events (event_type VARCHAR(64) NOT NULL, event_key VARCHAR(128) NOT NULL, processed_at TIMESTAMP DEFAULT NOW(), PRIMARY KEY (event_type, event_key))`);
+}
+
+function generatePickupCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+  return code;
 }
 
 async function sendNotification(shipment, stage, message) {
@@ -41,8 +49,9 @@ app.post('/api/shipments', async (req, res) => {
     if ((await pool.query('SELECT 1 FROM shipments WHERE order_id=$1', [orderId])).rows.length)
       return res.status(409).json({ error: `Ya existe envío para orden ${orderId}` });
     const tracking = 'TRACK-' + require('uuid').v4().substring(0, 8).toUpperCase();
-    const shipment = (await pool.query(`INSERT INTO shipments (order_id,customer_id,sku,quantity,status,tracking_number,created_at) VALUES ($1,$2,$3,$4,'EN_PREPARACION',$5,NOW()) RETURNING *`, [orderId, customerId, sku, quantity, tracking])).rows[0];
-    await sendNotification(shipment, 'SHIPMENT_CREATED', `Envío creado tracking ${tracking}`);
+    const pickupCode = generatePickupCode();
+    const shipment = (await pool.query(`INSERT INTO shipments (order_id,customer_id,sku,quantity,status,tracking_number,pickup_code,created_at) VALUES ($1,$2,$3,$4,'EN_PREPARACION',$5,$6,NOW()) RETURNING *`, [orderId, customerId, sku, quantity, tracking, pickupCode])).rows[0];
+    await sendNotification(shipment, 'SHIPMENT_CREATED', `Envio creado tracking ${tracking}. Codigo retiro: ${pickupCode}`);
     res.status(201).json(shipment);
   } catch (err) { sendError(res, 500, 'Failed to create shipment', err); }
 });
@@ -57,8 +66,12 @@ app.put('/api/shipments/:id/stage', async (req, res) => {
 
     let updated, notifStage, notifMsg;
     if (stage === 'EN_REPARTO') {
+      const p = req.body || {};
+      if (!p.pickupCode || !p.pickupCode.trim()) return res.status(400).json({ error: 'pickupCode es requerido para retirar' });
+      if (p.pickupCode.trim().toUpperCase() !== (shipment.pickup_code || '').toUpperCase())
+        return res.status(400).json({ error: 'Codigo de retiro incorrecto' });
       updated = (await pool.query("UPDATE shipments SET status='EN_REPARTO',shipped_at=NOW() WHERE id=$1 RETURNING *", [req.params.id])).rows[0];
-      notifStage = 'SHIPMENT_IN_TRANSIT'; notifMsg = `Envío en reparto - ${updated.tracking_number}`;
+      notifStage = 'SHIPMENT_IN_TRANSIT'; notifMsg = `Envio en reparto - ${updated.tracking_number}`;
     } else if (stage === 'ENTREGADO') {
       const p = req.body || {};
       updated = (await pool.query("UPDATE shipments SET status='ENTREGADO',customer_code=$1,recipient_rut=$2 WHERE id=$3 RETURNING *", [p.customerCode||'', p.recipientRut||'', req.params.id])).rows[0];
@@ -75,8 +88,8 @@ app.put('/api/shipments/:id/stage', async (req, res) => {
 app.get('/api/shipments/:id/qr', async (req, res) => {
   try {
     const r = await pool.query('SELECT * FROM shipments WHERE id=$1', [req.params.id]);
-    if (!r.rows.length) return res.status(404).json({ error: 'Envío no encontrado' });
-    res.json({ qrCode: 'SMARTLOGIX-' + r.rows[0].tracking_number });
+    if (!r.rows.length) return res.status(404).json({ error: 'Envio no encontrado' });
+    res.json({ qrCode: 'SMARTLOGIX-' + r.rows[0].tracking_number, pickupCode: r.rows[0].pickup_code });
   } catch (err) { sendError(res, 500, 'Failed', err); }
 });
 

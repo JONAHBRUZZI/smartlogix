@@ -58,6 +58,7 @@ export interface ApiShipment {
   quantity: number;
   status: string;
   trackingNumber: string | null;
+  pickupCode?: string | null;
   createdAt: string | null;
   shippedAt: string | null;
   proofOfDeliveryImage?: string | null;

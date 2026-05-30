@@ -187,12 +187,18 @@ export function OrderDetailPage() {
 
         {operationalShipment && (
           <div className="rounded border border-[#DCE0E2] bg-white p-5">
-            <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Envío</p>
+            <p className="mb-4 text-[0.6875rem] font-bold uppercase tracking-[0.92px] text-[#6B7280]">Envio</p>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-[#6B7280]">Tracking</span>
                 <span className="text-xs font-mono font-bold text-[#4B98CF]">{operationalShipment.tracking}</span>
               </div>
+              {operationalShipment.pickupCode && (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[#6B7280]">Cod. retiro</span>
+                  <span className="text-xs font-mono font-bold text-[#E3AA75] bg-[#E3AA75]/10 px-2 py-0.5 rounded">{operationalShipment.pickupCode}</span>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-xs text-[#6B7280]">Estado</span>
                 <span className={cn("text-xs font-bold", badgeClass())}>{badgeLabel()}</span>
